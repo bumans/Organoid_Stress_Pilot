@@ -1,0 +1,2533 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Ben Umans" />
+
+<meta name="date" content="2021-07-05" />
+
+<title>precheck</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Organoid_Stress_Pilot</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">precheck</h1>
+<h4 class="author">Ben Umans</h4>
+<h4 class="date">2021-07-05</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-07-08
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>Organoid_Stress_Pilot/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210705code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210705)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210705code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210705)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong4cb6d4f"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> 4cb6d4f </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong4cb6d4f" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 4cb6d4f. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Untracked files:
+    Untracked:  data/Snakefile_cellranger
+    Untracked:  data/all.vcf.bed
+    Untracked:  data/cellranger.38.dict
+    Untracked:  data/cluster.json
+    Untracked:  data/config.yaml
+    Untracked:  data/environment.yaml
+    Untracked:  data/fastq/
+    Untracked:  data/human.unsorted.vcf
+    Untracked:  data/human.vcf
+    Untracked:  data/human.vcf.bed
+    Untracked:  data/library9.rds
+    Untracked:  data/log/
+    Untracked:  data/mysterycell.rds
+    Untracked:  data/reheaded.vcf
+    Untracked:  data/snakelog.out
+    Untracked:  data/snakemake_cellranger.batch
+    Untracked:  data/sorted.vcf
+    Untracked:  data/submit.sh
+    Untracked:  data/unsorted.vcf
+    Untracked:  data/unsorted_header
+    Untracked:  output/YG-BU-01_human/
+    Untracked:  output/YG-BU-02_human/
+    Untracked:  output/YG-BU-03_human/
+    Untracked:  output/YG-BU-04_human/
+    Untracked:  output/YG-BU-05_human/
+    Untracked:  output/YG-BU-06_human/
+    Untracked:  output/YG-BU-07_human/
+    Untracked:  output/YG-BU-08_human/
+    Untracked:  output/YG-BU-09_human/
+    Untracked:  output/YG-BU-10_human/
+    Untracked:  output/YG-BU-11_human/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/precheck.Rmd</code>) and HTML (<code>docs/precheck.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+4cb6d4f
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-08
+</td>
+<td>
+wflow_publish(c(“analysis/index.Rmd”, “analysis/precheck.Rmd”))
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After running <code>demuxlet</code> to separate individuals from each run, I would like to first check what populations of cells I obtained on one sample before combining and integrating across all of the different libraries. This will allow me to assess how these (significantly older) organoids compare to the ones collected earlier. I’ll start with library 9, which is a control (untreated) sample from my final collection day (replicate 4).</p>
+<div id="data-import" class="section level2">
+<h2>Data Import</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>── Attaching packages ────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>✓ ggplot2 3.3.5     ✓ purrr   0.3.4
+✓ tibble  3.1.2     ✓ dplyr   1.0.7
+✓ tidyr   1.1.3     ✓ stringr 1.4.0
+✓ readr   1.4.0     ✓ forcats 0.5.1</code></pre>
+<pre><code>── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(knitr)
+library(patchwork)
+library(Seurat)
+library(patchwork)
+library(scHCL)</code></pre>
+<pre><code>Warning: replacing previous import &#39;shiny::dataTableOutput&#39; by
+&#39;DT::dataTableOutput&#39; when loading &#39;scHCL&#39;</code></pre>
+<pre><code>Warning: replacing previous import &#39;shiny::renderDataTable&#39; by
+&#39;DT::renderDataTable&#39; when loading &#39;scHCL&#39;</code></pre>
+<pre class="r"><code>library(RColorBrewer)
+library(cowplot)</code></pre>
+<pre><code>
+********************************************************</code></pre>
+<pre><code>Note: As of version 1.0.0, cowplot does not change the</code></pre>
+<pre><code>  default ggplot2 theme anymore. To recover the previous</code></pre>
+<pre><code>  behavior, execute:
+  theme_set(theme_cowplot())</code></pre>
+<pre><code>********************************************************</code></pre>
+<pre><code>
+Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:patchwork&#39;:
+
+    align_plots</code></pre>
+<pre class="r"><code>library(limma)
+source(&#39;/project2/gilad/kenneth/HumanChimpEBsOrtho/Analysis/utilities.R&#39;)
+dat &lt;- readRDS(file = &quot;output/YG-BU-09_human/obj.rds&quot;)</code></pre>
+</div>
+<div id="filtering" class="section level2">
+<h2>Filtering</h2>
+<p>First, we confirm that we have only singlets</p>
+<pre class="r"><code>table(dat@meta.data$DROPLET.TYPE)</code></pre>
+<pre><code>
+ SNG 
+9948 </code></pre>
+<p>The pre-processing script already subsetted to less than 15% mitochondrial reads, but this is still pretty liberal.</p>
+<pre class="r"><code>plot1 &lt;- FeatureScatter(dat, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;percent.mt&quot;) + theme(legend.position = &quot;none&quot;) + ggtitle(&quot;&quot;)
+plot2 &lt;- FeatureScatter(dat, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;nFeature_RNA&quot;) + theme(legend.position = &quot;none&quot;) + ggtitle(&quot;&quot;)
+plot3 &lt;- FeatureScatter(dat, feature1 = &quot;nFeature_RNA&quot;, feature2 = &quot;percent.mt&quot;) + theme(legend.position = &quot;none&quot;) + ggtitle(&quot;&quot;)
+plot1 + plot2 + plot3</code></pre>
+<p><img src="figure/precheck.Rmd/pre-qc-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>dat@meta.data %&gt;% 
+  ggplot(aes(x=percent.mt)) +
+  geom_freqpoly() +
+  ggtitle(&quot;Mitochondrial read percent per cell&quot;)</code></pre>
+<p><img src="figure/precheck.Rmd/pre-qc-2.png" width="672" style="display: block; margin: auto;" /> 15% is not a terrible cutoff, but we could easily do 10% and not lose anything worth missing. Let’s also check the number of genes detected, understanding that with low-pass sequencing there’s a lot less data here.</p>
+<pre class="r"><code>dat@meta.data %&gt;% 
+  ggplot(aes(x=nFeature_RNA)) +
+  geom_freqpoly() +
+  ggtitle(&quot;Number of genes per cell&quot;)</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/precheck.Rmd/genes-cell-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>dat &lt;- subset(dat, subset = percent.mt &lt; 10 &amp; nFeature_RNA &gt; 1000 )</code></pre>
+</div>
+<div id="normalization" class="section level2">
+<h2>Normalization</h2>
+<p>Now we can start normalizing expression and clustering cells.</p>
+<p>Kenneth’s demuxlet QC script already normalized the data using SCTransform. However, my reference data have not been processed this way and are very large for this routine. In order to be able to compare, I’m going to use log-normalization on the RNA assay in this object to start.</p>
+<pre class="r"><code>DefaultAssay(dat) &lt;- &quot;RNA&quot;
+dat &lt;- NormalizeData(dat, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000)</code></pre>
+<p>Now we identify highly variable features for use in clustering.</p>
+<pre class="r"><code>dat &lt;- FindVariableFeatures(dat, selection.method = &quot;vst&quot;, nfeatures = 2000)
+
+dat.plot &lt;- VariableFeaturePlot(dat)
+LabelPoints(dat.plot, points = head(VariableFeatures(dat), 20), repel = T) + theme(legend.position = &quot;none&quot;)</code></pre>
+<pre><code>Warning: Using `as.character()` on a quosure is deprecated as of rlang 0.3.0.
+Please use `as_label()` or `as_name()` instead.
+This warning is displayed once per session.</code></pre>
+<pre><code>Warning: Transformation introduced infinite values in continuous x-axis</code></pre>
+<pre><code>Warning: Removed 6915 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/precheck.Rmd/variable-features-1.png" width="45%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="scaling" class="section level2">
+<h2>Scaling</h2>
+<p>Now we have to rescale and center the expression of genes across cells for dimensionality reduction.</p>
+<pre class="r"><code>all.genes &lt;- row.names(dat)
+dat &lt;- ScaleData(dat, features = all.genes)</code></pre>
+</div>
+<div id="dimensionality-reduction" class="section level2">
+<h2>Dimensionality Reduction</h2>
+<p>Next, we perform PCA on the rescaled datasets.</p>
+<pre class="r"><code>dat &lt;- RunPCA(dat, features = VariableFeatures(object = dat))
+
+DimPlot(dat, dims = c(1,2))</code></pre>
+<p><img src="figure/precheck.Rmd/PCA-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimHeatmap(dat, dims = 2:3, cells = 600, balanced = TRUE)</code></pre>
+<p><img src="figure/precheck.Rmd/PCA-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now we determine the adequate number of PCs to include for informative clustering. Let’s try this with the <em>Macosko et al.</em> JackStraw procedure.</p>
+<pre class="r"><code>dat &lt;- JackStraw(dat, num.replicate = 200)
+dat &lt;- ScoreJackStraw(dat, dims = 1:20)
+
+JackStrawPlot(dat, dims = 1:20)</code></pre>
+<pre><code>Warning: Removed 28000 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/precheck.Rmd/PCA-choice-1.png" width="45%" style="display: block; margin: auto;" /></p>
+<p>This is…not super informative. It seems to imply that at least 34 PCs are informative. Let’s also look at an elbow plot to see whether it gives a similar answer.</p>
+<pre class="r"><code>ElbowPlot(dat, ndims = 55) + ggtitle(&quot;Human data&quot;)</code></pre>
+<pre><code>Warning in ElbowPlot(dat, ndims = 55): The object only has information for
+50 reductions</code></pre>
+<p><img src="figure/precheck.Rmd/elbowplots-1.png" width="45%" style="display: block; margin: auto;" /> Both of these would seem to suggest that 30ish is a reasonable choice…but so is 45. We’ll go with 40 for now.</p>
+</div>
+<div id="clustering" class="section level2">
+<h2>Clustering</h2>
+<p>Seurat guide recommends setting the resolution parameter between 0.3 and 1.2 for datasets of about this number of cells (though not necessarily this information depth). For now, we’ll just start with 0.5 so as to be reasonably conservative with the number of clusters we identify.</p>
+<pre class="r"><code>dat &lt;- FindNeighbors(dat, dims = 1:40)
+dat5 &lt;- FindClusters(dat, resolution = 0.5)</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 9853
+Number of edges: 347321
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9069
+Number of communities: 17
+Elapsed time: 0 seconds</code></pre>
+<pre class="r"><code>rm(dat)</code></pre>
+<p>Now we can run UMAP dimensionality reduction.</p>
+<pre class="r"><code>dat5 &lt;- RunUMAP(dat5, dims = 1:45)</code></pre>
+<pre><code>Warning: The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
+To use Python UMAP via reticulate, set umap.method to &#39;umap-learn&#39; and metric to &#39;correlation&#39;
+This message will be shown once per session</code></pre>
+<pre class="r"><code>DimPlot(dat5, reduction = &quot;umap&quot;) + ggtitle(&quot;resolution=0.5&quot;)</code></pre>
+<p><img src="figure/precheck.Rmd/umap-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="check-qc-metrics-on-umap" class="section level2">
+<h2>Check QC metrics on UMAP</h2>
+<p>Now that we’re thinking about clusters, do we have an uneven distribution of mitochondrial reads or detected genes across the UMAP?</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;percent.mt&quot;, &quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/umap-qc-1.png" width="45%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="find-markers" class="section level2">
+<h2>Find Markers</h2>
+<p>Now we’ll try to find markers for each of the clusters, and hope that some of these can help identify what clusters represent.</p>
+<pre class="r"><code>dat5.markers &lt;- FindAllMarkers(dat5, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+dat5.markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_logFC) %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">p_val</th>
+<th align="right">avg_logFC</th>
+<th align="right">pct.1</th>
+<th align="right">pct.2</th>
+<th align="right">p_val_adj</th>
+<th align="left">cluster</th>
+<th align="left">gene</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.885158</td>
+<td align="right">0.999</td>
+<td align="right">0.480</td>
+<td align="right">0</td>
+<td align="left">0</td>
+<td align="left">MGP</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.613123</td>
+<td align="right">0.474</td>
+<td align="right">0.103</td>
+<td align="right">0</td>
+<td align="left">0</td>
+<td align="left">PENK</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.548183</td>
+<td align="right">0.729</td>
+<td align="right">0.147</td>
+<td align="right">0</td>
+<td align="left">0</td>
+<td align="left">APOE</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.487821</td>
+<td align="right">0.478</td>
+<td align="right">0.091</td>
+<td align="right">0</td>
+<td align="left">0</td>
+<td align="left">PTGDS</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.325168</td>
+<td align="right">0.956</td>
+<td align="right">0.356</td>
+<td align="right">0</td>
+<td align="left">0</td>
+<td align="left">FBLN1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.334269</td>
+<td align="right">0.446</td>
+<td align="right">0.065</td>
+<td align="right">0</td>
+<td align="left">1</td>
+<td align="left">SGCZ</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.255293</td>
+<td align="right">0.986</td>
+<td align="right">0.422</td>
+<td align="right">0</td>
+<td align="left">1</td>
+<td align="left">COL3A1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.251211</td>
+<td align="right">0.736</td>
+<td align="right">0.158</td>
+<td align="right">0</td>
+<td align="left">1</td>
+<td align="left">LUM</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.235920</td>
+<td align="right">0.997</td>
+<td align="right">0.436</td>
+<td align="right">0</td>
+<td align="left">1</td>
+<td align="left">COL1A1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.510098</td>
+<td align="right">0.539</td>
+<td align="right">0.206</td>
+<td align="right">0</td>
+<td align="left">1</td>
+<td align="left">COL1A2</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.857188</td>
+<td align="right">0.924</td>
+<td align="right">0.301</td>
+<td align="right">0</td>
+<td align="left">2</td>
+<td align="left">RBFOX1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.819775</td>
+<td align="right">0.822</td>
+<td align="right">0.144</td>
+<td align="right">0</td>
+<td align="left">2</td>
+<td align="left">DSCAM</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.774786</td>
+<td align="right">0.963</td>
+<td align="right">0.386</td>
+<td align="right">0</td>
+<td align="left">2</td>
+<td align="left">CADM2</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.749972</td>
+<td align="right">0.953</td>
+<td align="right">0.224</td>
+<td align="right">0</td>
+<td align="left">2</td>
+<td align="left">LRRC7</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.711526</td>
+<td align="right">0.838</td>
+<td align="right">0.273</td>
+<td align="right">0</td>
+<td align="left">2</td>
+<td align="left">SEMA3C</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.338758</td>
+<td align="right">0.972</td>
+<td align="right">0.176</td>
+<td align="right">0</td>
+<td align="left">3</td>
+<td align="left">NKAIN2</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.305471</td>
+<td align="right">0.867</td>
+<td align="right">0.087</td>
+<td align="right">0</td>
+<td align="left">3</td>
+<td align="left">TAFA1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.287036</td>
+<td align="right">0.940</td>
+<td align="right">0.320</td>
+<td align="right">0</td>
+<td align="left">3</td>
+<td align="left">MEF2C</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.201765</td>
+<td align="right">0.974</td>
+<td align="right">0.434</td>
+<td align="right">0</td>
+<td align="left">3</td>
+<td align="left">DLG2</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.109643</td>
+<td align="right">0.896</td>
+<td align="right">0.102</td>
+<td align="right">0</td>
+<td align="left">3</td>
+<td align="left">FGF12</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">3.244344</td>
+<td align="right">0.836</td>
+<td align="right">0.071</td>
+<td align="right">0</td>
+<td align="left">4</td>
+<td align="left">COL2A1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.337214</td>
+<td align="right">0.624</td>
+<td align="right">0.035</td>
+<td align="right">0</td>
+<td align="left">4</td>
+<td align="left">COL9A1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.182685</td>
+<td align="right">0.925</td>
+<td align="right">0.057</td>
+<td align="right">0</td>
+<td align="left">4</td>
+<td align="left">MIA</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.012502</td>
+<td align="right">0.643</td>
+<td align="right">0.027</td>
+<td align="right">0</td>
+<td align="left">4</td>
+<td align="left">HAPLN1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.893090</td>
+<td align="right">0.719</td>
+<td align="right">0.033</td>
+<td align="right">0</td>
+<td align="left">4</td>
+<td align="left">COL11A2</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.664572</td>
+<td align="right">0.985</td>
+<td align="right">0.373</td>
+<td align="right">0</td>
+<td align="left">5</td>
+<td align="left">C1orf61</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.657546</td>
+<td align="right">0.823</td>
+<td align="right">0.083</td>
+<td align="right">0</td>
+<td align="left">5</td>
+<td align="left">GFAP</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.596624</td>
+<td align="right">0.942</td>
+<td align="right">0.439</td>
+<td align="right">0</td>
+<td align="left">5</td>
+<td align="left">DBI</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.587676</td>
+<td align="right">0.971</td>
+<td align="right">0.325</td>
+<td align="right">0</td>
+<td align="left">5</td>
+<td align="left">PTPRZ1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.539146</td>
+<td align="right">0.912</td>
+<td align="right">0.370</td>
+<td align="right">0</td>
+<td align="left">5</td>
+<td align="left">CLU</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.791144</td>
+<td align="right">0.830</td>
+<td align="right">0.184</td>
+<td align="right">0</td>
+<td align="left">6</td>
+<td align="left">MT2A</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.807447</td>
+<td align="right">0.902</td>
+<td align="right">0.239</td>
+<td align="right">0</td>
+<td align="left">6</td>
+<td align="left">HMGA1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.518586</td>
+<td align="right">0.669</td>
+<td align="right">0.079</td>
+<td align="right">0</td>
+<td align="left">6</td>
+<td align="left">PLAUR</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.284101</td>
+<td align="right">0.608</td>
+<td align="right">0.071</td>
+<td align="right">0</td>
+<td align="left">6</td>
+<td align="left">SERPINE1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.347362</td>
+<td align="right">0.989</td>
+<td align="right">0.530</td>
+<td align="right">0</td>
+<td align="left">6</td>
+<td align="left">S100A10</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.674186</td>
+<td align="right">0.939</td>
+<td align="right">0.135</td>
+<td align="right">0</td>
+<td align="left">7</td>
+<td align="left">CENPF</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.453895</td>
+<td align="right">0.897</td>
+<td align="right">0.086</td>
+<td align="right">0</td>
+<td align="left">7</td>
+<td align="left">TOP2A</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.228989</td>
+<td align="right">0.975</td>
+<td align="right">0.161</td>
+<td align="right">0</td>
+<td align="left">7</td>
+<td align="left">HMGB2</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.974755</td>
+<td align="right">0.862</td>
+<td align="right">0.095</td>
+<td align="right">0</td>
+<td align="left">7</td>
+<td align="left">NUSAP1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.027325</td>
+<td align="right">0.723</td>
+<td align="right">0.289</td>
+<td align="right">0</td>
+<td align="left">7</td>
+<td align="left">HIST1H4C</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.353855</td>
+<td align="right">0.773</td>
+<td align="right">0.102</td>
+<td align="right">0</td>
+<td align="left">8</td>
+<td align="left">GFAP</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.220602</td>
+<td align="right">0.816</td>
+<td align="right">0.123</td>
+<td align="right">0</td>
+<td align="left">8</td>
+<td align="left">SPARCL1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.774940</td>
+<td align="right">0.838</td>
+<td align="right">0.048</td>
+<td align="right">0</td>
+<td align="left">8</td>
+<td align="left">ERBB4</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.753071</td>
+<td align="right">0.944</td>
+<td align="right">0.258</td>
+<td align="right">0</td>
+<td align="left">8</td>
+<td align="left">METRN</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.303131</td>
+<td align="right">0.987</td>
+<td align="right">0.378</td>
+<td align="right">0</td>
+<td align="left">8</td>
+<td align="left">CLU</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.608966</td>
+<td align="right">0.870</td>
+<td align="right">0.095</td>
+<td align="right">0</td>
+<td align="left">9</td>
+<td align="left">TOP2A</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.434405</td>
+<td align="right">0.845</td>
+<td align="right">0.073</td>
+<td align="right">0</td>
+<td align="left">9</td>
+<td align="left">TPX2</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.427863</td>
+<td align="right">0.870</td>
+<td align="right">0.102</td>
+<td align="right">0</td>
+<td align="left">9</td>
+<td align="left">NUSAP1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.423709</td>
+<td align="right">0.836</td>
+<td align="right">0.064</td>
+<td align="right">0</td>
+<td align="left">9</td>
+<td align="left">MKI67</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.357725</td>
+<td align="right">0.929</td>
+<td align="right">0.129</td>
+<td align="right">0</td>
+<td align="left">9</td>
+<td align="left">PCLAF</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.065266</td>
+<td align="right">0.922</td>
+<td align="right">0.240</td>
+<td align="right">0</td>
+<td align="left">10</td>
+<td align="left">AL589740.1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.695223</td>
+<td align="right">0.746</td>
+<td align="right">0.172</td>
+<td align="right">0</td>
+<td align="left">10</td>
+<td align="left">HES6</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.685940</td>
+<td align="right">0.899</td>
+<td align="right">0.448</td>
+<td align="right">0</td>
+<td align="left">10</td>
+<td align="left">NKAIN3</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.567295</td>
+<td align="right">0.723</td>
+<td align="right">0.249</td>
+<td align="right">0</td>
+<td align="left">10</td>
+<td align="left">KCNIP4</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.672933</td>
+<td align="right">0.618</td>
+<td align="right">0.175</td>
+<td align="right">0</td>
+<td align="left">10</td>
+<td align="left">LINC01965</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.550163</td>
+<td align="right">0.409</td>
+<td align="right">0.025</td>
+<td align="right">0</td>
+<td align="left">11</td>
+<td align="left">ADARB2</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.260073</td>
+<td align="right">0.321</td>
+<td align="right">0.017</td>
+<td align="right">0</td>
+<td align="left">11</td>
+<td align="left">GALNTL6</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.936605</td>
+<td align="right">0.650</td>
+<td align="right">0.111</td>
+<td align="right">0</td>
+<td align="left">11</td>
+<td align="left">NRXN3</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.131121</td>
+<td align="right">0.467</td>
+<td align="right">0.079</td>
+<td align="right">0</td>
+<td align="left">11</td>
+<td align="left">ERBB4</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.272448</td>
+<td align="right">0.482</td>
+<td align="right">0.166</td>
+<td align="right">0</td>
+<td align="left">11</td>
+<td align="left">CNTN5</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.076182</td>
+<td align="right">0.781</td>
+<td align="right">0.039</td>
+<td align="right">0</td>
+<td align="left">12</td>
+<td align="left">CNTNAP5</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.117680</td>
+<td align="right">0.772</td>
+<td align="right">0.044</td>
+<td align="right">0</td>
+<td align="left">12</td>
+<td align="left">SORCS1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.301174</td>
+<td align="right">0.886</td>
+<td align="right">0.099</td>
+<td align="right">0</td>
+<td align="left">12</td>
+<td align="left">RALYL</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.671716</td>
+<td align="right">1.000</td>
+<td align="right">0.169</td>
+<td align="right">0</td>
+<td align="left">12</td>
+<td align="left">OPCML</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.053161</td>
+<td align="right">0.667</td>
+<td align="right">0.114</td>
+<td align="right">0</td>
+<td align="left">12</td>
+<td align="left">DPP10</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">3.265036</td>
+<td align="right">0.940</td>
+<td align="right">0.013</td>
+<td align="right">0</td>
+<td align="left">13</td>
+<td align="left">DLX6-AS1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">3.879690</td>
+<td align="right">1.000</td>
+<td align="right">0.111</td>
+<td align="right">0</td>
+<td align="left">13</td>
+<td align="left">NRXN3</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.727290</td>
+<td align="right">0.690</td>
+<td align="right">0.079</td>
+<td align="right">0</td>
+<td align="left">13</td>
+<td align="left">ERBB4</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">3.503203</td>
+<td align="right">0.690</td>
+<td align="right">0.112</td>
+<td align="right">0</td>
+<td align="left">13</td>
+<td align="left">SOX2-OT</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.510947</td>
+<td align="right">0.393</td>
+<td align="right">0.033</td>
+<td align="right">0</td>
+<td align="left">13</td>
+<td align="left">IL1RAPL2</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.666066</td>
+<td align="right">0.871</td>
+<td align="right">0.025</td>
+<td align="right">0</td>
+<td align="left">14</td>
+<td align="left">AC007402.1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.750204</td>
+<td align="right">0.790</td>
+<td align="right">0.053</td>
+<td align="right">0</td>
+<td align="left">14</td>
+<td align="left">LHFPL3</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.949216</td>
+<td align="right">0.855</td>
+<td align="right">0.146</td>
+<td align="right">0</td>
+<td align="left">14</td>
+<td align="left">CSMD1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">1.687360</td>
+<td align="right">0.887</td>
+<td align="right">0.309</td>
+<td align="right">0</td>
+<td align="left">14</td>
+<td align="left">NOVA1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.689771</td>
+<td align="right">0.758</td>
+<td align="right">0.231</td>
+<td align="right">0</td>
+<td align="left">14</td>
+<td align="left">GRIK2</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">3.271279</td>
+<td align="right">0.905</td>
+<td align="right">0.023</td>
+<td align="right">0</td>
+<td align="left">15</td>
+<td align="left">APOD</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.240927</td>
+<td align="right">0.952</td>
+<td align="right">0.124</td>
+<td align="right">0</td>
+<td align="left">15</td>
+<td align="left">ATP1A2</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">3.870993</td>
+<td align="right">1.000</td>
+<td align="right">0.159</td>
+<td align="right">0</td>
+<td align="left">15</td>
+<td align="left">PTGDS</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1.908566</td>
+<td align="right">1.000</td>
+<td align="right">0.307</td>
+<td align="right">0</td>
+<td align="left">15</td>
+<td align="left">DCN</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.284087</td>
+<td align="right">0.690</td>
+<td align="right">0.220</td>
+<td align="right">0</td>
+<td align="left">15</td>
+<td align="left">NNAT</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.203898</td>
+<td align="right">0.667</td>
+<td align="right">0.029</td>
+<td align="right">0</td>
+<td align="left">16</td>
+<td align="left">AL139383.1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.117888</td>
+<td align="right">0.810</td>
+<td align="right">0.047</td>
+<td align="right">0</td>
+<td align="left">16</td>
+<td align="left">PLP1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.197821</td>
+<td align="right">0.667</td>
+<td align="right">0.040</td>
+<td align="right">0</td>
+<td align="left">16</td>
+<td align="left">DGKB</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">2.175038</td>
+<td align="right">0.857</td>
+<td align="right">0.152</td>
+<td align="right">0</td>
+<td align="left">16</td>
+<td align="left">COL4A1</td>
+</tr>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2.278180</td>
+<td align="right">0.571</td>
+<td align="right">0.060</td>
+<td align="right">0</td>
+<td align="left">16</td>
+<td align="left">CRYAB</td>
+</tr>
+</tbody>
+</table>
+<p>Now’s a good time to save the output.</p>
+<pre class="r"><code>saveRDS(dat5, file = &quot;data/library9.rds&quot;)</code></pre>
+</div>
+<div id="gene-hunting" class="section level2">
+<h2>Gene hunting!</h2>
+<p>Now we can go looking for features of interest to start to make sense of these clusters, in addition to the naively-identified markers from before.</p>
+<pre class="r"><code>#dat5 &lt;- readRDS(file = &quot;data/library9.rds&quot;)
+
+FeaturePlot(dat5, features = c(&quot;FOS&quot;,  &quot;NPAS4&quot;, &quot;ARC&quot;, &quot;EGR1&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/genes-of-interest-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;BDNF&quot;, &quot;ADCYAP1&quot;, &quot;PCSK1&quot;, &quot;GPR22&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/genes-of-interest-2.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="targeted-gene-classification" class="section level3">
+<h3>Targeted gene classification</h3>
+<p>In addition to genes of interest above, I’ve borrowed from the Abcam manual of neural markers to provide a more systematic assessment of canonical (and immunostainable) CNS targets.</p>
+<p>First, neuroepithelium:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;NES&quot;, &quot;SOX2&quot;, &quot;NOTCH1&quot;, &quot;HES1&quot;, &quot;SOX10&quot;, &quot;OCLN&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/neuroepithelium-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>These indicate a cluster that contains progenitors. Not all of these markers are unique to neuroepithelium. Nestin, HES1, and SOX2, for instance, are also expressed by radial glia. Additional radial glial markers include:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;VIM&quot;, &quot;PAX6&quot;, &quot;HES5&quot;, &quot;SLC1A3&quot;, &quot;GFAP&quot;, &quot;FABP7&quot;, &quot;CDH2&quot;, &quot;TNC&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/rg-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Intermediate progenitors a are distinguished by the following markers:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;EOMES&quot;, &quot;ASCL1&quot;,&quot;OTX1&quot;, &quot;OTX2&quot;, &quot;FOXG1&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/IPC-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>While immature neurons, which IPCs differentiate into, express the following:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;DCX&quot;, &quot;TUBB3&quot;, &quot;NEUROD1&quot;, &quot;TBR1&quot;, &quot;STMN1&quot;, &quot;GAP43&quot;, &quot;NCAM1&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/immature-1.png" width="672" style="display: block; margin: auto;" /> In contrast to the cloud of progenitor cells, these markers seem to indicate the other large cluster as being more neuronal in character.</p>
+<p>Oligodendrocytes and their precursors generally express the following markers:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;PDGFRA&quot;, &quot;CSPG4&quot;, &quot;CLDN11&quot;, &quot;MOG&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/olig-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;OLIG1&quot;, &quot;OLIG2&quot;, &quot;OLIG3&quot;, &quot;MBP&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/olig-2.png" width="672" style="display: block; margin: auto;" /> Oligodendrocytes seem sparse and early, consistent with the idea that gliogenesis starts later in organoid development.</p>
+<p>Markers of “mature” neurons–a somewhat arbitrary term that simply means they’re post-mitotic–include:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;RBFOX3&quot;, &quot;MAP2&quot;, &quot;NEFM&quot;, &quot;NEFH&quot;, &quot;DLG4&quot;, &quot;SYP&quot;, &quot;UNC13A&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/mature-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;SYP&quot;, &quot;UNC13A&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/mature-2.png" width="672" style="display: block; margin: auto;" /> Which largely confirms our impression from earlier of which cluster contains neurons. Only a subset of these are positive for NeuN (RBFOX3), whereas more express PSD95 (DLG4) and Synaptophysin.</p>
+<p>I expect that the majority of these neurons will be glutamatergic:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;SLC17A7&quot;, &quot;SLC17A6&quot;, &quot;GRIN1&quot;, &quot;GRIN2B&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/glutamatergic-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>GABAergic neurons, on the other hand, express the following markers:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;SLC6A1&quot;, &quot;GABBR1&quot;, &quot;GABBR2&quot;, &quot;GAD1&quot;, &quot;GAD2&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/gabaergic-1.png" width="672" style="display: block; margin: auto;" /> GABA transporter (SLC6A1) and GABA synthesis enzymes GAD1/2 are expressed in a similar portion of cells complementary to the glutamatergic neurons described above. Expression of GABA receptors appears a bit more diffuse.</p>
+<p>Is there any evidence for dopaminergic neurons?</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;TH&quot;, &quot;SLC6A3&quot;, &quot;FOXA2&quot;, &quot;NR4A2&quot;, &quot;LMX1B&quot;))</code></pre>
+<pre><code>Warning in FeaturePlot(dat5, features = c(&quot;TH&quot;, &quot;SLC6A3&quot;, &quot;FOXA2&quot;,
+&quot;NR4A2&quot;, : All cells have the same value (0) of FOXA2.</code></pre>
+<p><img src="figure/precheck.Rmd/dans-1.png" width="672" style="display: block; margin: auto;" /> Only in a very early sense, as might be expected.</p>
+<p>Serotonergic neurons:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;FEV&quot;, &quot;TPH1&quot;, &quot;SLC6A4&quot;))</code></pre>
+<pre><code>Warning in FeaturePlot(dat5, features = c(&quot;FEV&quot;, &quot;TPH1&quot;, &quot;SLC6A4&quot;)): All
+cells have the same value (0) of FEV.</code></pre>
+<p><img src="figure/precheck.Rmd/serotonin-1.png" width="672" style="display: block; margin: auto;" /> Teeny tiny! There’s a tiny cluster of cells that express Pet1 (FEV) and SERT (SLC6A4). Cool!</p>
+<p>Cholinergic neurons:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;CHAT&quot;, &quot;SLC18A3&quot;, &quot;ACHE&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/cholinergic-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;TNC&quot;, &quot;PTPRZ1&quot;, &quot;FAM107A&quot;, &quot;HOPX&quot;,  &quot;LIFR&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/cholinergic-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;POU5F1&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/cholinergic-3.png" width="672" style="display: block; margin: auto;" /> Tenuously. While a number of cells express acetylcholinesterase, there’s just a tiny stripe of cells that express ChAT/VAChT.</p>
+</div>
+</div>
+</div>
+<div id="compare-to-human-refs" class="section level1">
+<h1>Compare to human refs</h1>
+<div id="align-to-organoid-data-arlotta-lab" class="section level2">
+<h2>Align to organoid data (Arlotta lab)</h2>
+<p>The first reference I’d like to use is the data from <a href="https://singlecell.broadinstitute.org/single_cell/study/SCP282/reproducible-brain-organoids">Velasco et al</a>, which reported single-cell expression data from organoids at 3 and 6 months, derived from both iPSCs and hESCs. The uploaded data aren’t super well explained, but at the minimum I can start by using the expression data from one of the 3-month time point batches.</p>
+<pre class="r"><code># first, read in the expression matrix from the 3mo data
+batch1 &lt;- read_delim(&quot;../HumanChimpCellranger/HumanChimpOrganoidPilot/data/expression_PGP1.3mon.txt&quot;, &quot;\t&quot;, escape_double = FALSE, trim_ws = TRUE)
+batch1 &lt;- column_to_rownames(batch1, var=&quot;GENE&quot;)
+batch1.matrix &lt;- as.matrix(batch1)
+
+#velasco.data &lt;- CreateAssayObject(data=batch1.matrix)
+velasco &lt;- CreateSeuratObject(batch1.matrix)</code></pre>
+<pre><code>Warning: Feature names cannot have underscores (&#39;_&#39;), replacing with dashes
+(&#39;-&#39;)</code></pre>
+<pre class="r"><code>rm(batch1)
+rm(batch1.matrix)
+#tsne &lt;- read.table(file=&quot;data/tsne_PGP1.3mon.txt&quot;, as.is = T, header = T) %&gt;% column_to_rownames( var=&quot;NAME&quot;)</code></pre>
+<p>I will very quickly now run through the clustering and dimensionality reduction steps on the Velasco data. Unfortunately I can’t really start with their clusters directly and will have to try to recreate them as best I can.</p>
+<pre class="r"><code>plot(density(velasco@meta.data$nFeature_RNA))</code></pre>
+<p><img src="figure/precheck.Rmd/velasco-clustering-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#it looks like the data we have here are mostly in good shape to start, I will assume I don&#39;t have to do any cleaning beyond what was uploaded.
+
+velasco &lt;- FindVariableFeatures(velasco, selection.method = &quot;vst&quot;, nfeatures = 2000)
+
+velasco.filtered.plot &lt;- VariableFeaturePlot(velasco)
+LabelPoints(velasco.filtered.plot, points = head(VariableFeatures(velasco), 20), repel = T) + theme(legend.position = &quot;none&quot;) </code></pre>
+<pre><code>Warning: Transformation introduced infinite values in continuous x-axis</code></pre>
+<pre><code>Warning: Removed 8350 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/precheck.Rmd/velasco-clustering-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>all.genes.filtered &lt;- row.names(velasco)
+velasco &lt;- ScaleData(velasco, features = all.genes.filtered)
+
+velasco &lt;- RunPCA(velasco, features = VariableFeatures(object = velasco), npcs = 60)
+
+velasco &lt;- FindNeighbors(velasco, dims = 1:60)
+
+velasco &lt;- FindClusters(velasco, resolution = 0.7)</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 17774
+Number of edges: 691626
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8683
+Number of communities: 14
+Elapsed time: 2 seconds</code></pre>
+<pre class="r"><code>velasco &lt;- RunUMAP(velasco, dims = 1:50)
+DimPlot(velasco, reduction = &quot;umap&quot;) + ggtitle(&quot;resolution=0.7&quot;)</code></pre>
+<p><img src="figure/precheck.Rmd/velasco-clustering-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>meta_combined &lt;- read.delim(&quot;/project2/gilad/umans/HumanChimpCellranger/HumanChimpOrganoidPilot/data/meta_combined.txt&quot;, stringsAsFactors = F)
+meta_combined &lt;- meta_combined[-1,]
+
+meta_combined &lt;- meta_combined %&gt;% filter(Batch==&quot;PGP1_3mon_Batch1&quot;) %&gt;% column_to_rownames( var=&quot;NAME&quot;)
+
+velasco &lt;- AddMetaData(velasco, metadata = meta_combined)</code></pre>
+<!-- Now I follow the Seurat guide for aligning to a reference set. -->
+<!-- ```{r align-to-velasco, message=FALSE} -->
+<!-- anchors <- FindTransferAnchors(reference = velasco, query = dat5,  -->
+<!--     dims = 1:30, normalization.method = "LogNormalize", k.filter = 100) -->
+<!-- predictions <- TransferData(anchorset = anchors, refdata = velasco$CellType,  -->
+<!--     dims = 1:30, k.weight = 30) -->
+<!-- dat5 <- AddMetaData(dat5, metadata = predictions) -->
+<!-- table(dat5$predicted.id) %>% kable() -->
+<!-- table(velasco$CellType) %>% kable() -->
+<!-- ``` -->
+<!-- This seems to indicate that, compared to the Velasco dataset, my organoids contain a mix of cell types, though with a good number of radial glia.  Many of the more specific cell types found in their dataset do not transfer as preferred labels to my cells--hrm. -->
+<!-- We can also visualize this. -->
+<!-- ```{r visualize-labels} -->
+<!-- DimPlot(dat5, reduction = "umap", group.by = "predicted.id", label = TRUE,  -->
+<!--     repel = TRUE) + NoLegend() + ggtitle("Velasco-derived labels") -->
+<!-- ``` -->
+<!-- Not terribly informative, really. -->
+<div id="integration" class="section level3">
+<h3>Integration</h3>
+<p>To look at this a little differently, I can integrate the datasets and then look for overlapping clusters.</p>
+<pre class="r"><code>data.list &lt;- list(vel=velasco, hum=dat5)
+
+in.anchors &lt;- FindIntegrationAnchors(object.list = data.list, dims = 1:50)
+organoid.integrated &lt;- IntegrateData(anchorset = in.anchors, dims = 1:50)</code></pre>
+<pre><code>Warning: Adding a command log without an assay associated with it</code></pre>
+<pre class="r"><code>DefaultAssay(organoid.integrated) &lt;- &quot;integrated&quot;
+
+# Run the standard workflow for visualization and clustering
+organoid.integrated &lt;- ScaleData(organoid.integrated, verbose = FALSE)
+organoid.integrated &lt;- RunPCA(organoid.integrated, npcs = 50, verbose = FALSE)
+organoid.integrated &lt;- RunUMAP(organoid.integrated, reduction = &quot;pca&quot;, dims = 1:50)
+
+#saveRDS(organoid.integrated, file=&quot;data/organoid-integrated.rds&quot;)
+rm(data.list)
+rm(in.anchors)</code></pre>
+<pre class="r"><code>#organoid.integrated&lt;- readRDS(file=&quot;data/organoid-integrated.rds&quot;)
+
+p1 &lt;- DimPlot(organoid.integrated, reduction = &quot;umap&quot;, group.by = &quot;orig.ident&quot;) +ggtitle(&quot;velasco-integrated, by origin&quot;)
+p2 &lt;- DimPlot(organoid.integrated, reduction = &quot;umap&quot;, group.by = &quot;CellType&quot;, label=TRUE, repel = TRUE, cols = DiscretePalette(20, &quot;stepped&quot;), na.value = &quot;black&quot;) + NoLegend() + ggtitle(&quot;velasco-integrated, by label&quot;)
+
+p1 +p2</code></pre>
+<p><img src="figure/precheck.Rmd/velasco-integrated-plots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ggsave(&quot;output/velascoplot.png&quot;, p2)
+
+rm(organoid.integrated)</code></pre>
+<p>Aside from the large cluster of mystery cells, this overlap looks a bit better than the label transfer would suggest.</p>
+</div>
+</div>
+<div id="compare-to-primary-fetal-brain-tissue" class="section level2">
+<h2>Compare to primary fetal brain tissue</h2>
+<p><a href="https://www.sciencedirect.com/science/article/pii/S0896627319305616#bib31">Polioudakis et al. 2019</a> used DropSeq to profile mid-gestational cortical neurons. I’ll use this dataset as reference for a final comparison.</p>
+<pre class="r"><code>load(&quot;../HumanChimpCellranger/HumanChimpOrganoidPilot/data/geschwind-raw_counts_mat.rdata&quot;)
+geschwind_meta &lt;- read_csv(&quot;../HumanChimpCellranger/HumanChimpOrganoidPilot/data/geschwind-cell_metadata.csv&quot;) %&gt;% column_to_rownames(var=&quot;Cell&quot;)</code></pre>
+<pre><code>
+── Column specification ───────────────────────────────────────────────────
+cols(
+  Cell = col_character(),
+  Cluster = col_character(),
+  Subcluster = col_character(),
+  Donor = col_double(),
+  Layer = col_character(),
+  Gestation_week = col_double(),
+  Index = col_character(),
+  Library = col_character(),
+  Number_genes_detected = col_double(),
+  Number_UMI = col_double(),
+  Percentage_mitochondrial = col_double(),
+  S_phase_score = col_double(),
+  G2M_phase_score = col_double(),
+  Phase = col_character()
+)</code></pre>
+<pre class="r"><code>geschwind &lt;- CreateSeuratObject(raw_counts_mat)
+geschwind &lt;- AddMetaData(object = geschwind, metadata = geschwind_meta)
+rm(raw_counts_mat)</code></pre>
+<p>Now we follow the Geschwind <a href="http://solo.bmap.ucla.edu/shiny/webapp/">lab’s guidance</a> to filter their data for further processing: (1) remove cells with fewer than 200 genes detected; (2) remove cells with more than 3152 genes detected; (3) remove cells with &gt;5% mitochondrial read content; (4) remove genes detected in &lt;3 cells.</p>
+<p>…except that it appears they’ve already performed this filtering on the uploaded “raw” data. Great!</p>
+<pre class="r"><code>plot(density(geschwind@meta.data$nFeature_RNA))</code></pre>
+<p><img src="figure/precheck.Rmd/geschwind-processing-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#it looks like the data we have here are mostly in good shape to start, I will assume I don&#39;t have to do any cleaning beyond what was uploaded.
+
+geschwind &lt;- FindVariableFeatures(geschwind, selection.method = &quot;vst&quot;, nfeatures = 2000)
+
+geschwind.plot &lt;- VariableFeaturePlot(geschwind)
+LabelPoints(geschwind.plot, points = head(VariableFeatures(geschwind), 20), repel = T) + theme(legend.position = &quot;none&quot;) </code></pre>
+<pre><code>When using repel, set xnudge and ynudge to 0 for optimal results</code></pre>
+<pre><code>Warning: Transformation introduced infinite values in continuous x-axis</code></pre>
+<pre><code>Warning: Removed 64 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/precheck.Rmd/geschwind-processing-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>all.genes.filtered &lt;- row.names(geschwind)
+geschwind &lt;- ScaleData(geschwind, features = all.genes.filtered)</code></pre>
+<pre><code>Centering and scaling data matrix</code></pre>
+<pre class="r"><code>geschwind &lt;- RunPCA(geschwind, features = VariableFeatures(object = geschwind), npcs = 60)</code></pre>
+<pre><code>PC_ 1 
+Positive:  STMN2, SLA, NEUROD6, SATB2, ARPP21, RUNX1T1, CHL1, SYT1, PLXNA4, SYT4 
+       MEF2C, DLX6-AS1, GAP43, NEFM, PCLO, ERBB4, DLX2, BHLHE22, INHBA, DLX5 
+       DLX1, GAD2, ENSG00000260664, CALB2, C1orf115, GPR22, GAD1, LHX6, ELMOD1, PDZRN3 
+Negative:  TUBA1B, HMGB2, SMC4, HMGN2, NUSAP1, HMGB1, ANP32E, SOX2, TOP2A, H2AFZ 
+       TPX2, VIM, RAD21, MKI67, PRC1, TMPO, NUCKS1, PTN, SFRP1, CKAP2 
+       KIF11, PAX6, HIST1H4C, CKS2, BIRC5, NDC80, CDK1, KIF15, H2AFV, SMC2 
+PC_ 2 
+Positive:  PTN, PEA15, PTPRZ1, FABP7, CALM1, C1orf61, DBI, GPM6B, FGFBP3, VIM 
+       TTYH1, PON2, SLC1A3, HOPX, HMGCS1, CLU, FAM107A, NRG1, JUN, MAP1B 
+       FOS, KLF6, HES1, ZFP36L1, SAT1, PLPP3, ATP1A2, CST3, SFRP1, FABP5 
+Negative:  HMGB2, NUSAP1, TOP2A, TPX2, CENPF, UBE2C, MKI67, PRC1, PTTG1, DLGAP5 
+       NUF2, GTSE1, NDC80, ASPM, BIRC5, KIF11, CKAP2, TTK, CCNB2, CKAP2L 
+       CDK1, SGO2, CENPE, AURKA, SMC4, KNL1, BUB1B, BUB1, CCNB1, KIF4A 
+PC_ 3 
+Positive:  PTN, VIM, SLC1A3, SFRP1, PEA15, HES1, PLPP3, ID4, TTYH1, PON2 
+       SOX9, JUN, FAM107A, HOPX, C8orf4, CLU, FOS, IQGAP2, NRG1, HSPB1 
+       MOXD1, ZFP36L1, GPX3, LGALS3, HSPA1B, GFAP, SOX2, RCN1, PSAT1, GATM 
+Negative:  CALM1, MAP1B, STMN2, CHL1, LMO3, GAP43, MT-RNR2, SYT1, ARPP21, SOBP 
+       FBXW7, MEF2C, GRIA2, LMO7, TCEAL2, ITSN1, MEG3, GRIN2B, ANK3, VCAN 
+       ZEB2, SCN2A, ATP1B1, ADCY1, AKAP9, NRCAM, ANK2, PTMS, KCTD12, CRYM 
+PC_ 4 
+Positive:  IGFBP7, ETS1, FN1, LAMA4, GNG11, ARHGAP29, ITGA1, ADGRF5, ESAM, MYO1B 
+       A2M, COL4A1, CLDN5, UACA, B2M, SPARC, LAMB1, ITM2A, FOXC1, EPAS1 
+       IFITM3, COL4A2, FLT1, NID1, COBLL1, C1orf54, ID3, VAMP5, PECAM1, CGNL1 
+Negative:  C1orf61, FABP7, PTPRZ1, SFRP1, SLC1A3, PTN, NRG1, TTYH1, FAM107A, FABP5 
+       FGFBP3, HMGCS1, PLPP3, CLU, MOXD1, DBI, PEA15, TMEM132B, SOX9, GPM6B 
+       ID4, PSAT1, SOX2, LRRC3B, GATM, LGALS3, MT3, INTU, GPX3, TNC 
+PC_ 5 
+Positive:  STMN2, POU3F2, SATB2, PLXNA4, SLA, MAP1B, LIMCH1, SYT4, ANK2, NEUROD6 
+       TUBA1A, CSRP2, BHLHE22, CLMP, GAP43, MT-RNR2, DAB1, MASP1, RAI14, MT-ATP8 
+       ENSG00000279576, RUNX1T1, AKAP9, MT-ND6, PTMS, NEFM, DOK5, ZEB2, HMGCS1, NASP 
+Negative:  LMO3, CRYM, TLE4, FBXW7, SORCS1, LMO7, KCTD12, CELF4, ZNF385D, TRPM3 
+       SYT6, ST18, TMEM178A, PDE1A, HS3ST4, NRCAM, KCNMA1, WNT7B, MEG3, PLEKHH2 
+       NEGR1, VSNL1, FAM81A, PAPPA2, ENSG00000228971, MGLL, RIMS2, ATP1B1, IGSF21, PDZD2 </code></pre>
+<pre class="r"><code>geschwind &lt;- FindNeighbors(geschwind, dims = 1:40)</code></pre>
+<pre><code>Computing nearest neighbor graph</code></pre>
+<pre><code>Computing SNN</code></pre>
+<pre class="r"><code>geschwind &lt;- FindClusters(geschwind, resolution = 0.7)</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 33986
+Number of edges: 1298102
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8758
+Number of communities: 17
+Elapsed time: 8 seconds</code></pre>
+<pre><code>1 singletons identified. 16 final clusters.</code></pre>
+<pre class="r"><code>geschwind &lt;- RunUMAP(geschwind, dims = 1:50)</code></pre>
+<pre><code>20:22:46 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>20:22:46 Read 33986 rows and found 50 numeric columns</code></pre>
+<pre><code>20:22:46 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>20:22:46 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
+<pre><code>[----|----|----|----|----|----|----|----|----|----|</code></pre>
+<pre><code>**************************************************|
+20:22:54 Writing NN index file to temp file /tmp/RtmppjXhlS/file2a6063b88cb68
+20:22:54 Searching Annoy index using 1 thread, search_k = 3000
+20:23:03 Annoy recall = 100%
+20:23:03 Commencing smooth kNN distance calibration using 1 thread
+20:23:05 Initializing from normalized Laplacian + noise
+20:23:07 Commencing optimization for 200 epochs, with 1682144 positive edges
+20:23:45 Optimization finished</code></pre>
+<pre class="r"><code>DimPlot(geschwind, reduction = &quot;umap&quot;, group.by=&quot;Cluster&quot;, label=TRUE, cols = DiscretePalette(20, &quot;stepped&quot;), na.value = &quot;black&quot;) + ggtitle(&quot;resolution=0.7&quot;) + NoLegend() + ggtitle(&quot;Geschwind lab data&quot;)</code></pre>
+<p><img src="figure/precheck.Rmd/geschwind-processing-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#the Geschwind lab data looks nice, now I can combine my data with it.
+
+geschwind$source &lt;- &quot;geschwind&quot;
+dat5$source &lt;- &quot;gilad&quot;
+
+data.list &lt;- list(ges=geschwind, hum=dat5)
+
+in.anchors &lt;- FindIntegrationAnchors(object.list = data.list, dims = 1:50)</code></pre>
+<pre><code>Computing 2000 integration features
+Scaling features for provided objects
+Finding all pairwise anchors
+Running CCA
+Merging objects
+Finding neighborhoods
+Finding anchors
+    Found 27336 anchors
+Filtering anchors
+    Retained 4813 anchors
+Extracting within-dataset neighbors</code></pre>
+<pre class="r"><code>geschwind.integrated &lt;- IntegrateData(anchorset = in.anchors, dims = 1:50)</code></pre>
+<pre><code>Merging dataset 2 into 1
+Extracting anchors for merged samples
+Finding integration vectors
+Finding integration vector weights
+Integrating data</code></pre>
+<pre><code>Warning: Adding a command log without an assay associated with it</code></pre>
+<pre class="r"><code>DefaultAssay(geschwind.integrated) &lt;- &quot;integrated&quot;
+
+# Run the standard workflow for visualization and clustering
+geschwind.integrated &lt;- ScaleData(geschwind.integrated, verbose = FALSE)
+geschwind.integrated &lt;- RunPCA(geschwind.integrated, npcs = 50, verbose = FALSE)
+geschwind.integrated &lt;- RunUMAP(geschwind.integrated, reduction = &quot;pca&quot;, dims = 1:40)</code></pre>
+<pre><code>20:32:34 UMAP embedding parameters a = 0.9922 b = 1.112
+20:32:34 Read 43839 rows and found 40 numeric columns
+20:32:34 Using Annoy for neighbor search, n_neighbors = 30
+20:32:34 Building Annoy index with metric = cosine, n_trees = 50
+0%   10   20   30   40   50   60   70   80   90   100%
+[----|----|----|----|----|----|----|----|----|----|
+**************************************************|
+20:32:42 Writing NN index file to temp file /tmp/RtmppjXhlS/file2a6062413f5cc
+20:32:43 Searching Annoy index using 1 thread, search_k = 3000
+20:32:52 Annoy recall = 100%
+20:32:53 Commencing smooth kNN distance calibration using 1 thread
+20:32:55 Initializing from normalized Laplacian + noise
+20:32:57 Commencing optimization for 200 epochs, with 2056222 positive edges
+20:33:48 Optimization finished</code></pre>
+<pre class="r"><code>#saveRDS(geschwind.integrated, &quot;data/geschwindintegrated.rds&quot;)
+DimPlot(geschwind.integrated, reduction = &quot;umap&quot;, group.by = &quot;source&quot;, cols = brewer.pal(3, &quot;Set1&quot;)) +ggtitle(&quot;Geschwind-Gilad integrated data&quot;) </code></pre>
+<p><img src="figure/precheck.Rmd/geschwind-processing-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(geschwind.integrated, reduction = &quot;umap&quot;, split.by = &quot;source&quot;, label = TRUE, repel = TRUE, cols = DiscretePalette(20, &quot;stepped&quot;)) +ggtitle(&quot;Geschwind-Gilad integrated data&quot;) + NoLegend()</code></pre>
+<p><img src="figure/precheck.Rmd/geschwind-processing-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>g2 &lt;- DimPlot(geschwind.integrated, reduction = &quot;umap&quot;, group.by = &quot;Cluster&quot;, label = TRUE, repel = TRUE, cols = DiscretePalette(20, &quot;stepped&quot;), na.value = &quot;purple&quot;) + NoLegend() + ggtitle(&quot;Geschwind-Gilad integrated data, by cluster label&quot;)
+g2</code></pre>
+<p><img src="figure/precheck.Rmd/geschwind-processing-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>rm(data.list)
+rm(in.anchors)</code></pre>
+<p>This looks pretty good, aside from that weird cluster over to the side.</p>
+<p>How well do the Arlotta lab organoids overlap with the fetal brain tissue here anyway?</p>
+<pre class="r"><code>data.list &lt;- list(ges=geschwind, vel=velasco)
+
+in.anchors &lt;- FindIntegrationAnchors(object.list = data.list, dims = 1:50)
+human.organoid &lt;- IntegrateData(anchorset = in.anchors, dims = 1:50)</code></pre>
+<pre><code>Warning: Adding a command log without an assay associated with it</code></pre>
+<pre class="r"><code>DefaultAssay(human.organoid) &lt;- &quot;integrated&quot;
+
+# Run the standard workflow for visualization and clustering
+human.organoid &lt;- ScaleData(human.organoid, verbose = FALSE)
+human.organoid &lt;- RunPCA(human.organoid, npcs = 50, verbose = FALSE)
+human.organoid &lt;- RunUMAP(human.organoid, reduction = &quot;pca&quot;, dims = 1:40)
+#saveRDS(geschwind.integrated, &quot;data/geschwindintegrated.rds&quot;)
+
+DimPlot(human.organoid, reduction = &quot;umap&quot;, group.by = &quot;source&quot;, cols = brewer.pal(3, &quot;Set1&quot;)) +ggtitle(&quot;Geschwind-Arlotta integrated data&quot;) </code></pre>
+<p><img src="figure/precheck.Rmd/velasco-geschwind-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(human.organoid, reduction = &quot;umap&quot;, split.by = &quot;source&quot;, label = TRUE, repel = TRUE, cols = DiscretePalette(20, &quot;stepped&quot;)) +ggtitle(&quot;Geschwind-Arlotta integrated data&quot;) + NoLegend()</code></pre>
+<pre><code>Warning: Removed 14 rows containing missing values (geom_text_repel).</code></pre>
+<p><img src="figure/precheck.Rmd/velasco-geschwind-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>rm(data.list)</code></pre>
+</div>
+<div id="mystery-cluster" class="section level2">
+<h2>Mystery cluster</h2>
+<p>Once again we have a cluster of my cells that sit alone. What are they?</p>
+<pre class="r"><code># select.cells &lt;- CellSelector(plot = g2)
+# saveRDS(select.cells, &quot;data/mysterycell.rds&quot;)
+select.cells &lt;- readRDS(file = &quot;data/mysterycell.rds&quot;)
+Idents(geschwind.integrated, cells = select.cells) &lt;- &quot;GiladCells&quot;
+giladcells.markers &lt;- FindMarkers(geschwind.integrated, ident.1 = &quot;GiladCells&quot;, min.diff.pct = 0.3,
+    only.pos = TRUE)
+head(giladcells.markers, n=10) %&gt;% kable(caption = &quot;top markers for unknown cluster&quot;)</code></pre>
+<table>
+<caption>top markers for unknown cluster</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">p_val</th>
+<th align="right">avg_logFC</th>
+<th align="right">pct.1</th>
+<th align="right">pct.2</th>
+<th align="right">p_val_adj</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>HLA-E</td>
+<td align="right">0</td>
+<td align="right">20.9440936</td>
+<td align="right">0.841</td>
+<td align="right">0.073</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>PLEK</td>
+<td align="right">0</td>
+<td align="right">5.5341060</td>
+<td align="right">0.959</td>
+<td align="right">0.010</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>NEAT1</td>
+<td align="right">0</td>
+<td align="right">2.5455573</td>
+<td align="right">0.697</td>
+<td align="right">0.072</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>COL9A1</td>
+<td align="right">0</td>
+<td align="right">0.6707962</td>
+<td align="right">0.966</td>
+<td align="right">0.088</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>TIMP1</td>
+<td align="right">0</td>
+<td align="right">0.5131207</td>
+<td align="right">0.680</td>
+<td align="right">0.040</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>GPC6</td>
+<td align="right">0</td>
+<td align="right">0.5024240</td>
+<td align="right">0.673</td>
+<td align="right">0.072</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>BIN2</td>
+<td align="right">0</td>
+<td align="right">0.4999229</td>
+<td align="right">0.774</td>
+<td align="right">0.008</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>EGFL6</td>
+<td align="right">0</td>
+<td align="right">0.4952986</td>
+<td align="right">0.346</td>
+<td align="right">0.014</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>NUPR1</td>
+<td align="right">0</td>
+<td align="right">0.4799265</td>
+<td align="right">0.644</td>
+<td align="right">0.029</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>KCNQ5</td>
+<td align="right">0</td>
+<td align="right">0.4652113</td>
+<td align="right">0.349</td>
+<td align="right">0.031</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>giladquery &lt;- subset(geschwind.integrated, idents = &quot;GiladCells&quot;)[[&quot;RNA&quot;]]@counts
+gilad_hcl &lt;- scHCL(scdata=giladquery, numbers_plot=3)
+table(gilad_hcl$scHCL) %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Activated_stellate.cell.Adult.Pancreas_Baron.</td>
+<td align="right">203</td>
+</tr>
+<tr class="even">
+<td align="left">Astrocyte_.SLC1A2.high.Adult.Brain_Lake.</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">Astrocyte.Fetal.Brain_Zhong.</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">Autonomic.nervous.system.Fetal.Muscle1.</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">Basal.cell_KRT17.high.Breast.Epithelium_Nguyen.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Chondrocyte_CYTL1.high.Fetal.Rib3.</td>
+<td align="right">227</td>
+</tr>
+<tr class="odd">
+<td align="left">Chondrocyte_PANX3.high.Fetal.Rib3.</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">Chondrocyte.Fetal.Calvaria1.</td>
+<td align="right">77</td>
+</tr>
+<tr class="odd">
+<td align="left">Chondrocyte.Fetal.Rib2.</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Dermis.fibroblast.Fetal.Skin2.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">dS1.Placenta_VentoTormo.</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">dS3.Placenta_VentoTormo.</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">Endothelial.cell.Pericyte.Adult.Brain_Lake.</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">Ependymal.cell.Fetal.Brain5.</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Erythroid.cell.Fetal.Gonad_Li.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Excitatory..neuron_CBLN2.high.Adult.Brain_Lake.</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="left">Excitatory..neuron_HS3ST4.high.Adult.Brain_Lake.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Excitatory..neuron_RORB.high.Adult.Brain_Lake.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">F1.Placenta_VentoTormo.</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">Fibroblast_APOD.high.Fetal.Brain5.</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">Fibroblast_COL1A1.high.Fetal.Brain5.</td>
+<td align="right">219</td>
+</tr>
+<tr class="even">
+<td align="left">Fibroblast_COL1A1.high.Fetal.Pancreas2.</td>
+<td align="right">38</td>
+</tr>
+<tr class="odd">
+<td align="left">Fibroblast_COL3A1.high..Fetal.Adrenal.Gland2.</td>
+<td align="right">27</td>
+</tr>
+<tr class="even">
+<td align="left">Fibroblast_COL5A2.high.Fetal.Skin2.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Fibroblast_DCN.high.Fetal.Male.Gonad2.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Fibroblast_MFAP5.high.Fetal.Muscle1.</td>
+<td align="right">110</td>
+</tr>
+<tr class="odd">
+<td align="left">Fibroblast_POSTN.high.Fetal.Adrenal.Gland2.</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Fibroblast_SFPR4.high.Fetal.Skin2.</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">Fibroblast_TWIST2.high.Fetal.Muscle1.</td>
+<td align="right">64</td>
+</tr>
+<tr class="even">
+<td align="left">Fibroblast.Fetal.Brain4.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Fibroblast.Fetal.Calvaria1.</td>
+<td align="right">70</td>
+</tr>
+<tr class="even">
+<td align="left">Granule.cell.Adult.Brain_Lake.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Granulosa.cell.Fetal.Gonad_Li.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">hPeric.Fetal.Mid.Brain_LaManno.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">hRgl3.Fetal.Mid.Brain_LaManno.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Inhibitory.neuron_CXCL14.high.Adult.Brain_Lake.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Interstitial.cell_POSTN.high.Fetal.Kidney5.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Leydig.cell.Testis_Guo.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Leydig.precursor.cell.Fetal.Gonad_Li.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Megakaryocyte.Erythroid.Progenitor.Fetal.Kidney6.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Mesenchymal.cell.Adult.Pancreas_Muraro.</td>
+<td align="right">68</td>
+</tr>
+<tr class="even">
+<td align="left">Muscle.cell.ES.to.EB_8Day_Han.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Myofibroblast_POSTN.high.Adult.Artery1.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Neuron_PLP1.high.Fetal.Pancreas2.</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">Neuron.ES.to.EB_8Day_Han.</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">Neuron.Fetal.Adrenal.Gland2.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Neuron.Fetal.Brain_Zhong.</td>
+<td align="right">46</td>
+</tr>
+<tr class="even">
+<td align="left">Oligodendrocyte.Adult.Brain_Lake.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Oligodendrocyte.progenitor.cell.Adult.Brain_Lake.</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">Osteoblast_IBSP.high.Fetal.Rib3.</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Pancreatic.stellate.cell.Adult.Pancreas_Segerstolpe.</td>
+<td align="right">43</td>
+</tr>
+<tr class="even">
+<td align="left">Proliferating.cell_KIAA0101.high.Fetal.Calvaria1.</td>
+<td align="right">45</td>
+</tr>
+<tr class="odd">
+<td align="left">Proliferating.cell_TOP2A.high.Fetal.Muscle1.</td>
+<td align="right">18</td>
+</tr>
+<tr class="even">
+<td align="left">Proliferating.cell_UBE2C..high.Fetal.Calvaria1.</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">Proliferating.cell.Fetal.Rib3.</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">Proliferating.fibroblast.Fetal.Pancreas2.</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">PV1.Placenta_VentoTormo.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Quiescent.stellate.cell.Adult.Pancreas_Baron.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Radial.glia.Fetal.Brain4.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Schwann.cell.Adult.Pancreas_Baron.</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Skeletal.muscle.cell_MYLPF.high.Fetal.Muscle1.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Smooth.muscle.cell_ACTG2.high.Adult.Cervix1.</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Smooth.muscle.cell_ACTG2.high.Adult.Uterus1.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Smooth.muscle.cell_RGS5.high.Adult.Cervix1.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Smooth.muscle.cell.Placenta1.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Stellate.cell.Liver_Camp.</td>
+<td align="right">67</td>
+</tr>
+<tr class="odd">
+<td align="left">Stromal.cell_DCN.high.Adult.Cervix1.</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Stromal.cell_LUM.high.Adult.Cervix1.</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">Stromal.cell_MGP.high.Adult.Pleura1.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Stromal.cell_PCP4.high.Fetal.Calvaria1.</td>
+<td align="right">2044</td>
+</tr>
+<tr class="odd">
+<td align="left">Stromal.cell_SULT1E1.high.Fetal.Calvaria1.</td>
+<td align="right">1181</td>
+</tr>
+<tr class="even">
+<td align="left">Stromal.cell.ES.to.EB_8Day_Han.</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="left">Stromal.cell.Fetal.Muscle1.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Stromal.cell.Fetal.Rib3.</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">Tendon.cell_TNMD.high.Fetal.Muscle1.</td>
+<td align="right">11</td>
+</tr>
+<tr class="even">
+<td align="left">Unknown.Adult.Cervix1.</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+<p>This seems to include…some mesenchymal genes? Huh?</p>
+<p>I talked with Genevieve about markers she uses for her chondrogenic cells, and she recommended COL2A1, SOX5, SOX6, ACAN, among others. Are these expressed?</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;COL2A1&quot;, &quot;SOX5&quot;, &quot;SOX6&quot;, &quot;ACAN&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/chondro-1.png" width="672" style="display: block; margin: auto;" /> Yikes!! One end of this Australia cell continent sure looks pretty mesenchymal, which could mean any number of things.</p>
+<p>At the other end of this cluster I definitely saw expression of some glial genes, for instance:</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;APOE&quot;, &quot;MBP&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/glia-cluster-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>What could be going on here? Neural crest that started to differentiate? Consider looking at the CNCC marker trajectory that Sara Prescott worked out for her human-chimp paper, which was mostly designed for FACS but found some good markers (CD99, CD266(TNFRSF12A), CD10(MME), CD105(ENG), p75(NGFR)).</p>
+<pre class="r"><code>FeaturePlot(dat5, features = c(&quot;CD99&quot;, &quot;TNFRSF12A&quot;, &quot;MME&quot;, &quot;ENG&quot;, &quot;NGFR&quot;))</code></pre>
+<p><img src="figure/precheck.Rmd/CNCC-1.png" width="672" style="display: block; margin: auto;" /> Per Figure S1b of that paper, for CNCC-derived mesenchyme I would expect to see high CD99, high CD266(TNFRSF12A), highish CD10(MME), modest levels of CD105(ENG), and low p75(NGFR). That’s…sort of what we see here? Not really clear, but one could make the case. In any case, this cluster is not neuronal and will probably need to be excluded from further use.</p>
+</div>
+<div id="compare-to-previous-data" class="section level2">
+<h2>Compare to previous data</h2>
+<p>Finally, I’d like to see how this control dataset compares to the data collected previously from much younger organoids.</p>
+<pre class="r"><code>young &lt;- readRDS(file=&quot;../HumanChimpCellranger/HumanChimpOrganoidPilot/data/human-filtered.rds&quot;)
+
+young$source &lt;- &quot;gilad_young&quot;
+
+data.list &lt;- list(new=dat5, old=young)
+
+in.anchors &lt;- FindIntegrationAnchors(object.list = data.list, dims = 1:50)</code></pre>
+<pre><code>Computing 2000 integration features</code></pre>
+<pre><code>Scaling features for provided objects</code></pre>
+<pre><code>Finding all pairwise anchors</code></pre>
+<pre><code>Running CCA</code></pre>
+<pre><code>Merging objects</code></pre>
+<pre><code>Finding neighborhoods</code></pre>
+<pre><code>Finding anchors</code></pre>
+<pre><code>    Found 9213 anchors</code></pre>
+<pre><code>Filtering anchors</code></pre>
+<pre><code>    Retained 4338 anchors</code></pre>
+<pre><code>Extracting within-dataset neighbors</code></pre>
+<pre class="r"><code>new.old &lt;- IntegrateData(anchorset = in.anchors, dims = 1:50)</code></pre>
+<pre><code>Merging dataset 2 into 1</code></pre>
+<pre><code>Extracting anchors for merged samples</code></pre>
+<pre><code>Finding integration vectors</code></pre>
+<pre><code>Finding integration vector weights</code></pre>
+<pre><code>Integrating data</code></pre>
+<pre><code>Warning: Adding a command log without an assay associated with it</code></pre>
+<pre class="r"><code>DefaultAssay(new.old) &lt;- &quot;integrated&quot;
+
+# Run the standard workflow for visualization and clustering
+new.old &lt;- ScaleData(new.old, verbose = FALSE)
+new.old &lt;- RunPCA(new.old, npcs = 50, verbose = FALSE)
+new.old &lt;- RunUMAP(new.old, reduction = &quot;pca&quot;, dims = 1:40)</code></pre>
+<pre><code>21:14:44 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>21:14:45 Read 12292 rows and found 40 numeric columns</code></pre>
+<pre><code>21:14:45 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>21:14:45 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
+<pre><code>[----|----|----|----|----|----|----|----|----|----|</code></pre>
+<pre><code>**************************************************|
+21:14:47 Writing NN index file to temp file /tmp/RtmppjXhlS/file2a606319e9c77
+21:14:47 Searching Annoy index using 1 thread, search_k = 3000
+21:14:51 Annoy recall = 100%
+21:14:52 Commencing smooth kNN distance calibration using 1 thread
+21:14:53 Initializing from normalized Laplacian + noise
+21:14:53 Commencing optimization for 200 epochs, with 514212 positive edges
+21:15:05 Optimization finished</code></pre>
+<pre class="r"><code>#saveRDS(geschwind.integrated, &quot;data/geschwindintegrated.rds&quot;)
+
+DimPlot(new.old, reduction = &quot;umap&quot;, group.by = &quot;source&quot;, cols = brewer.pal(3, &quot;Set1&quot;)) +ggtitle(&quot;New-Old integrated data&quot;) </code></pre>
+<p><img src="figure/precheck.Rmd/import-previous-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(new.old, reduction = &quot;umap&quot;, split.by = &quot;source&quot;, label = TRUE, repel = TRUE, cols = DiscretePalette(20, &quot;stepped&quot;)) +ggtitle(&quot;New-Old integrated data&quot;) + NoLegend()</code></pre>
+<p><img src="figure/precheck.Rmd/import-previous-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>rm(data.list)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.6.1 (2019-07-05)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Scientific Linux 7.4 (Nitrogen)
+
+Matrix products: default
+BLAS/LAPACK: /software/openblas-0.2.19-el7-x86_64/lib/libopenblas_haswellp-r0.2.19.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] lattice_0.20-38    limma_3.40.6       cowplot_1.0.0     
+ [4] RColorBrewer_1.1-2 scHCL_0.1.1        Seurat_3.1.3      
+ [7] patchwork_1.1.1    knitr_1.23         forcats_0.5.1     
+[10] stringr_1.4.0      dplyr_1.0.7        purrr_0.3.4       
+[13] readr_1.4.0        tidyr_1.1.3        tibble_3.1.2      
+[16] ggplot2_3.3.5      tidyverse_1.3.1    workflowr_1.6.2   
+
+loaded via a namespace (and not attached):
+  [1] readxl_1.3.1        backports_1.2.1     plyr_1.8.6         
+  [4] igraph_1.2.4.1      lazyeval_0.2.2      splines_3.6.1      
+  [7] listenv_0.7.0       digest_0.6.27       htmltools_0.5.1.1  
+ [10] gdata_2.18.0        fansi_0.5.0         magrittr_2.0.1     
+ [13] cluster_2.1.0       ROCR_1.0-7          globals_0.12.4     
+ [16] modelr_0.1.8        RcppParallel_5.1.4  colorspace_2.0-2   
+ [19] rvest_1.0.0         rappdirs_0.3.1      ggrepel_0.8.1      
+ [22] haven_2.3.1         xfun_0.24           crayon_1.4.1       
+ [25] jsonlite_1.7.2      survival_3.2-11     zoo_1.8-6          
+ [28] ape_5.4-1           glue_1.4.2          gtable_0.3.0       
+ [31] leiden_0.3.1        future.apply_1.3.0  scales_1.1.1       
+ [34] pheatmap_1.0.12     DBI_1.1.0           bibtex_0.4.2       
+ [37] Rcpp_1.0.6          metap_1.1           viridisLite_0.3.0  
+ [40] xtable_1.8-4        reticulate_1.16     rsvd_1.0.1         
+ [43] tsne_0.1-3          DT_0.18             htmlwidgets_1.5.3  
+ [46] httr_1.4.2          gplots_3.0.1.1      ellipsis_0.3.2     
+ [49] ica_1.0-2           pkgconfig_2.0.3     farver_2.1.0       
+ [52] uwot_0.1.5          dbplyr_2.1.1        utf8_1.1.4         
+ [55] tidyselect_1.1.0    labeling_0.4.2      rlang_0.4.11       
+ [58] reshape2_1.4.4      later_1.2.0         munsell_0.5.0      
+ [61] cellranger_1.1.0    tools_3.6.1         cli_2.5.0          
+ [64] generics_0.1.0      broom_0.7.8         ggridges_0.5.1     
+ [67] evaluate_0.14       fastmap_1.0.1       yaml_2.2.1         
+ [70] npsurv_0.4-0        fs_1.3.1            fitdistrplus_1.0-14
+ [73] caTools_1.17.1.2    RANN_2.6.1          pbapply_1.4-0      
+ [76] future_1.14.0       nlme_3.1-140        whisker_0.3-2      
+ [79] mime_0.11           xml2_1.3.2          compiler_3.6.1     
+ [82] shinythemes_1.2.0   rstudioapi_0.13     plotly_4.9.4.1     
+ [85] png_0.1-7           lsei_1.2-0          reprex_2.0.0       
+ [88] stringi_1.6.2       highr_0.8           RSpectra_0.15-0    
+ [91] Matrix_1.2-18       vctrs_0.3.8         pillar_1.6.1       
+ [94] lifecycle_1.0.0     Rdpack_0.11-0       lmtest_0.9-37      
+ [97] RcppAnnoy_0.0.12    data.table_1.14.0   bitops_1.0-6       
+[100] irlba_2.3.3         gbRd_0.4-11         httpuv_1.6.1       
+[103] R6_2.5.0            promises_1.2.0.1    KernSmooth_2.23-15 
+[106] gridExtra_2.3       codetools_0.2-16    MASS_7.3-51.4      
+[109] gtools_3.8.1        assertthat_0.2.1    rprojroot_2.0.2    
+[112] withr_2.4.2         sctransform_0.2.0   parallel_3.6.1     
+[115] hms_1.1.0           grid_3.6.1          rmarkdown_1.13     
+[118] Rtsne_0.15          git2r_0.26.1        shiny_1.6.0        
+[121] lubridate_1.7.10   </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
