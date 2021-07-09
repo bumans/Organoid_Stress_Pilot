@@ -1,0 +1,500 @@
+---
+title: "precheck"
+author: "Ben Umans"
+date: "2021-07-05"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Introduction
+After running `demuxlet` to separate individuals from each run, I would like to first check what populations of cells I obtained on one sample before combining and integrating across all of the different libraries.  This will allow me to assess how these (significantly older) organoids compare to the ones collected earlier.  I'll start with library 9, which is a control (untreated) sample from my final collection day (replicate 4).  
+
+
+##Data Import
+```{r setup}
+library(tidyverse)
+library(knitr)
+library(patchwork)
+library(Seurat)
+library(patchwork)
+library(scHCL)
+library(RColorBrewer)
+library(cowplot)
+library(limma)
+source('/project2/gilad/kenneth/HumanChimpEBsOrtho/Analysis/utilities.R')
+dat <- readRDS(file = "output/YG-BU-09_human/obj.rds")
+
+```
+
+##Filtering
+First, we confirm that we have only singlets
+```{r singlets}
+table(dat@meta.data$DROPLET.TYPE)
+```
+
+The pre-processing script already subsetted to less than 15% mitochondrial reads, but this is still pretty liberal.
+```{r pre-qc, message=FALSE}
+plot1 <- FeatureScatter(dat, feature1 = "nCount_RNA", feature2 = "percent.mt") + theme(legend.position = "none") + ggtitle("")
+plot2 <- FeatureScatter(dat, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + theme(legend.position = "none") + ggtitle("")
+plot3 <- FeatureScatter(dat, feature1 = "nFeature_RNA", feature2 = "percent.mt") + theme(legend.position = "none") + ggtitle("")
+plot1 + plot2 + plot3
+
+dat@meta.data %>% 
+  ggplot(aes(x=percent.mt)) +
+  geom_freqpoly() +
+  ggtitle("Mitochondrial read percent per cell")
+```
+15% is not a terrible cutoff, but we could easily do 10% and not lose anything worth missing.  Let's also check the number of genes detected, understanding that with low-pass sequencing there's a lot less data here.
+```{r genes-cell}
+dat@meta.data %>% 
+  ggplot(aes(x=nFeature_RNA)) +
+  geom_freqpoly() +
+  ggtitle("Number of genes per cell")
+```
+
+```{r subset}
+dat <- subset(dat, subset = percent.mt < 10 & nFeature_RNA > 1000 )
+```
+
+##Normalization
+
+Now we can start normalizing expression and clustering cells.
+
+Kenneth's demuxlet QC script already normalized the data using SCTransform.  However, my reference data have not been processed this way and are very large for this routine.  In order to be able to compare, I'm going to use log-normalization on the RNA assay in this object to start.
+
+```{r normalization, message=FALSE}
+DefaultAssay(dat) <- "RNA"
+dat <- NormalizeData(dat, normalization.method = "LogNormalize", scale.factor = 10000)
+```
+
+Now we identify highly variable features for use in clustering.
+```{r variable-features, message=FALSE, fig.show="hold", out.width="45%"}
+dat <- FindVariableFeatures(dat, selection.method = "vst", nfeatures = 2000)
+
+dat.plot <- VariableFeaturePlot(dat)
+LabelPoints(dat.plot, points = head(VariableFeatures(dat), 20), repel = T) + theme(legend.position = "none")
+
+```
+
+## Scaling
+Now we have to rescale and center the expression of genes across cells for dimensionality reduction.
+
+```{r scaling, message=FALSE}
+all.genes <- row.names(dat)
+dat <- ScaleData(dat, features = all.genes)
+
+```
+## Dimensionality Reduction
+Next, we perform PCA on the rescaled datasets.
+```{r PCA, message=FALSE}
+dat <- RunPCA(dat, features = VariableFeatures(object = dat))
+
+DimPlot(dat, dims = c(1,2))
+DimHeatmap(dat, dims = 2:3, cells = 600, balanced = TRUE)
+```
+
+Now we determine the adequate number of PCs to include for informative clustering.  Let's try this with the _Macosko et al._ JackStraw procedure.
+
+```{r PCA-choice, message=FALSE, fig.show="hold", out.width="45%"}
+dat <- JackStraw(dat, num.replicate = 200)
+dat <- ScoreJackStraw(dat, dims = 1:20)
+
+JackStrawPlot(dat, dims = 1:20)
+```
+
+This is...not super informative.  It seems to imply that at least 34 PCs are informative.  Let's also look at an elbow plot to see whether it gives a similar answer.
+
+```{r elbowplots, message=FALSE,  fig.show="hold", out.width="45%"}
+ElbowPlot(dat, ndims = 55) + ggtitle("Human data")
+```
+Both of these would seem to suggest that 30ish is a reasonable choice...but so is 45.  We'll go with 40 for now.
+
+## Clustering
+Seurat guide recommends setting the resolution parameter between 0.3 and 1.2 for datasets of about this number of cells (though not necessarily this information depth).  For now, we'll just start with 0.5 so as to be reasonably conservative with the number of clusters we identify.
+
+```{r clustering, message=FALSE}
+dat <- FindNeighbors(dat, dims = 1:40)
+dat5 <- FindClusters(dat, resolution = 0.5)
+
+rm(dat)
+```
+
+Now we can run UMAP dimensionality reduction.
+```{r umap, message=FALSE}
+dat5 <- RunUMAP(dat5, dims = 1:45)
+DimPlot(dat5, reduction = "umap") + ggtitle("resolution=0.5")
+
+```
+
+## Check QC metrics on UMAP
+Now that we're thinking about clusters, do we have an uneven distribution of mitochondrial reads or detected genes across the UMAP?
+```{r umap-qc, message=FALSE, fig.show="hold", out.width="45%"}
+FeaturePlot(dat5, features = c("percent.mt", "nFeature_RNA", "nCount_RNA"))
+```
+
+## Find Markers
+Now we'll try to find markers for each of the clusters, and hope that some of these can help identify what clusters represent.
+```{r marker-id, message=FALSE}
+dat5.markers <- FindAllMarkers(dat5, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+dat5.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+```
+
+Now's a good time to save the output.
+```{r save-rds, eval=FALSE}
+saveRDS(dat5, file = "data/library9.rds")
+
+```
+
+
+## Gene hunting!  
+Now we can go looking for features of interest to start to make sense of these clusters, in addition to the naively-identified markers from before.
+```{r genes-of-interest}
+#dat5 <- readRDS(file = "data/library9.rds")
+
+FeaturePlot(dat5, features = c("FOS",  "NPAS4", "ARC", "EGR1"))
+FeaturePlot(dat5, features = c("BDNF", "ADCYAP1", "PCSK1", "GPR22"))
+
+```
+
+### Targeted gene classification
+
+In addition to genes of interest above, I've borrowed from the Abcam manual of neural markers to provide a more systematic assessment of canonical (and immunostainable) CNS targets.
+
+First, neuroepithelium:
+```{r neuroepithelium}
+FeaturePlot(dat5, features = c("NES", "SOX2", "NOTCH1", "HES1", "SOX10", "OCLN"))
+```
+
+These indicate a cluster that contains progenitors.  Not all of these markers are unique to neuroepithelium.  Nestin, HES1, and SOX2, for instance, are also expressed by radial glia.  Additional radial glial markers include:
+```{r rg}
+FeaturePlot(dat5, features = c("VIM", "PAX6", "HES5", "SLC1A3", "GFAP", "FABP7", "CDH2", "TNC"))
+```
+
+Intermediate progenitors a are distinguished by the following markers:
+```{r IPC}
+FeaturePlot(dat5, features = c("EOMES", "ASCL1","OTX1", "OTX2", "FOXG1"))
+
+```
+
+While immature neurons, which IPCs differentiate into, express the following:
+```{r immature}
+FeaturePlot(dat5, features = c("DCX", "TUBB3", "NEUROD1", "TBR1", "STMN1", "GAP43", "NCAM1"))
+```
+In contrast to the cloud of progenitor cells, these markers seem to indicate the other large cluster as being more neuronal in character.
+
+Oligodendrocytes and their precursors generally express the following markers:
+```{r olig}
+FeaturePlot(dat5, features = c("PDGFRA", "CSPG4", "CLDN11", "MOG"))
+
+FeaturePlot(dat5, features = c("OLIG1", "OLIG2", "OLIG3", "MBP"))
+```
+Oligodendrocytes seem sparse and early, consistent with the idea that gliogenesis starts later in organoid development.
+
+Markers of "mature" neurons--a somewhat arbitrary term that simply means they're post-mitotic--include:
+```{r mature}
+FeaturePlot(dat5, features = c("RBFOX3", "MAP2", "NEFM", "NEFH", "DLG4", "SYP", "UNC13A"))
+FeaturePlot(dat5, features = c("SYP", "UNC13A"))
+
+```
+Which largely confirms our impression from earlier of which cluster contains neurons.  Only a subset of these are positive for NeuN (RBFOX3), whereas more express PSD95 (DLG4) and Synaptophysin.
+
+I expect that the majority of these neurons will be glutamatergic:
+```{r glutamatergic}
+FeaturePlot(dat5, features = c("SLC17A7", "SLC17A6", "GRIN1", "GRIN2B"))
+```
+
+GABAergic neurons, on the other hand, express the following markers:
+```{r gabaergic}
+FeaturePlot(dat5, features = c("SLC6A1", "GABBR1", "GABBR2", "GAD1", "GAD2"))
+```
+GABA transporter (SLC6A1) and GABA synthesis enzymes GAD1/2 are expressed in a similar portion of cells complementary to the glutamatergic neurons described above.  Expression of GABA receptors appears a bit more diffuse.
+
+Is there any evidence for dopaminergic neurons?
+```{r dans}
+FeaturePlot(dat5, features = c("TH", "SLC6A3", "FOXA2", "NR4A2", "LMX1B"))
+```
+Only in a very early sense, as might be expected.
+
+Serotonergic neurons:
+```{r serotonin}
+FeaturePlot(dat5, features = c("FEV", "TPH1", "SLC6A4"))
+```
+Teeny tiny!  There's a tiny cluster of cells that express Pet1 (FEV) and SERT (SLC6A4).  Cool!
+
+Cholinergic neurons:
+```{r cholinergic}
+FeaturePlot(dat5, features = c("CHAT", "SLC18A3", "ACHE"))
+
+FeaturePlot(dat5, features = c("TNC", "PTPRZ1", "FAM107A", "HOPX",  "LIFR"))
+
+
+FeaturePlot(dat5, features = c("POU5F1"))
+```
+Tenuously.  While a number of cells express acetylcholinesterase, there's just a tiny stripe of cells that express ChAT/VAChT.
+
+#Compare to human refs
+## Align to organoid data (Arlotta lab)
+The first reference I'd like to use is the data from [Velasco et al](https://singlecell.broadinstitute.org/single_cell/study/SCP282/reproducible-brain-organoids), which reported single-cell expression data from organoids at 3 and 6 months, derived from both iPSCs and hESCs.  The uploaded data aren't super well explained, but at the minimum I can start by using the expression data from one of the 3-month time point batches.  
+
+```{r process-velasco, message=FALSE}
+# first, read in the expression matrix from the 3mo data
+batch1 <- read_delim("../HumanChimpCellranger/HumanChimpOrganoidPilot/data/expression_PGP1.3mon.txt", "\t", escape_double = FALSE, trim_ws = TRUE)
+batch1 <- column_to_rownames(batch1, var="GENE")
+batch1.matrix <- as.matrix(batch1)
+
+#velasco.data <- CreateAssayObject(data=batch1.matrix)
+velasco <- CreateSeuratObject(batch1.matrix)
+
+rm(batch1)
+rm(batch1.matrix)
+#tsne <- read.table(file="data/tsne_PGP1.3mon.txt", as.is = T, header = T) %>% column_to_rownames( var="NAME")
+
+```
+
+I will very quickly now run through the clustering and dimensionality reduction steps on the Velasco data.  Unfortunately I can't really start with their clusters directly and will have to try to recreate them as best I can.
+
+```{r velasco-clustering, message=FALSE}
+plot(density(velasco@meta.data$nFeature_RNA))
+#it looks like the data we have here are mostly in good shape to start, I will assume I don't have to do any cleaning beyond what was uploaded.
+
+velasco <- FindVariableFeatures(velasco, selection.method = "vst", nfeatures = 2000)
+
+velasco.filtered.plot <- VariableFeaturePlot(velasco)
+LabelPoints(velasco.filtered.plot, points = head(VariableFeatures(velasco), 20), repel = T) + theme(legend.position = "none") 
+
+all.genes.filtered <- row.names(velasco)
+velasco <- ScaleData(velasco, features = all.genes.filtered)
+
+velasco <- RunPCA(velasco, features = VariableFeatures(object = velasco), npcs = 60)
+
+velasco <- FindNeighbors(velasco, dims = 1:60)
+
+velasco <- FindClusters(velasco, resolution = 0.7)
+
+velasco <- RunUMAP(velasco, dims = 1:50)
+DimPlot(velasco, reduction = "umap") + ggtitle("resolution=0.7")
+
+meta_combined <- read.delim("/project2/gilad/umans/HumanChimpCellranger/HumanChimpOrganoidPilot/data/meta_combined.txt", stringsAsFactors = F)
+meta_combined <- meta_combined[-1,]
+
+meta_combined <- meta_combined %>% filter(Batch=="PGP1_3mon_Batch1") %>% column_to_rownames( var="NAME")
+
+velasco <- AddMetaData(velasco, metadata = meta_combined)
+```
+
+<!-- Now I follow the Seurat guide for aligning to a reference set. -->
+
+<!-- ```{r align-to-velasco, message=FALSE} -->
+<!-- anchors <- FindTransferAnchors(reference = velasco, query = dat5,  -->
+<!--     dims = 1:30, normalization.method = "LogNormalize", k.filter = 100) -->
+
+<!-- predictions <- TransferData(anchorset = anchors, refdata = velasco$CellType,  -->
+<!--     dims = 1:30, k.weight = 30) -->
+<!-- dat5 <- AddMetaData(dat5, metadata = predictions) -->
+
+<!-- table(dat5$predicted.id) %>% kable() -->
+<!-- table(velasco$CellType) %>% kable() -->
+<!-- ``` -->
+
+<!-- This seems to indicate that, compared to the Velasco dataset, my organoids contain a mix of cell types, though with a good number of radial glia.  Many of the more specific cell types found in their dataset do not transfer as preferred labels to my cells--hrm. -->
+
+<!-- We can also visualize this. -->
+<!-- ```{r visualize-labels} -->
+<!-- DimPlot(dat5, reduction = "umap", group.by = "predicted.id", label = TRUE,  -->
+<!--     repel = TRUE) + NoLegend() + ggtitle("Velasco-derived labels") -->
+
+<!-- ``` -->
+
+<!-- Not terribly informative, really. -->
+
+### Integration
+To look at this a little differently, I can integrate the datasets and then look for overlapping clusters.
+
+```{r integrate-velasco, message=FALSE}
+data.list <- list(vel=velasco, hum=dat5)
+
+in.anchors <- FindIntegrationAnchors(object.list = data.list, dims = 1:50)
+organoid.integrated <- IntegrateData(anchorset = in.anchors, dims = 1:50)
+
+DefaultAssay(organoid.integrated) <- "integrated"
+
+# Run the standard workflow for visualization and clustering
+organoid.integrated <- ScaleData(organoid.integrated, verbose = FALSE)
+organoid.integrated <- RunPCA(organoid.integrated, npcs = 50, verbose = FALSE)
+organoid.integrated <- RunUMAP(organoid.integrated, reduction = "pca", dims = 1:50)
+
+#saveRDS(organoid.integrated, file="data/organoid-integrated.rds")
+rm(data.list)
+rm(in.anchors)
+```
+
+```{r velasco-integrated-plots}
+#organoid.integrated<- readRDS(file="data/organoid-integrated.rds")
+
+p1 <- DimPlot(organoid.integrated, reduction = "umap", group.by = "orig.ident") +ggtitle("velasco-integrated, by origin")
+p2 <- DimPlot(organoid.integrated, reduction = "umap", group.by = "CellType", label=TRUE, repel = TRUE, cols = DiscretePalette(20, "stepped"), na.value = "black") + NoLegend() + ggtitle("velasco-integrated, by label")
+
+p1 +p2
+#ggsave("output/velascoplot.png", p2)
+
+rm(organoid.integrated)
+```
+
+Aside from the large cluster of mystery cells, this overlap looks a bit better than the label transfer would suggest.
+
+##Compare to primary fetal brain tissue
+[Polioudakis et al. 2019](https://www.sciencedirect.com/science/article/pii/S0896627319305616#bib31) used DropSeq to profile mid-gestational cortical neurons.  I'll use this dataset as reference for a final comparison.  
+
+```{r import-geschwind}
+load("../HumanChimpCellranger/HumanChimpOrganoidPilot/data/geschwind-raw_counts_mat.rdata")
+geschwind_meta <- read_csv("../HumanChimpCellranger/HumanChimpOrganoidPilot/data/geschwind-cell_metadata.csv") %>% column_to_rownames(var="Cell")
+
+geschwind <- CreateSeuratObject(raw_counts_mat)
+geschwind <- AddMetaData(object = geschwind, metadata = geschwind_meta)
+rm(raw_counts_mat)
+```
+
+Now we follow the Geschwind [lab's guidance](http://solo.bmap.ucla.edu/shiny/webapp/) to filter their data for further processing:  (1) remove cells with fewer than 200 genes detected; (2) remove cells with more than 3152 genes detected; (3) remove cells with >5% mitochondrial read content; (4) remove genes detected in <3 cells.
+
+...except that it appears they've already performed this filtering on the uploaded "raw" data.  Great!
+```{r geschwind-processing}
+plot(density(geschwind@meta.data$nFeature_RNA))
+#it looks like the data we have here are mostly in good shape to start, I will assume I don't have to do any cleaning beyond what was uploaded.
+
+geschwind <- FindVariableFeatures(geschwind, selection.method = "vst", nfeatures = 2000)
+
+geschwind.plot <- VariableFeaturePlot(geschwind)
+LabelPoints(geschwind.plot, points = head(VariableFeatures(geschwind), 20), repel = T) + theme(legend.position = "none") 
+
+all.genes.filtered <- row.names(geschwind)
+geschwind <- ScaleData(geschwind, features = all.genes.filtered)
+
+geschwind <- RunPCA(geschwind, features = VariableFeatures(object = geschwind), npcs = 60)
+
+geschwind <- FindNeighbors(geschwind, dims = 1:40)
+geschwind <- FindClusters(geschwind, resolution = 0.7)
+
+geschwind <- RunUMAP(geschwind, dims = 1:50)
+DimPlot(geschwind, reduction = "umap", group.by="Cluster", label=TRUE, cols = DiscretePalette(20, "stepped"), na.value = "black") + ggtitle("resolution=0.7") + NoLegend() + ggtitle("Geschwind lab data")
+#the Geschwind lab data looks nice, now I can combine my data with it.
+
+geschwind$source <- "geschwind"
+dat5$source <- "gilad"
+
+data.list <- list(ges=geschwind, hum=dat5)
+
+in.anchors <- FindIntegrationAnchors(object.list = data.list, dims = 1:50)
+geschwind.integrated <- IntegrateData(anchorset = in.anchors, dims = 1:50)
+
+DefaultAssay(geschwind.integrated) <- "integrated"
+
+# Run the standard workflow for visualization and clustering
+geschwind.integrated <- ScaleData(geschwind.integrated, verbose = FALSE)
+geschwind.integrated <- RunPCA(geschwind.integrated, npcs = 50, verbose = FALSE)
+geschwind.integrated <- RunUMAP(geschwind.integrated, reduction = "pca", dims = 1:40)
+#saveRDS(geschwind.integrated, "data/geschwindintegrated.rds")
+DimPlot(geschwind.integrated, reduction = "umap", group.by = "source", cols = brewer.pal(3, "Set1")) +ggtitle("Geschwind-Gilad integrated data") 
+
+DimPlot(geschwind.integrated, reduction = "umap", split.by = "source", label = TRUE, repel = TRUE, cols = DiscretePalette(20, "stepped")) +ggtitle("Geschwind-Gilad integrated data") + NoLegend()
+
+g2 <- DimPlot(geschwind.integrated, reduction = "umap", group.by = "Cluster", label = TRUE, repel = TRUE, cols = DiscretePalette(20, "stepped"), na.value = "purple") + NoLegend() + ggtitle("Geschwind-Gilad integrated data, by cluster label")
+g2
+
+rm(data.list)
+rm(in.anchors)
+```
+
+This looks pretty good, aside from that weird cluster over to the side.  
+
+How well do the Arlotta lab organoids overlap with the fetal brain tissue here anyway?
+
+```{r velasco-geschwind, message=FALSE}
+data.list <- list(ges=geschwind, vel=velasco)
+
+in.anchors <- FindIntegrationAnchors(object.list = data.list, dims = 1:50)
+human.organoid <- IntegrateData(anchorset = in.anchors, dims = 1:50)
+
+DefaultAssay(human.organoid) <- "integrated"
+
+# Run the standard workflow for visualization and clustering
+human.organoid <- ScaleData(human.organoid, verbose = FALSE)
+human.organoid <- RunPCA(human.organoid, npcs = 50, verbose = FALSE)
+human.organoid <- RunUMAP(human.organoid, reduction = "pca", dims = 1:40)
+#saveRDS(geschwind.integrated, "data/geschwindintegrated.rds")
+
+DimPlot(human.organoid, reduction = "umap", group.by = "source", cols = brewer.pal(3, "Set1")) +ggtitle("Geschwind-Arlotta integrated data") 
+
+DimPlot(human.organoid, reduction = "umap", split.by = "source", label = TRUE, repel = TRUE, cols = DiscretePalette(20, "stepped")) +ggtitle("Geschwind-Arlotta integrated data") + NoLegend()
+
+rm(data.list)
+```
+
+##Mystery cluster
+Once again we have a cluster of my cells that sit alone.  What are they?
+```{r geschwind-outlier-id}
+# select.cells <- CellSelector(plot = g2)
+# saveRDS(select.cells, "data/mysterycell.rds")
+select.cells <- readRDS(file = "data/mysterycell.rds")
+Idents(geschwind.integrated, cells = select.cells) <- "GiladCells"
+giladcells.markers <- FindMarkers(geschwind.integrated, ident.1 = "GiladCells", min.diff.pct = 0.3,
+    only.pos = TRUE)
+head(giladcells.markers, n=10) %>% kable(caption = "top markers for unknown cluster")
+
+giladquery <- subset(geschwind.integrated, idents = "GiladCells")[["RNA"]]@counts
+gilad_hcl <- scHCL(scdata=giladquery, numbers_plot=3)
+table(gilad_hcl$scHCL) %>% kable()
+```
+
+This seems to include...some mesenchymal genes?  Huh?  
+
+I talked with Genevieve about markers she uses for her chondrogenic cells, and she recommended COL2A1, SOX5, SOX6, ACAN, among others.  Are these expressed?
+
+```{r chondro}
+FeaturePlot(dat5, features = c("COL2A1", "SOX5", "SOX6", "ACAN"))
+
+```
+Yikes!!  One end of this Australia cell continent sure looks pretty mesenchymal, which could mean any number of things.  
+
+At the other end of this cluster I definitely saw expression of some glial genes, for instance:
+```{r glia-cluster}
+FeaturePlot(dat5, features = c("APOE", "MBP"))
+
+```
+
+
+What could be going on here?  Neural crest that started to differentiate?  Consider looking at the CNCC marker trajectory that Sara Prescott worked out for her human-chimp paper, which was mostly designed for FACS but found some good markers (CD99, CD266(TNFRSF12A), CD10(MME), CD105(ENG), p75(NGFR)).  
+
+```{r CNCC}
+FeaturePlot(dat5, features = c("CD99", "TNFRSF12A", "MME", "ENG", "NGFR"))
+```
+Per Figure S1b of that paper, for CNCC-derived mesenchyme I would expect to see high CD99, high CD266(TNFRSF12A), highish CD10(MME), modest levels of CD105(ENG), and low p75(NGFR).  That's...sort of what we see here?  Not really clear, but one could make the case.  In any case, this cluster is not neuronal and will probably need to be excluded from further use.  
+
+##Compare to previous data
+Finally, I'd like to see how this control dataset compares to the data collected previously from much younger organoids.
+
+```{r import-previous}
+young <- readRDS(file="../HumanChimpCellranger/HumanChimpOrganoidPilot/data/human-filtered.rds")
+
+young$source <- "gilad_young"
+
+data.list <- list(new=dat5, old=young)
+
+in.anchors <- FindIntegrationAnchors(object.list = data.list, dims = 1:50)
+new.old <- IntegrateData(anchorset = in.anchors, dims = 1:50)
+
+DefaultAssay(new.old) <- "integrated"
+
+# Run the standard workflow for visualization and clustering
+new.old <- ScaleData(new.old, verbose = FALSE)
+new.old <- RunPCA(new.old, npcs = 50, verbose = FALSE)
+new.old <- RunUMAP(new.old, reduction = "pca", dims = 1:40)
+#saveRDS(geschwind.integrated, "data/geschwindintegrated.rds")
+
+DimPlot(new.old, reduction = "umap", group.by = "source", cols = brewer.pal(3, "Set1")) +ggtitle("New-Old integrated data") 
+
+DimPlot(new.old, reduction = "umap", split.by = "source", label = TRUE, repel = TRUE, cols = DiscretePalette(20, "stepped")) +ggtitle("New-Old integrated data") + NoLegend()
+
+rm(data.list)
+```
+

@@ -8,4 +8,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+This is the `workflowr` project for initial analysis of low-pass sequencing from my organoid pilot project.  Three individuals were used to differentiate cerebral organoids in triplicate, which were then left as controls or stimulated before single-cell (10x) data were collected.  A total of 11 libraries were constructed, of which 9 are immediately relevant to this project.
+
+To start, I used one of the control libraries to check the quality of the data and its correspondence to previous datasets.
