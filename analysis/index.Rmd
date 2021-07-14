@@ -10,4 +10,9 @@ editor_options:
 
 This is the `workflowr` project for initial analysis of low-pass sequencing from my organoid pilot project.  Three individuals were used to differentiate cerebral organoids in triplicate, which were then left as controls or stimulated before single-cell (10x) data were collected.  A total of 11 libraries were constructed, of which 9 are immediately relevant to this project.
 
-To [start](precheck.html), I used one of the control libraries to check the quality of the data and its correspondence to previous datasets.
+To [start](precheck.html), I used one of the control libraries to check the quality of the data and its 
+correspondence to previous datasets.
+
+[Next](combine_experiments.html), I used SCTransform-ed versions of all datasets to create an integrated Seurat object for clustering and expression analysis.  In this document I also look for expression of a few stress-related genes and begin to use the `variancePartition` package to assess reproducibility and the factors contributing to gene expression variation in my dataset.  I also include suggestions from KB and YG after an initial discussion of these findings.
+
+[To explore their suggestions further](variance-estimation.html), I looked at the effect or running the analysis on separated clusters and downsampling cell numbers.

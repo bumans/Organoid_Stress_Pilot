@@ -1,0 +1,308 @@
+---
+title: "combine_experiments"
+author: "Ben Umans"
+date: "2021-07-09"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+The data here were collected on three separate days, from three separate replicates, each consisting of three individuals.  Demuxlet has already resolved each library into its constituent individuals by genotype, and now I'd need to combine the various libraries in order to test for consistency.
+
+```{r setup}
+pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(cowplot)
+library(knitr)
+
+```
+
+```{r combine-data, eval=FALSE}
+control1 <- readRDS(file = "output/YG-BU-01_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames1 <- control1$individual
+newnames1 <- str_replace(oldnames1, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+control1 <- AddMetaData(control1, newnames1, col.name = "cell.line")
+control1$replicate <- "2"
+control1$stim <- "control"
+
+
+oxid1 <- readRDS(file = "output/YG-BU-02_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames2 <- oxid1$individual
+newnames2 <- str_replace(oldnames2, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+oxid1 <- AddMetaData(oxid1, newnames2, col.name = "cell.line")
+oxid1$replicate <- "2"
+oxid1$stim <- "oxidation"
+
+pff1 <- readRDS(file = "output/YG-BU-03_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames3 <- pff1$individual
+newnames3 <- str_replace(oldnames3, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+pff1 <- AddMetaData(pff1, newnames3, col.name = "cell.line")
+pff1$replicate <- "2"
+pff1$stim <- "pff"
+
+control2 <- readRDS(file = "output/YG-BU-06_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames6 <- control2$individual
+newnames6 <- str_replace(oldnames6, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+control2 <- AddMetaData(control2, newnames6, col.name = "cell.line")
+control2$replicate <- "3"
+control2$stim <- "control"
+
+
+oxid2 <- readRDS(file = "output/YG-BU-07_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames7 <- oxid2$individual
+newnames7 <- str_replace(oldnames7, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+oxid2 <- AddMetaData(oxid2, newnames7, col.name = "cell.line")
+oxid2$replicate <- "3"
+oxid2$stim <- "oxidation"
+
+
+control3 <- readRDS(file = "output/YG-BU-09_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames9 <- control3$individual
+newnames9 <- str_replace(oldnames9, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+control3 <- AddMetaData(control3, newnames9, col.name = "cell.line")
+control3$replicate <- "4"
+control3$stim <- "control"
+
+oxid3 <- readRDS(file = "output/YG-BU-10_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames10 <- oxid3$individual
+newnames10 <- str_replace(oldnames10, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+oxid3 <- AddMetaData(oxid3, newnames10, col.name = "cell.line")
+oxid3$replicate <- "4"
+oxid3$stim <- "oxidation"
+
+pff3 <- readRDS(file = "output/YG-BU-11_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames11 <- pff3$individual
+newnames11 <- str_replace(oldnames11, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+pff3 <- AddMetaData(pff3, newnames11, col.name = "cell.line")
+pff3$replicate <- "4"
+pff3$stim <- "oxidation"
+
+
+combined.data <- list(control1, control2, control3, oxid1, oxid2, oxid3, pff1, pff3)
+
+rm(control1, control2, control3, oxid1, oxid2, oxid3, pff1, pff3)
+```
+
+Because each of these datasets was prepared using `SCTransform` it should be straightforward to now integrate them.  Following the [guide](https://satijalab.org/seurat/articles/integration_introduction.html#performing-integration-on-datasets-normalized-with-sctransform-1) from the Satija lab for integrating these datasets, I run the following steps:
+
+```{r integrate, eval=FALSE}
+features <- SelectIntegrationFeatures(object.list = combined.data, nfeatures = 3000, verbose = F)
+combined.data <- PrepSCTIntegration(object.list = combined.data, anchor.features = features)
+
+organoid.anchors <- FindIntegrationAnchors(object.list = combined.data, normalization.method = "SCT",
+    anchor.features = features)
+organoid.combined.sct <- IntegrateData(anchorset = organoid.anchors, normalization.method = "SCT")
+
+rm(combined.data)
+```
+
+With the combined data I now look run through the normal workflow to find clusters.
+```{r integrated-umap, eval=FALSE}
+organoid.combined.sct <- RunPCA(organoid.combined.sct, npcs = 60)
+organoid.combined.sct <- RunUMAP(organoid.combined.sct, reduction = "pca", dims = 1:45)
+
+DimPlot(organoid.combined.sct, reduction = "umap", group.by = "stim")
+DimPlot(organoid.combined.sct, reduction = "umap", group.by = "replicate")
+
+```
+
+And now we can look for clusters:
+```{r integrated-clustering }
+#organoid.combined.sct <- FindNeighbors(organoid.combined.sct, dims=1:65)
+organoid.combined.sct03 <- readRDS("output/organoid.combined.sct03.RDS")
+organoid.combined.sct05 <- readRDS("output/organoid.combined.sct05.RDS")
+organoid.combined.sct1 <- readRDS("output/organoid.combined.sct1.RDS")
+
+#organoid.combined.sct03 <- FindClusters(organoid.combined.sct, resolution=0.3)
+DimPlot(organoid.combined.sct03, reduction = "umap") + ggtitle("resolution=0.3")
+#organoid.combined.sct05 <- FindClusters(organoid.combined.sct, resolution=0.5)
+DimPlot(organoid.combined.sct05, reduction = "umap") + ggtitle("resolution=0.5")
+#organoid.combined.sct1 <- FindClusters(organoid.combined.sct, resolution=1)
+DimPlot(organoid.combined.sct1, reduction = "umap") + ggtitle("resolution=1")
+
+```
+A lot of these possibilities _seem_ reasonable.  Can cluster markers give us any idea of which of them make sense to pursue?
+
+```{r cluster-markers}
+organoid.combined.sct03.markers <- FindAllMarkers(organoid.combined.sct03, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+organoid.combined.sct03.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+
+organoid.combined.sct05.markers <- FindAllMarkers(organoid.combined.sct05, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+organoid.combined.sct05.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+
+organoid.combined.sct1.markers <- FindAllMarkers(organoid.combined.sct1, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+organoid.combined.sct1.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+```
+
+
+###Cell health, or otherwise
+Are these cells hopelessly dead or otherwise inviable?  Let's look at some markers of cell death and distress.  I looked to [Machado et al.](https://www.cell.com/cell-stem-cell/pdf/S1934-5909(21)00017-5.pdf) and [van den Brink et al.](https://www.nature.com/articles/nmeth.4437) for some marker genes
+```{r cell-health}
+FeaturePlot(organoid.combined.sct03, features = c("sct_DAP"), max.cutoff = 5, split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_CASP1"), max.cutoff = 5, split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_BCL10"), max.cutoff = 5, split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_CARD10"), max.cutoff = 5, split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_HIF1A"), max.cutoff = 5, split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_ATF3"), max.cutoff = 5, split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_SOCS3"), max.cutoff = 5, split.by = "stim")
+
+FeaturePlot(organoid.combined.sct03, features = c("sct_ZFP36"), max.cutoff = 5, split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_EGR1"), max.cutoff = 5, split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_KLF4"), max.cutoff = 5, split.by = "stim")
+
+FeaturePlot(organoid.combined.sct03, features = c("sct_UBC"), split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_HSP90AB1"),  split.by = "stim")
+FeaturePlot(organoid.combined.sct03, features = c("sct_STAT3"), max.cutoff = 5, split.by = "stim")
+
+```
+While there are some genes that are expressed fairly widely, actually a good number of these stress markers appear to be enriched in the stress treatment conditions, and particularly enriched in the weird mesenchymal cluster.  This is not really convincing or direct evidence that my neurons are "healthy" _per se,_ but it's a little reassuring and might even indicate that the treatments were (at least at the margin) effective.
+
+#Obtain Pseudobulk counts
+
+Now that we've assigned clusters to each cell from each data collection, we want to go back to get the raw data for use in differential expression testing.  Kenneth wrote a code snippet to do this.  His code takes a Seurat object and a list of all the desired metadata columns that you want to subdivide, and it returns a matrix of pseudobulked counts (gene rows, columns as the cross product of all the metadata factors specified) and list of metadata.
+
+```{r pseudobulk-functions}
+generate.pseudobulk <- function(object, labels, assay="RNA",slot="counts") {
+  factorlist <- list()
+  for (i in labels) factorlist[[i]] <- unique(object@meta.data[,i])
+  meta <- expand.grid(factorlist, stringsAsFactors = FALSE)
+  rownames(meta) <- apply(meta, 1, function(x) paste0(x, collapse = '.'))
+  # build the output matrix
+  n <- nrow(meta)
+  out <- matrix(nrow=dim(object[[assay]])[1], ncol=n, data=0)
+  rownames(out) <- rownames(object[[assay]])
+  colnames(out) <- rownames(meta)
+  ncells <- c()
+  total.cells <- dim(object[[assay]])[2]
+  for (i in 1:n)
+  {
+    #prog(i,n)
+    cells <- 1:total.cells
+    for (j in names(meta)) {
+      keep  <- which(object@meta.data[[j]] == meta[i,j])
+      cells <- cells[cells %in% keep]
+    }
+    ncells[i] <- length(cells)
+    #some other thing to measure
+    if (length(cells)==1) {
+      out[,i] <- slot(object[[assay]], slot)[,cells]
+    } else {
+      out[,i] <- Matrix::rowSums(slot(object[[assay]], slot)[,cells])
+    }
+  }
+  meta$ncells <- ncells
+  #add that something else as metadata
+  return(list(counts=out, meta=meta))
+}
+
+# keep only levels with more than 'threshold' cells
+filter.pseudobulk <- function(pseudobulk, threshold = 0) {
+  w <- which(pseudobulk$meta$ncells > threshold)
+  pseudobulk$counts <- pseudobulk$counts[,w]
+  pseudobulk$meta   <- pseudobulk$meta[w,]
+  pseudobulk
+}
+```
+
+
+```{r resolution03-varpart}
+pseudo3 <- generate.pseudobulk(organoid.combined.sct03, labels = c("cell.line", "stim", "replicate", "seurat_clusters"))
+pseudo3 <- filter.pseudobulk(pseudo3)
+
+d03 <- DGEList(pseudo3$counts)
+d03 <- calcNormFactors(d03)
+
+keep3 <- filterByExpr(d03$counts)
+
+d03 <- d03[keep,]
+
+param = SnowParam(20, "SOCK", progressbar=TRUE)
+register(param)
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|seurat_clusters) + (1|replicate)
+
+voomed3 <- voomWithDreamWeights(d03, fbase, pseudo3$meta, plot=TRUE)
+
+varpart3 <- fitExtractVarPartModel(voomed3, fbase, pseudo3$meta)
+
+vp3 <- sortCols(varpart3)
+plotPercentBars(vp3[1:10,])
+plotVarPart(vp3) + ggtitle("Variance partition clustered resolution=0.3")
+```
+
+```{r resolution05-varpart}
+pseudo5 <- generate.pseudobulk(organoid.combined.sct05, labels = c("cell.line", "stim", "replicate", "seurat_clusters"))
+pseudo5 <- filter.pseudobulk(pseudo5)
+
+d05 <- DGEList(pseudo5$counts)
+d05 <- calcNormFactors(d05)
+
+keep5 <- filterByExpr(d05$counts)
+
+d05 <- d05[keep5,]
+
+param = SnowParam(20, "SOCK", progressbar=TRUE)
+register(param)
+
+fbase <- ~ (1|cell.line) + (1|stim) + (1|seurat_clusters) + (1|replicate)
+
+voomed5 <- voomWithDreamWeights(d05, fbase, pseudo5$meta, plot=TRUE)
+
+varpart5 <- fitExtractVarPartModel(voomed5, fbase, pseudo5$meta)
+
+vp5 <- sortCols(varpart5)
+plotPercentBars(vp5[1:10,])
+plotVarPart(vp5) + ggtitle("Variance partition clustered resolution=0.5")
+```
+
+```{r resolution1-varpart}
+pseudo1 <- generate.pseudobulk(organoid.combined.sct1, labels = c("cell.line", "stim", "replicate", "seurat_clusters"))
+pseudo1 <- filter.pseudobulk(pseudo1)
+
+d1 <- DGEList(pseudo1$counts)
+d1 <- calcNormFactors(d1)
+
+keep1 <- filterByExpr(d1$counts)
+
+d1 <- d1[keep1,]
+
+param = SnowParam(20, "SOCK", progressbar=TRUE)
+register(param)
+
+fbase <- ~ (1|cell.line) + (1|stim) + (1|seurat_clusters) + (1|replicate)
+
+voomed1 <- voomWithDreamWeights(d1, fbase, pseudo1$meta, plot=TRUE)
+
+varpart1 <- fitExtractVarPartModel(cpm(d1$counts, log=TRUE), fbase, pseudo1$meta)
+
+vp1 <- sortCols(varpart1)
+plotPercentBars(vp1[1:10,])
+plotVarPart(vp1) + ggtitle("Variance partition clustered resolution=1")
+```
+
+```{r save-things, eval=FALSE}
+saveRDS(organoid.combined.sct1, file = "output/organoid.combined.sct1.RDS")
+saveRDS(organoid.combined.sct03, file = "output/organoid.combined.sct03.RDS")
+saveRDS(organoid.combined.sct05, file = "output/organoid.combined.sct05.RDS")
+```
+
+
+#Summary, discussion with Yoav
+This is not what we expect, not at all.  Discussed with Kenneth and Yoav.  Yoav suggested this is not the right way to analyze the data.  First of all, because cluster composition and membership are likely confounded with cell line and treatment, the analysis should be done on each cluster separately.  Maybe the right way to start is to use large manually selected clusters.  
+
+Second, getting at a similar issue, Yoav suggests trying to ascertain whether the mean expression values in each cluster are stable with regards to cell number by jacknifing to generate the pseudobulk data.
+
+Finally, Yoav suggests comparing these variancePartition results to the results obtained by PCA.  If these are consistent, then PC2 should correspond to cluster and PC1 should correspond to...something else.  Can compare to the experimental meta-data to try to figure out what that is.  If PC2 is not Seurat cluster, then something doesn't add up.
+
