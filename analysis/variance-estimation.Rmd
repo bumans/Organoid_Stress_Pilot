@@ -104,7 +104,7 @@ Only very very weakly, though the trend with mitochondrial reads seems mostly to
 ##Partition by cluster
 Next, I'll go ahead and separate each of my (broad) clusters into a new object and repeat the variance analysis on these.
 
-```{r}
+```{r cluster-separation}
 organoid.combined.sct01 <- FindClusters(organoid.combined.sct03, resolution=0.1)
 DimPlot(organoid.combined.sct01)
 
@@ -129,7 +129,7 @@ pseudo0 <- filter.pseudobulk(pseudo0)
 d0 <- DGEList(pseudo0$counts)
 d0 <- calcNormFactors(d0)
 keep0 <- filterByExpr(d0$counts)
-d0 <- d0[keep,]
+d0 <- d0[keep0,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed0 <- voomWithDreamWeights(d0, fbase, pseudo0$meta, plot=TRUE)
@@ -147,7 +147,7 @@ pseudo1 <- filter.pseudobulk(pseudo1)
 d1 <- DGEList(pseudo1$counts)
 d1 <- calcNormFactors(d1)
 keep1 <- filterByExpr(d1$counts)
-d1 <- d1[keep,]
+d1 <- d1[keep1,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed1 <- voomWithDreamWeights(d1, fbase, pseudo1$meta, plot=TRUE)
@@ -165,7 +165,7 @@ pseudo2 <- filter.pseudobulk(pseudo2)
 d2 <- DGEList(pseudo2$counts)
 d2 <- calcNormFactors(d2)
 keep2 <- filterByExpr(d2$counts)
-d2 <- d2[keep,]
+d2 <- d2[keep2,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed2 <- voomWithDreamWeights(d2, fbase, pseudo2$meta, plot=TRUE)
@@ -183,7 +183,7 @@ pseudo3 <- filter.pseudobulk(pseudo3)
 d3 <- DGEList(pseudo3$counts)
 d3 <- calcNormFactors(d3)
 keep3 <- filterByExpr(d3$counts)
-d3 <- d3[keep,]
+d3 <- d3[keep3,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed3 <- voomWithDreamWeights(d3, fbase, pseudo3$meta, plot=TRUE)
@@ -201,7 +201,7 @@ pseudo4 <- filter.pseudobulk(pseudo4)
 d4 <- DGEList(pseudo4$counts)
 d4 <- calcNormFactors(d4)
 keep4 <- filterByExpr(d4$counts)
-d4 <- d4[keep,]
+d4 <- d4[keep4,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed4 <- voomWithDreamWeights(d4, fbase, pseudo4$meta, plot=TRUE)
@@ -219,7 +219,7 @@ pseudo5 <- filter.pseudobulk(pseudo5)
 d5 <- DGEList(pseudo5$counts)
 d5 <- calcNormFactors(d5)
 keep5 <- filterByExpr(d5$counts)
-d5 <- d5[keep,]
+d5 <- d5[keep5,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed5 <- voomWithDreamWeights(d5, fbase, pseudo5$meta, plot=TRUE)
@@ -237,7 +237,7 @@ pseudo6 <- filter.pseudobulk(pseudo6)
 d6 <- DGEList(pseudo6$counts)
 d6 <- calcNormFactors(d6)
 keep6 <- filterByExpr(d6$counts)
-d6 <- d6[keep,]
+d6 <- d6[keep6,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed6 <- voomWithDreamWeights(d6, fbase, pseudo6$meta, plot=TRUE)
@@ -256,7 +256,7 @@ pseudo7 <- filter.pseudobulk(pseudo7)
 d7 <- DGEList(pseudo7$counts)
 d7 <- calcNormFactors(d7)
 keep7 <- filterByExpr(d7$counts)
-d7 <- d7[keep,]
+d7 <- d7[keep7,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed7 <- voomWithDreamWeights(d7, fbase, pseudo7$meta, plot=TRUE)
@@ -274,7 +274,7 @@ pseudo8 <- filter.pseudobulk(pseudo8)
 d8 <- DGEList(pseudo8$counts)
 d8 <- calcNormFactors(d8)
 keep8 <- filterByExpr(d8$counts)
-d8 <- d8[keep,]
+d8 <- d8[keep8,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed8 <- voomWithDreamWeights(d8, fbase, pseudo8$meta, plot=TRUE)
@@ -321,7 +321,7 @@ pseudo0.5000 <- filter.pseudobulk(pseudo0.5000)
 d0.5000 <- DGEList(pseudo0.5000$counts)
 d0.5000 <- calcNormFactors(d0.5000)
 keep0.5000 <- filterByExpr(d0.5000$counts)
-d0.5000 <- d0.5000[keep,]
+d0.5000 <- d0.5000[keep0.5000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed0.5000 <- voomWithDreamWeights(d0.5000, fbase, pseudo0.5000$meta, plot=TRUE)
 varpart0.5000 <- fitExtractVarPartModel(voomed0.5000, fbase, pseudo0.5000$meta)
@@ -333,7 +333,7 @@ pseudo0.2000 <- filter.pseudobulk(pseudo0.2000)
 d0.2000 <- DGEList(pseudo0.2000$counts)
 d0.2000 <- calcNormFactors(d0.2000)
 keep0.2000 <- filterByExpr(d0.2000$counts)
-d0.2000 <- d0.2000[keep,]
+d0.2000 <- d0.2000[keep0.2000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed0.2000 <- voomWithDreamWeights(d0.2000, fbase, pseudo0.2000$meta, plot=TRUE)
 varpart0.2000 <- fitExtractVarPartModel(voomed0.2000, fbase, pseudo0.2000$meta)
@@ -345,7 +345,7 @@ pseudo0.500 <- filter.pseudobulk(pseudo0.500)
 d0.500 <- DGEList(pseudo0.500$counts)
 d0.500 <- calcNormFactors(d0.500)
 keep0.500 <- filterByExpr(d0.500$counts)
-d0.500 <- d0.500[keep,]
+d0.500 <- d0.500[keep0.500,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed0.500 <- voomWithDreamWeights(d0.500, fbase, pseudo0.500$meta, plot=TRUE)
 varpart0.500 <- fitExtractVarPartModel(voomed0.500, fbase, pseudo0.500$meta)
@@ -363,7 +363,7 @@ pseudo1.5000 <- filter.pseudobulk(pseudo1.5000)
 d1.5000 <- DGEList(pseudo1.5000$counts)
 d1.5000 <- calcNormFactors(d1.5000)
 keep1.5000 <- filterByExpr(d1.5000$counts)
-d1.5000 <- d1.5000[keep,]
+d1.5000 <- d1.5000[keep1.5000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed1.5000 <- voomWithDreamWeights(d1.5000, fbase, pseudo1.5000$meta, plot=TRUE)
 varpart1.5000 <- fitExtractVarPartModel(voomed1.5000, fbase, pseudo1.5000$meta)
@@ -375,7 +375,7 @@ pseudo1.2000 <- filter.pseudobulk(pseudo1.2000)
 d1.2000 <- DGEList(pseudo1.2000$counts)
 d1.2000 <- calcNormFactors(d1.2000)
 keep1.2000 <- filterByExpr(d1.2000$counts)
-d1.2000 <- d1.2000[keep,]
+d1.2000 <- d1.2000[keep1.2000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed1.2000 <- voomWithDreamWeights(d1.2000, fbase, pseudo1.2000$meta, plot=TRUE)
 varpart1.2000 <- fitExtractVarPartModel(voomed1.2000, fbase, pseudo1.2000$meta)
@@ -387,7 +387,7 @@ pseudo1.500 <- filter.pseudobulk(pseudo1.500)
 d1.500 <- DGEList(pseudo1.500$counts)
 d1.500 <- calcNormFactors(d1.500)
 keep1.500 <- filterByExpr(d1.500$counts)
-d1.500 <- d1.500[keep,]
+d1.500 <- d1.500[keep1.500,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed1.500 <- voomWithDreamWeights(d1.500, fbase, pseudo1.500$meta, plot=TRUE)
 varpart1.500 <- fitExtractVarPartModel(voomed1.500, fbase, pseudo1.500$meta)
@@ -405,7 +405,7 @@ pseudo2.5000 <- filter.pseudobulk(pseudo2.5000)
 d2.5000 <- DGEList(pseudo2.5000$counts)
 d2.5000 <- calcNormFactors(d2.5000)
 keep2.5000 <- filterByExpr(d2.5000$counts)
-d2.5000 <- d2.5000[keep,]
+d2.5000 <- d2.5000[keep2.5000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed2.5000 <- voomWithDreamWeights(d2.5000, fbase, pseudo2.5000$meta, plot=TRUE)
 varpart2.5000 <- fitExtractVarPartModel(voomed2.5000, fbase, pseudo2.5000$meta)
@@ -417,7 +417,7 @@ pseudo2.2000 <- filter.pseudobulk(pseudo2.2000)
 d2.2000 <- DGEList(pseudo2.2000$counts)
 d2.2000 <- calcNormFactors(d2.2000)
 keep2.2000 <- filterByExpr(d2.2000$counts)
-d2.2000 <- d2.2000[keep,]
+d2.2000 <- d2.2000[keep2.2000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed2.2000 <- voomWithDreamWeights(d2.2000, fbase, pseudo2.2000$meta, plot=TRUE)
 varpart2.2000 <- fitExtractVarPartModel(voomed2.2000, fbase, pseudo2.2000$meta)
@@ -429,7 +429,7 @@ pseudo2.500 <- filter.pseudobulk(pseudo2.500)
 d2.500 <- DGEList(pseudo2.500$counts)
 d2.500 <- calcNormFactors(d2.500)
 keep2.500 <- filterByExpr(d2.500$counts)
-d2.500 <- d2.500[keep,]
+d2.500 <- d2.500[keep2.500,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed2.500 <- voomWithDreamWeights(d2.500, fbase, pseudo2.500$meta, plot=TRUE)
 varpart2.500 <- fitExtractVarPartModel(voomed2.500, fbase, pseudo2.500$meta)
@@ -451,7 +451,7 @@ pseudo_all <- filter.pseudobulk(pseudo_all)
 d_all <- DGEList(pseudo_all$counts)
 d_all <- calcNormFactors(d_all)
 keep_all <- filterByExpr(d_all$counts)
-d_all <- d_all[keep,]
+d_all <- d_all[keep_all,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
 voomed_all <- voomWithDreamWeights(d_all, fbase, pseudo_all$meta, plot=TRUE)
@@ -459,7 +459,7 @@ varpart_all <- fitExtractVarPartModel(voomed_all, fbase, pseudo_all$meta)
 
 vp_all <- sortCols(varpart_all)
 # plotPercentBars(vp_all[1:10,])
-plotVarPart(vp_all) + ggtitle("Variance partition cluster _all (resolution=0.1)")
+plotVarPart(vp_all) + ggtitle("Variance partition cluster all (resolution=0.1)")
 ```
 
 To the extent that cell cluster and cell line are related, this surely inflates the variation attributable to cell line alone.  
