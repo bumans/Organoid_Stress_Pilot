@@ -105,7 +105,7 @@ Only very very weakly, though the trend with mitochondrial reads seems mostly to
 Next, I'll go ahead and separate each of my (broad) clusters into a new object and repeat the variance analysis on these.
 
 ```{r}
-organoid.combined.sct01 <- FindClusters(organoid.combined.sct, resolution=0.1)
+organoid.combined.sct01 <- FindClusters(organoid.combined.sct03, resolution=0.1)
 DimPlot(organoid.combined.sct01)
 
 cluster0 <- subset(organoid.combined.sct01, subset = seurat_clusters == '0')
