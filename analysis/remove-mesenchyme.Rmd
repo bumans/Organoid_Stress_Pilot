@@ -1,0 +1,63 @@
+---
+title: "remove-mesenchyme"
+author: "Ben Umans"
+date: "2021-07-15"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+In the previous analyses, I used the full dataset.  However, it became clear that a large portion of cells were not neuronal and had more hallmarks of mesenchymal or chondrogenic cells, perhaps as a result of NCC differentiation and perhaps simply because of off-target differentiation.  The yield of these cells varied across replicates and cell lines and made things confusing.  Here, I simply remove these cells and save a new, cleaned dataset.
+
+```{r setup}
+pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(cowplot)
+library(knitr)
+
+organoid.combined.sct03 <- readRDS(file = "output/organoid.combined.sct03.RDS")
+
+```
+
+Any chance that these cells are microglia?
+```{r microglia}
+FeaturePlot(organoid.combined.sct03, features = c("sct_MMP9", "sct_SALL1", "sct_P2RY12", "sct_TMEM119", "sct_CX3CR1"))
+FeaturePlot(organoid.combined.sct03, features = c("sct_ITGAM"), max.cutoff = 0.5)
+
+```
+That cluster is probably not microglia.
+
+```{r subset-data}
+DimPlot(organoid.combined.sct03, cells.highlight = WhichCells(organoid.combined.sct03, idents = 1))
+#clusters are not so perfectly compact here.  I want to remove that whole australian blob.  I'll do it manually
+
+# p1 <- DimPlot(organoid.combined.sct03)
+# select.cells <- CellSelector(plot = p1)
+# saveRDS(select.cells, "data/australia.rds")
+select.cells <- readRDS(file = "data/australia.rds")
+organoid.combined.sct03.neuron <- subset(organoid.combined.sct03, cells = select.cells, invert=TRUE)
+```
+
+Now recluster with this reduced dataset
+```{r recluster, message=FALSE}
+organoid.combined.sct03.neuron <- RunPCA(organoid.combined.sct03.neuron, npcs = 65)
+organoid.combined.sct03.neuron <- RunUMAP(organoid.combined.sct03.neuron, reduction = "pca", dims = 1:60)
+
+DimPlot(organoid.combined.sct03.neuron, reduction = "umap", group.by = "stim")
+DimPlot(organoid.combined.sct03.neuron, reduction = "umap", group.by = "replicate")
+
+organoid.combined.sct03.neuron <- FindNeighbors(organoid.combined.sct03.neuron, dims=1:65)
+organoid.combined.sct03.neuron <- FindClusters(organoid.combined.sct03.neuron, resolution=0.3)
+DimPlot(organoid.combined.sct03.neuron, reduction = "umap") + ggtitle("resolution=0.3")
+
+organoid.combined.sct03.neuron.markers <- FindAllMarkers(organoid.combined.sct03.neuron, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+organoid.combined.sct03.neuron.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+
+saveRDS(organoid.combined.sct03.neuron, file = "data/organoid.combined.sct03.neuron.RDS")
+```
+

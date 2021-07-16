@@ -16,3 +16,5 @@ correspondence to previous datasets.
 [Next](combine_experiments.html), I used SCTransform-ed versions of all datasets to create an integrated Seurat object for clustering and expression analysis.  In this document I also look for expression of a few stress-related genes and begin to use the `variancePartition` package to assess reproducibility and the factors contributing to gene expression variation in my dataset.  I also include suggestions from KB and YG after an initial discussion of these findings.
 
 [To explore their suggestions further](variance-estimation.html), I looked at the effect or running the analysis on separated clusters and downsampling cell numbers.
+
+Not all of the cells collected during this experiment appear to fall along the neural development trajectory.  In order to remove overtly different cells, I subsetted out the "mesenchyme" and reclustered using the remaining cells [here](remove-mesenchyme.html).
