@@ -18,3 +18,5 @@ correspondence to previous datasets.
 [To explore their suggestions further](variance-estimation.html), I looked at the effect or running the analysis on separated clusters and downsampling cell numbers.
 
 Not all of the cells collected during this experiment appear to fall along the neural development trajectory.  In order to remove overtly different cells, I subsetted out the "mesenchyme" and reclustered using the remaining cells [here](remove-mesenchyme.html).
+
+[Next](de.html), I used this filtered dataset to test for differential expression across stimulus conditions.
