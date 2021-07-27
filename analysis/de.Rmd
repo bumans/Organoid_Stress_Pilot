@@ -1,0 +1,341 @@
+---
+title: "de"
+author: "Ben Umans"
+date: "2021-07-26"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+I will now test for differential expression in each cluster independently, using `dream` on the "low-pass" sequencing data with the "mesenchymal" cluster removed.
+```{r setup}
+pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(cowplot)
+library(knitr)
+Sys.setenv(TZ='America/Chicago')
+
+generate.pseudobulk <- function(object, labels, assay="RNA",slot="counts") {
+  factorlist <- list()
+  for (i in labels) factorlist[[i]] <- unique(object@meta.data[,i])
+  meta <- expand.grid(factorlist, stringsAsFactors = FALSE)
+  rownames(meta) <- apply(meta, 1, function(x) paste0(x, collapse = '.'))
+  # build the output matrix
+  n <- nrow(meta)
+  out <- matrix(nrow=dim(object[[assay]])[1], ncol=n, data=0)
+  rownames(out) <- rownames(object[[assay]])
+  colnames(out) <- rownames(meta)
+  ncells <- c()
+  ncounts <- c()
+  total.cells <- dim(object[[assay]])[2]
+  for (i in 1:n)
+  {
+    #prog(i,n)
+    cells <- 1:total.cells
+    for (j in names(meta)) {
+      keep  <- which(object@meta.data[[j]] == meta[i,j])
+      cells <- cells[cells %in% keep]
+    }
+    ncells[i] <- length(cells)
+    ncounts[i] <- sum(slot(object[[assay]], slot)[,cells])
+    #some other thing to measure
+    if (length(cells)==1) {
+      out[,i] <- slot(object[[assay]], slot)[,cells]
+    } else {
+      out[,i] <- Matrix::rowSums(slot(object[[assay]], slot)[,cells])
+    }
+  }
+  meta$ncells <- ncells
+  meta$ncounts <- ncounts/max(ncounts)
+  #add that something else as metadata
+  return(list(counts=out, meta=meta))
+}
+
+# keep only levels with more than 'threshold' cells
+filter.pseudobulk <- function(pseudobulk, threshold = 0) {
+  w <- which(pseudobulk$meta$ncells > threshold)
+  pseudobulk$counts <- pseudobulk$counts[,w]
+  pseudobulk$meta <- pseudobulk$meta[w,]
+  pseudobulk
+}
+
+organoid.combined.sct03.neuron <- readRDS(file = "data/organoid.combined.sct03.neuron.RDS")
+```
+
+Now I split the data into the 11 clusters identified by Seurat.
+```{r cluster-separation}
+cluster0 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '0')
+cluster1 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '1')
+cluster2 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '2')
+cluster3 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '3')
+cluster4 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '4')
+cluster5 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '5')
+cluster6 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '6')
+cluster7 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '7')
+cluster8 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '8')
+cluster9 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '9')
+cluster10 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '10')
+```
+
+Now we can use `dream` to look for differential expression using a repeated-measures model.  For each cluster we can thank count the number of DE genes (FDR 0.05) for each control vs. stimulus comparison.
+
+For cluster 0:
+```{r cluster0de, message=FALSE, error=TRUE}
+param = SnowParam(20, "SOCK", progressbar=TRUE)
+register(param)
+
+pseudo0 <- generate.pseudobulk(cluster0, labels = c("stim", "replicate", "cell.line"))
+pseudo0 <- filter.pseudobulk(pseudo0)
+d0 <- DGEList(pseudo0$counts)
+d0 <- calcNormFactors(d0)
+keep0 <- filterByExpr(d0$counts)
+d0 <- d0[keep0,]
+
+formde <- ~  stim + (1|cell.line) + (1|replicate)
+voomed0 <- voomWithDreamWeights(d0, formde, pseudo0$meta, plot=FALSE)
+fitmm0 = dream(voomed0, formde, pseudo0$meta)
+
+#fitmm$design %>% kable()
+de.summary <- matrix(0, nrow = 11, ncol = 2)
+colnames(de.summary) <- c("oxidation", "pff")
+rownames(de.summary) <- c("cluster0","cluster1",
+                          "cluster2","cluster3",
+                          "cluster4","cluster5",
+                          "cluster6","cluster7",
+                          "cluster8","cluster9",
+                          "cluster10")
+
+try(topTable(fitmm0, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[1,1] <- try(topTable(fitmm0, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm0, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 0")
+
+try(topTable(fitmm0, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[1,2] <- try(topTable(fitmm0, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+try(topTable(fitmm0, coef='stimpff', number = 10000)) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 0")
+```
+
+Cluster 1:
+```{r cluster1de, message=FALSE, error=TRUE}
+pseudo1 <- generate.pseudobulk(cluster1, labels = c("cell.line", "stim", "replicate"))
+pseudo1 <- filter.pseudobulk(pseudo1)
+d1 <- DGEList(pseudo1$counts)
+d1 <- calcNormFactors(d1)
+keep1 <- filterByExpr(d1$counts)
+d1 <- d1[keep1,]
+
+voomed1 <- voomWithDreamWeights(d1, formde, pseudo1$meta, plot=FALSE)
+fitmm1 = dream(voomed1, formde, pseudo1$meta)
+
+# how many DE genes with FDR 0.05
+topTable(fitmm1, coef='stimoxidation', p.value = 0.05, number = 10000) %>% nrow()
+de.summary[2,1] <- topTable(fitmm1, coef='stimoxidation', p.value = 0.05, number = 10000) %>% nrow()
+topTable(fitmm1, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 1")
+
+try(topTable(fitmm1, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[2,2] <- try(topTable(fitmm1, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm1, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 1")
+
+```
+
+Cluster 2:
+```{r cluster2de, message=FALSE, error=TRUE}
+pseudo2 <- generate.pseudobulk(cluster2, labels = c("cell.line", "stim", "replicate"))
+pseudo2 <- filter.pseudobulk(pseudo2)
+d2 <- DGEList(pseudo2$counts)
+d2 <- calcNormFactors(d2)
+keep2 <- filterByExpr(d2$counts)
+d2 <- d2[keep2,]
+
+voomed2 <- voomWithDreamWeights(d2, formde, pseudo2$meta, plot=FALSE)
+fitmm2 = dream(voomed2, formde, pseudo2$meta)
+
+# how many DE genes are there?
+try(topTable(fitmm2, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[3,1] <- try(topTable(fitmm2, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm2, coef='stimoxidation', number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 2")
+
+try(topTable(fitmm2, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[3,2] <- try(topTable(fitmm2, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm2, coef='stimpff',number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 2")
+
+```
+
+Cluster 3:
+```{r cluster3de, message=FALSE, error=TRUE}
+pseudo3 <- generate.pseudobulk(cluster3, labels = c("cell.line", "stim", "replicate"))
+pseudo3 <- filter.pseudobulk(pseudo3)
+d3 <- DGEList(pseudo3$counts)
+d3 <- calcNormFactors(d3)
+keep3 <- filterByExpr(d3$counts)
+d3 <- d3[keep3,]
+
+voomed3 <- voomWithDreamWeights(d3, formde, pseudo3$meta, plot=FALSE)
+fitmm3 = dream(voomed3, formde, pseudo3$meta)
+
+try(topTable(fitmm3, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[4,1] <- try(topTable(fitmm3, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm3, coef='stimoxidation', number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 3")
+
+try(topTable(fitmm3, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[4,2] <- try(topTable(fitmm3, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm3, coef='stimpff',  number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 3")
+
+```
+
+Cluster 4
+```{r cluster4de, message=FALSE, error=TRUE}
+pseudo4 <- generate.pseudobulk(cluster4, labels = c("cell.line", "stim", "replicate"))
+pseudo4 <- filter.pseudobulk(pseudo4)
+d4 <- DGEList(pseudo4$counts)
+d4 <- calcNormFactors(d4)
+keep4 <- filterByExpr(d4$counts)
+d4 <- d4[keep4,]
+
+voomed4 <- voomWithDreamWeights(d4, formde, pseudo4$meta, plot=FALSE)
+fitmm4 = dream(voomed4, formde, pseudo4$meta)
+
+try(topTable(fitmm4, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[5,1] <- try(topTable(fitmm4, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm4, coef='stimoxidation', number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 4")
+
+try(topTable(fitmm4, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[5,2] <- try(topTable(fitmm4, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm4, coef='stimpff',  number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 4")
+
+```
+
+Cluster 5:
+```{r cluster5de, message=FALSE, error=TRUE}
+pseudo5 <- generate.pseudobulk(cluster5, labels = c("cell.line", "stim", "replicate"))
+pseudo5 <- filter.pseudobulk(pseudo5)
+d5 <- DGEList(pseudo5$counts)
+d5 <- calcNormFactors(d5)
+keep5 <- filterByExpr(d5$counts)
+d5 <- d5[keep5,]
+
+voomed5 <- voomWithDreamWeights(d5, formde, pseudo5$meta, plot=FALSE)
+fitmm5 = dream(voomed5, formde, pseudo5$meta)
+
+try(topTable(fitmm5, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[6,1] <- try(topTable(fitmm5, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm5, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 5")
+
+try(topTable(fitmm5, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[6,2] <- try(topTable(fitmm5, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm5, coef='stimpff',number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 5")
+```
+
+Cluster 6:
+```{r cluster6de, message=FALSE, error=TRUE}
+pseudo6 <- generate.pseudobulk(cluster6, labels = c("cell.line", "stim", "replicate"))
+pseudo6 <- filter.pseudobulk(pseudo6)
+d6 <- DGEList(pseudo6$counts)
+d6 <- calcNormFactors(d6)
+keep6 <- filterByExpr(d6$counts)
+d6 <- d6[keep6,]
+
+voomed6 <- voomWithDreamWeights(d6, formde, pseudo6$meta, plot=FALSE)
+fitmm6 = dream(voomed6, formde, pseudo6$meta)
+
+try(topTable(fitmm6, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[7,1] <- try(topTable(fitmm6, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm6, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 6")
+
+try(topTable(fitmm6, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[7,2] <- try(topTable(fitmm6, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm6, coef='stimpff',  number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 6")
+```
+
+Cluster 7:
+```{r cluster7de, message=FALSE, error=TRUE}
+pseudo7 <- generate.pseudobulk(cluster7, labels = c("cell.line", "stim", "replicate"))
+pseudo7 <- filter.pseudobulk(pseudo7)
+d7 <- DGEList(pseudo7$counts)
+d7 <- calcNormFactors(d7)
+keep7 <- filterByExpr(d7$counts)
+d7 <- d7[keep7,]
+
+voomed7 <- voomWithDreamWeights(d7, formde, pseudo7$meta, plot=FALSE)
+fitmm7 = dream(voomed7, formde, pseudo7$meta)
+
+try(topTable(fitmm7, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[8,1] <- try(topTable(fitmm7, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm7, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 7")
+
+try(topTable(fitmm7, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[8,1] <- try(topTable(fitmm7, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm7, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 7")
+```
+
+Cluster 8:
+```{r cluster8de, message=FALSE, error=TRUE}
+pseudo8 <- generate.pseudobulk(cluster8, labels = c("cell.line", "stim", "replicate"))
+pseudo8 <- filter.pseudobulk(pseudo8)
+d8 <- DGEList(pseudo8$counts)
+d8 <- calcNormFactors(d8)
+keep8 <- filterByExpr(d8$counts)
+d8 <- d8[keep8,]
+
+voomed8 <- voomWithDreamWeights(d8, formde, pseudo8$meta, plot=FALSE)
+fitmm8 = dream(voomed8, formde, pseudo8$meta)
+
+try(topTable(fitmm8, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[9,1] <- try(topTable(fitmm8, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm8, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 8")
+
+try(topTable(fitmm8, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[9,2] <- try(topTable(fitmm8, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm8, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 8")
+```
+
+Cluster 9:
+```{r cluster9de, message=FALSE, error=TRUE}
+pseudo9 <- generate.pseudobulk(cluster9, labels = c("cell.line", "stim", "replicate"))
+pseudo9 <- filter.pseudobulk(pseudo9)
+d9 <- DGEList(pseudo9$counts)
+d9 <- calcNormFactors(d9)
+keep9 <- filterByExpr(d9$counts)
+d9 <- d9[keep9,]
+
+voomed9 <- voomWithDreamWeights(d9, formde, pseudo9$meta, plot=FALSE)
+fitmm9 = dream(voomed9, formde, pseudo9$meta)
+
+try(topTable(fitmm9, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[10,1] <- try(topTable(fitmm9, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm9, coef='stimoxidation', number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 9")
+
+try(topTable(fitmm9, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[10,2] <- try(topTable(fitmm9, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+topTable(fitmm9, coef='stimpff',  number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 9")
+```
+
+Cluster 10:
+```{r cluster10de, message=FALSE, error=TRUE}
+pseudo10 <- generate.pseudobulk(cluster10, labels = c("cell.line", "stim", "replicate"))
+pseudo10 <- filter.pseudobulk(pseudo10)
+d10 <- DGEList(pseudo10$counts)
+d10 <- calcNormFactors(d10)
+keep10 <- filterByExpr(d10$counts)
+d10 <- d10[keep10,]
+
+voomed10 <- voomWithDreamWeights(d10, formde, pseudo10$meta, plot=FALSE)
+fitmm10 = dream(voomed10, formde, pseudo10$meta)
+
+try(topTable(fitmm10, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[11,1] <- try(topTable(fitmm10, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+try(topTable(fitmm10, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 10")
+
+try(topTable(fitmm10, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+de.summary[11,2] <- try(topTable(fitmm10, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+try(topTable(fitmm10, coef='stimpff', p.value = 0.05, number = 10000)) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 10")
+```
+
+To summarize, at 5% FDR threshold, I detect the following number of DE genes in each cluster:
+```{r}
+de.summary %>% kable()
+```
+
