@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Introduction
+## Combining demultiplexed Seurat objects
 The data here were collected on three separate days, from three separate replicates, each consisting of three individuals.  Demuxlet has already resolved each library into its constituent individuals by genotype, and now I'd need to combine the various libraries in order to test for consistency.
 
 ```{r setup}
@@ -135,7 +135,7 @@ DimPlot(organoid.combined.sct1, reduction = "umap") + ggtitle("resolution=1")
 ```
 A lot of these possibilities _seem_ reasonable.  Can cluster markers give us any idea of which of them make sense to pursue?
 
-```{r cluster-markers}
+```{r cluster-markers, message=FALSE}
 organoid.combined.sct03.markers <- FindAllMarkers(organoid.combined.sct03, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 organoid.combined.sct03.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
 
@@ -217,7 +217,7 @@ filter.pseudobulk <- function(pseudobulk, threshold = 0) {
 ```
 
 
-```{r resolution03-varpart}
+```{r resolution03-varpart, message=FALSE}
 pseudo3 <- generate.pseudobulk(organoid.combined.sct03, labels = c("cell.line", "stim", "replicate", "seurat_clusters"))
 pseudo3 <- filter.pseudobulk(pseudo3)
 
@@ -226,7 +226,7 @@ d03 <- calcNormFactors(d03)
 
 keep3 <- filterByExpr(d03$counts)
 
-d03 <- d03[keep,]
+d03 <- d03[keep3,]
 
 param = SnowParam(20, "SOCK", progressbar=TRUE)
 register(param)
@@ -242,7 +242,7 @@ plotPercentBars(vp3[1:10,])
 plotVarPart(vp3) + ggtitle("Variance partition clustered resolution=0.3")
 ```
 
-```{r resolution05-varpart}
+```{r resolution05-varpart, message=FALSE}
 pseudo5 <- generate.pseudobulk(organoid.combined.sct05, labels = c("cell.line", "stim", "replicate", "seurat_clusters"))
 pseudo5 <- filter.pseudobulk(pseudo5)
 
@@ -253,8 +253,6 @@ keep5 <- filterByExpr(d05$counts)
 
 d05 <- d05[keep5,]
 
-param = SnowParam(20, "SOCK", progressbar=TRUE)
-register(param)
 
 fbase <- ~ (1|cell.line) + (1|stim) + (1|seurat_clusters) + (1|replicate)
 
@@ -267,7 +265,7 @@ plotPercentBars(vp5[1:10,])
 plotVarPart(vp5) + ggtitle("Variance partition clustered resolution=0.5")
 ```
 
-```{r resolution1-varpart}
+```{r resolution1-varpart, message=FALSE}
 pseudo1 <- generate.pseudobulk(organoid.combined.sct1, labels = c("cell.line", "stim", "replicate", "seurat_clusters"))
 pseudo1 <- filter.pseudobulk(pseudo1)
 
@@ -277,9 +275,6 @@ d1 <- calcNormFactors(d1)
 keep1 <- filterByExpr(d1$counts)
 
 d1 <- d1[keep1,]
-
-param = SnowParam(20, "SOCK", progressbar=TRUE)
-register(param)
 
 fbase <- ~ (1|cell.line) + (1|stim) + (1|seurat_clusters) + (1|replicate)
 
