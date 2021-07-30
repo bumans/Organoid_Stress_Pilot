@@ -20,3 +20,6 @@ correspondence to previous datasets.
 Not all of the cells collected during this experiment appear to fall along the neural development trajectory.  In order to remove overtly different cells, I subsetted out the "mesenchyme" and reclustered using the remaining cells [here](remove-mesenchyme.html).
 
 [Next](de.html), I used this filtered dataset to test for differential expression across stimulus conditions.
+
+After completing these analyses, we sent these sequencing libraries back for further sequencing using a NovaSeq S2 chip, with the library composition rebalanced to yield equal numbers of reads across all samples (which will yield slightly different numbers of reads/cell owing to differing capture rates of cells between replicates).  Upon receipt of these new data, the combined fastq files from the first and second sequencing batches were processed using `cellranger` and `demuxlet` and then filtered and [merged](merge_full_data.html) to form integrated datasets.
+
