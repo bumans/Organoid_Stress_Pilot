@@ -1,0 +1,3450 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Ben Umans" />
+
+<meta name="date" content="2021-07-26" />
+
+<title>de</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Organoid_Stress_Pilot</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/bumans/Organoid_Stress_Pilot">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">de</h1>
+<h4 class="author">Ben Umans</h4>
+<h4 class="date">2021-07-26</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-07-31
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>Organoid_Stress_Pilot/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210705code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210705)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210705code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210705)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree5d8afa5b0840cd65c8111901f4455b45b85abe82targetblank5d8afa5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/5d8afa5b0840cd65c8111901f4455b45b85abe82" target="_blank">5d8afa5</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree5d8afa5b0840cd65c8111901f4455b45b85abe82targetblank5d8afa5a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/5d8afa5b0840cd65c8111901f4455b45b85abe82" target="_blank">5d8afa5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    data/.DS_Store
+    Ignored:    data/fastq/
+    Ignored:    output/.DS_Store
+    Ignored:    output/YG-BU-01_human/
+    Ignored:    output/YG-BU-02_human/
+    Ignored:    output/YG-BU-03_human/
+    Ignored:    output/YG-BU-04_human/
+    Ignored:    output/YG-BU-05_human/
+    Ignored:    output/YG-BU-06_human/
+    Ignored:    output/YG-BU-07_human/
+    Ignored:    output/YG-BU-08_human/
+    Ignored:    output/YG-BU-09_human/
+    Ignored:    output/YG-BU-10_human/
+    Ignored:    output/YG-BU-11_human/
+    Ignored:    output/merged_full_dataset.RDS
+    Ignored:    output/organoid.combined.full.sct.neuron.RDS
+    Ignored:    output/organoid.combined.sct.neuron.markers.RDS
+    Ignored:    output/organoid.combined.sct03.RDS
+    Ignored:    output/organoid.combined.sct05.RDS
+    Ignored:    output/organoid.combined.sct1.RDS
+
+Untracked files:
+    Untracked:  data/Snakefile_cellranger
+    Untracked:  data/all.vcf.bed
+    Untracked:  data/australia.rds
+    Untracked:  data/cellranger.38.dict
+    Untracked:  data/cluster.json
+    Untracked:  data/config.yaml
+    Untracked:  data/environment.yaml
+    Untracked:  data/exclude_fulldata.rds
+    Untracked:  data/human.unsorted.vcf
+    Untracked:  data/human.vcf
+    Untracked:  data/human.vcf.bed
+    Untracked:  data/library9.rds
+    Untracked:  data/log/
+    Untracked:  data/mysterycell.rds
+    Untracked:  data/organoid.combined.sct03.neuron.RDS
+    Untracked:  data/organoid_combined_sct03.RDS
+    Untracked:  data/reheaded.vcf
+    Untracked:  data/snakelog.out
+    Untracked:  data/snakemake_cellranger.batch
+    Untracked:  data/sorted.vcf
+    Untracked:  data/submit.sh
+    Untracked:  data/unsorted.vcf
+    Untracked:  data/unsorted_header
+    Untracked:  data_S2/
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   analysis/index.Rmd
+    Modified:   analysis/precheck.Rmd
+    Modified:   analysis/remove-mesenchyme.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/de.Rmd</code>) and HTML (<code>docs/de.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/3aa13a38939d21a31d278f95e45370075b5895a9/analysis/de.Rmd" target="_blank">3aa13a3</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-27
+</td>
+<td>
+wflow_publish(files = c(“analysis/de.Rmd”))
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>I will now test for differential expression in each cluster independently, using <code>dream</code> on the “low-pass” sequencing data with the “mesenchymal” cluster removed.</p>
+<pre class="r"><code>pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)</code></pre>
+<pre><code>── Attaching packages ────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>✓ tibble  3.1.2     ✓ dplyr   1.0.7
+✓ tidyr   1.1.3     ✓ stringr 1.4.0
+✓ readr   1.4.0     ✓ forcats 0.5.1
+✓ purrr   0.3.4     </code></pre>
+<pre><code>── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+x purrr::accumulate()      masks foreach::accumulate()
+x readr::col_factor()      masks scales::col_factor()
+x dplyr::combine()         masks Biobase::combine(), BiocGenerics::combine()
+x purrr::discard()         masks scales::discard()
+x dplyr::filter()          masks stats::filter()
+x dplyr::lag()             masks stats::lag()
+x BiocGenerics::Position() masks ggplot2::Position(), base::Position()
+x purrr::when()            masks foreach::when()</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(RColorBrewer)
+library(cowplot)</code></pre>
+<pre><code>
+********************************************************</code></pre>
+<pre><code>Note: As of version 1.0.0, cowplot does not change the</code></pre>
+<pre><code>  default ggplot2 theme anymore. To recover the previous</code></pre>
+<pre><code>  behavior, execute:
+  theme_set(theme_cowplot())</code></pre>
+<pre><code>********************************************************</code></pre>
+<pre class="r"><code>library(knitr)
+Sys.setenv(TZ=&#39;America/Chicago&#39;)
+
+generate.pseudobulk &lt;- function(object, labels, assay=&quot;RNA&quot;,slot=&quot;counts&quot;) {
+  factorlist &lt;- list()
+  for (i in labels) factorlist[[i]] &lt;- unique(object@meta.data[,i])
+  meta &lt;- expand.grid(factorlist, stringsAsFactors = FALSE)
+  rownames(meta) &lt;- apply(meta, 1, function(x) paste0(x, collapse = &#39;.&#39;))
+  # build the output matrix
+  n &lt;- nrow(meta)
+  out &lt;- matrix(nrow=dim(object[[assay]])[1], ncol=n, data=0)
+  rownames(out) &lt;- rownames(object[[assay]])
+  colnames(out) &lt;- rownames(meta)
+  ncells &lt;- c()
+  ncounts &lt;- c()
+  total.cells &lt;- dim(object[[assay]])[2]
+  for (i in 1:n)
+  {
+    #prog(i,n)
+    cells &lt;- 1:total.cells
+    for (j in names(meta)) {
+      keep  &lt;- which(object@meta.data[[j]] == meta[i,j])
+      cells &lt;- cells[cells %in% keep]
+    }
+    ncells[i] &lt;- length(cells)
+    ncounts[i] &lt;- sum(slot(object[[assay]], slot)[,cells])
+    #some other thing to measure
+    if (length(cells)==1) {
+      out[,i] &lt;- slot(object[[assay]], slot)[,cells]
+    } else {
+      out[,i] &lt;- Matrix::rowSums(slot(object[[assay]], slot)[,cells])
+    }
+  }
+  meta$ncells &lt;- ncells
+  meta$ncounts &lt;- ncounts/max(ncounts)
+  #add that something else as metadata
+  return(list(counts=out, meta=meta))
+}
+
+# keep only levels with more than &#39;threshold&#39; cells
+filter.pseudobulk &lt;- function(pseudobulk, threshold = 0) {
+  w &lt;- which(pseudobulk$meta$ncells &gt; threshold)
+  pseudobulk$counts &lt;- pseudobulk$counts[,w]
+  pseudobulk$meta &lt;- pseudobulk$meta[w,]
+  pseudobulk
+}
+
+organoid.combined.sct03.neuron &lt;- readRDS(file = &quot;data/organoid.combined.sct03.neuron.RDS&quot;)</code></pre>
+<p>Now I split the data into the 11 clusters identified by Seurat.</p>
+<pre class="r"><code>cluster0 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;0&#39;)
+cluster1 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;1&#39;)
+cluster2 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;2&#39;)
+cluster3 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;3&#39;)
+cluster4 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;4&#39;)
+cluster5 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;5&#39;)
+cluster6 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;6&#39;)
+cluster7 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;7&#39;)
+cluster8 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;8&#39;)
+cluster9 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;9&#39;)
+cluster10 &lt;- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == &#39;10&#39;)</code></pre>
+<p>Now we can use <code>dream</code> to look for differential expression using a repeated-measures model. For each cluster we can thank count the number of DE genes (FDR 0.05) for each control vs. stimulus comparison.</p>
+<p>For cluster 0:</p>
+<pre class="r"><code>param = SnowParam(20, &quot;SOCK&quot;, progressbar=TRUE)
+register(param)
+
+pseudo0 &lt;- generate.pseudobulk(cluster0, labels = c(&quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+pseudo0 &lt;- filter.pseudobulk(pseudo0)
+d0 &lt;- DGEList(pseudo0$counts)
+d0 &lt;- calcNormFactors(d0)
+keep0 &lt;- filterByExpr(d0$counts)
+d0 &lt;- d0[keep0,]
+
+formde &lt;- ~  stim + (1|cell.line) + (1|replicate)
+voomed0 &lt;- voomWithDreamWeights(d0, formde, pseudo0$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 20.9 Mb 
+Dividing work into 100 chunks...
+
+Total: 70 s</code></pre>
+<pre class="r"><code>fitmm0 = dream(voomed0, formde, pseudo0$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 95 s</code></pre>
+<pre class="r"><code>#fitmm$design %&gt;% kable()
+de.summary &lt;- matrix(0, nrow = 11, ncol = 2)
+colnames(de.summary) &lt;- c(&quot;oxidation&quot;, &quot;pff&quot;)
+rownames(de.summary) &lt;- c(&quot;cluster0&quot;,&quot;cluster1&quot;,
+                          &quot;cluster2&quot;,&quot;cluster3&quot;,
+                          &quot;cluster4&quot;,&quot;cluster5&quot;,
+                          &quot;cluster6&quot;,&quot;cluster7&quot;,
+                          &quot;cluster8&quot;,&quot;cluster9&quot;,
+                          &quot;cluster10&quot;)
+
+try(topTable(fitmm0, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[1,1] &lt;- try(topTable(fitmm0, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[1, 1] &lt;- try(topTable(fitmm0, coef = &quot;stimoxidation&quot;, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm0, coef=&#39;stimoxidation&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 0&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 0</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RPTOR</td>
+<td align="right">0.3594514</td>
+<td align="right">5.578225</td>
+<td align="right">5.427914</td>
+<td align="right">0.0000694</td>
+<td align="right">0.5353136</td>
+<td align="right">3.978454</td>
+</tr>
+<tr class="even">
+<td>MT-ND1</td>
+<td align="right">0.4419023</td>
+<td align="right">10.328583</td>
+<td align="right">5.164984</td>
+<td align="right">0.0001875</td>
+<td align="right">0.5353136</td>
+<td align="right">3.735299</td>
+</tr>
+<tr class="odd">
+<td>MT-ND2</td>
+<td align="right">0.4660609</td>
+<td align="right">10.334261</td>
+<td align="right">5.158692</td>
+<td align="right">0.0001942</td>
+<td align="right">0.5353136</td>
+<td align="right">3.726458</td>
+</tr>
+<tr class="even">
+<td>MT-ND3</td>
+<td align="right">0.4269425</td>
+<td align="right">10.946775</td>
+<td align="right">4.640944</td>
+<td align="right">0.0003175</td>
+<td align="right">0.5353136</td>
+<td align="right">3.600583</td>
+</tr>
+<tr class="odd">
+<td>VEGFA</td>
+<td align="right">-1.2212030</td>
+<td align="right">5.368369</td>
+<td align="right">-4.646355</td>
+<td align="right">0.0003235</td>
+<td align="right">0.5353136</td>
+<td align="right">-3.595718</td>
+</tr>
+<tr class="even">
+<td>DOCK4</td>
+<td align="right">0.2427493</td>
+<td align="right">8.990827</td>
+<td align="right">4.793014</td>
+<td align="right">0.0003464</td>
+<td align="right">0.5353136</td>
+<td align="right">3.577841</td>
+</tr>
+<tr class="odd">
+<td>PDK1</td>
+<td align="right">-1.8609950</td>
+<td align="right">4.882249</td>
+<td align="right">-4.409594</td>
+<td align="right">0.0004709</td>
+<td align="right">0.5557641</td>
+<td align="right">-3.496793</td>
+</tr>
+<tr class="even">
+<td>BNIP3</td>
+<td align="right">-1.0829119</td>
+<td align="right">6.951502</td>
+<td align="right">-4.368086</td>
+<td align="right">0.0005378</td>
+<td align="right">0.5557641</td>
+<td align="right">-3.461164</td>
+</tr>
+<tr class="odd">
+<td>CPSF6</td>
+<td align="right">0.1711415</td>
+<td align="right">7.382231</td>
+<td align="right">4.566130</td>
+<td align="right">0.0005395</td>
+<td align="right">0.5557641</td>
+<td align="right">3.460328</td>
+</tr>
+<tr class="even">
+<td>MT-ATP6</td>
+<td align="right">0.3870144</td>
+<td align="right">11.865668</td>
+<td align="right">4.421146</td>
+<td align="right">0.0006855</td>
+<td align="right">0.6355644</td>
+<td align="right">3.395298</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm0, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[1,2] &lt;- try(topTable(fitmm0, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[1, 2] &lt;- try(topTable(fitmm0, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>try(topTable(fitmm0, coef=&#39;stimpff&#39;, number = 10000)) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 0&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 0</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>JUN</td>
+<td align="right">1.6506527</td>
+<td align="right">6.338015</td>
+<td align="right">4.644395</td>
+<td align="right">0.0002495</td>
+<td align="right">0.9894616</td>
+<td align="right">3.662740</td>
+</tr>
+<tr class="even">
+<td>HSPA5</td>
+<td align="right">0.6378969</td>
+<td align="right">6.527300</td>
+<td align="right">4.125780</td>
+<td align="right">0.0008732</td>
+<td align="right">0.9894616</td>
+<td align="right">3.328483</td>
+</tr>
+<tr class="odd">
+<td>GPATCH8</td>
+<td align="right">0.2672299</td>
+<td align="right">7.878970</td>
+<td align="right">4.044558</td>
+<td align="right">0.0009282</td>
+<td align="right">0.9894616</td>
+<td align="right">3.311423</td>
+</tr>
+<tr class="even">
+<td>VEZT</td>
+<td align="right">0.1555035</td>
+<td align="right">8.140049</td>
+<td align="right">3.999560</td>
+<td align="right">0.0012624</td>
+<td align="right">0.9894616</td>
+<td align="right">3.224389</td>
+</tr>
+<tr class="odd">
+<td>RPRD2</td>
+<td align="right">0.2922612</td>
+<td align="right">7.230185</td>
+<td align="right">3.933568</td>
+<td align="right">0.0013400</td>
+<td align="right">0.9894616</td>
+<td align="right">3.207282</td>
+</tr>
+<tr class="even">
+<td>STK19</td>
+<td align="right">-0.6397902</td>
+<td align="right">4.350857</td>
+<td align="right">-3.793515</td>
+<td align="right">0.0014511</td>
+<td align="right">0.9894616</td>
+<td align="right">-3.184283</td>
+</tr>
+<tr class="odd">
+<td>MRPS11</td>
+<td align="right">-0.3710445</td>
+<td align="right">5.477042</td>
+<td align="right">-3.846490</td>
+<td align="right">0.0018594</td>
+<td align="right">0.9894616</td>
+<td align="right">-3.111818</td>
+</tr>
+<tr class="even">
+<td>DENND5A</td>
+<td align="right">0.3454148</td>
+<td align="right">6.901427</td>
+<td align="right">3.786864</td>
+<td align="right">0.0019293</td>
+<td align="right">0.9894616</td>
+<td align="right">3.100903</td>
+</tr>
+<tr class="odd">
+<td>RNF31</td>
+<td align="right">0.6392317</td>
+<td align="right">3.598756</td>
+<td align="right">3.611799</td>
+<td align="right">0.0025997</td>
+<td align="right">0.9894616</td>
+<td align="right">3.011493</td>
+</tr>
+<tr class="even">
+<td>NOL8</td>
+<td align="right">-0.5655650</td>
+<td align="right">4.997635</td>
+<td align="right">-3.588734</td>
+<td align="right">0.0027273</td>
+<td align="right">0.9894616</td>
+<td align="right">-2.996916</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 1:</p>
+<pre class="r"><code>pseudo1 &lt;- generate.pseudobulk(cluster1, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo1 &lt;- filter.pseudobulk(pseudo1)
+d1 &lt;- DGEList(pseudo1$counts)
+d1 &lt;- calcNormFactors(d1)
+keep1 &lt;- filterByExpr(d1$counts)
+d1 &lt;- d1[keep1,]
+
+voomed1 &lt;- voomWithDreamWeights(d1, formde, pseudo1$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 24 Mb 
+Dividing work into 100 chunks...
+
+Total: 74 s</code></pre>
+<pre class="r"><code>fitmm1 = dream(voomed1, formde, pseudo1$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 101 s</code></pre>
+<pre class="r"><code># how many DE genes with FDR 0.05
+topTable(fitmm1, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000) %&gt;% nrow()</code></pre>
+<pre><code>[1] 3</code></pre>
+<pre class="r"><code>de.summary[2,1] &lt;- topTable(fitmm1, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000) %&gt;% nrow()
+topTable(fitmm1, coef=&#39;stimoxidation&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 1&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 1</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>UPF3B</td>
+<td align="right">0.3787061</td>
+<td align="right">6.266429</td>
+<td align="right">7.695205</td>
+<td align="right">0.0000021</td>
+<td align="right">0.0235821</td>
+<td align="right">4.738947</td>
+</tr>
+<tr class="even">
+<td>SLFNL1-AS1</td>
+<td align="right">0.6405576</td>
+<td align="right">2.976566</td>
+<td align="right">6.546815</td>
+<td align="right">0.0000125</td>
+<td align="right">0.0464160</td>
+<td align="right">4.369075</td>
+</tr>
+<tr class="odd">
+<td>LINC01618</td>
+<td align="right">1.2072862</td>
+<td align="right">3.474924</td>
+<td align="right">6.555562</td>
+<td align="right">0.0000127</td>
+<td align="right">0.0464160</td>
+<td align="right">4.365462</td>
+</tr>
+<tr class="even">
+<td>ADNP2</td>
+<td align="right">0.6036681</td>
+<td align="right">4.903836</td>
+<td align="right">6.801621</td>
+<td align="right">0.0000211</td>
+<td align="right">0.0579646</td>
+<td align="right">4.252686</td>
+</tr>
+<tr class="odd">
+<td>MT-ND2</td>
+<td align="right">0.4912677</td>
+<td align="right">10.408105</td>
+<td align="right">6.016107</td>
+<td align="right">0.0000593</td>
+<td align="right">0.1198519</td>
+<td align="right">4.015517</td>
+</tr>
+<tr class="even">
+<td>FLACC1</td>
+<td align="right">0.9022009</td>
+<td align="right">3.393145</td>
+<td align="right">5.964951</td>
+<td align="right">0.0000655</td>
+<td align="right">0.1198519</td>
+<td align="right">3.992028</td>
+</tr>
+<tr class="odd">
+<td>SLC25A29</td>
+<td align="right">-0.2413799</td>
+<td align="right">5.629663</td>
+<td align="right">-5.230714</td>
+<td align="right">0.0001590</td>
+<td align="right">0.2182937</td>
+<td align="right">-3.776561</td>
+</tr>
+<tr class="even">
+<td>TFRC</td>
+<td align="right">-0.7523915</td>
+<td align="right">4.910987</td>
+<td align="right">-4.974424</td>
+<td align="right">0.0001930</td>
+<td align="right">0.2182937</td>
+<td align="right">-3.727944</td>
+</tr>
+<tr class="odd">
+<td>CABIN1</td>
+<td align="right">-0.2057742</td>
+<td align="right">5.902773</td>
+<td align="right">-5.207213</td>
+<td align="right">0.0002076</td>
+<td align="right">0.2182937</td>
+<td align="right">-3.709629</td>
+</tr>
+<tr class="even">
+<td>TMEM182</td>
+<td align="right">-0.7346057</td>
+<td align="right">3.122020</td>
+<td align="right">-4.838211</td>
+<td align="right">0.0002558</td>
+<td align="right">0.2182937</td>
+<td align="right">-3.656368</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm1, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[2,2] &lt;- try(topTable(fitmm1, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[2, 2] &lt;- try(topTable(fitmm1, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm1, coef=&#39;stimpff&#39;, number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 1&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 1</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DCAF1</td>
+<td align="right">0.3097469</td>
+<td align="right">5.141316</td>
+<td align="right">4.544917</td>
+<td align="right">0.0006602</td>
+<td align="right">0.9995605</td>
+<td align="right">3.405605</td>
+</tr>
+<tr class="even">
+<td>EIF4A3</td>
+<td align="right">-0.3505377</td>
+<td align="right">5.912599</td>
+<td align="right">-4.473129</td>
+<td align="right">0.0008406</td>
+<td align="right">0.9995605</td>
+<td align="right">-3.339066</td>
+</tr>
+<tr class="odd">
+<td>AC068205.2</td>
+<td align="right">0.8492459</td>
+<td align="right">2.642830</td>
+<td align="right">3.950168</td>
+<td align="right">0.0014629</td>
+<td align="right">0.9995605</td>
+<td align="right">3.181941</td>
+</tr>
+<tr class="even">
+<td>PCNP</td>
+<td align="right">0.1721225</td>
+<td align="right">6.237261</td>
+<td align="right">3.937686</td>
+<td align="right">0.0015756</td>
+<td align="right">0.9995605</td>
+<td align="right">3.160391</td>
+</tr>
+<tr class="odd">
+<td>G2E3-AS1</td>
+<td align="right">0.6545394</td>
+<td align="right">3.504418</td>
+<td align="right">3.925495</td>
+<td align="right">0.0016349</td>
+<td align="right">0.9995605</td>
+<td align="right">3.149613</td>
+</tr>
+<tr class="even">
+<td>DLGAP1-AS5</td>
+<td align="right">0.3651092</td>
+<td align="right">5.758218</td>
+<td align="right">3.792278</td>
+<td align="right">0.0020256</td>
+<td align="right">0.9995605</td>
+<td align="right">3.086450</td>
+</tr>
+<tr class="odd">
+<td>RBSN</td>
+<td align="right">0.3152095</td>
+<td align="right">5.951944</td>
+<td align="right">3.834836</td>
+<td align="right">0.0021334</td>
+<td align="right">0.9995605</td>
+<td align="right">3.071004</td>
+</tr>
+<tr class="even">
+<td>TRMT5</td>
+<td align="right">-0.6396905</td>
+<td align="right">3.891100</td>
+<td align="right">-3.655927</td>
+<td align="right">0.0027755</td>
+<td align="right">0.9995605</td>
+<td align="right">-2.991571</td>
+</tr>
+<tr class="odd">
+<td>RBM23</td>
+<td align="right">-0.3755682</td>
+<td align="right">5.319494</td>
+<td align="right">-3.498710</td>
+<td align="right">0.0031011</td>
+<td align="right">0.9995605</td>
+<td align="right">-2.957532</td>
+</tr>
+<tr class="even">
+<td>CLGN</td>
+<td align="right">-0.7703832</td>
+<td align="right">3.628642</td>
+<td align="right">-3.468413</td>
+<td align="right">0.0034964</td>
+<td align="right">0.9995605</td>
+<td align="right">-2.920346</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 2:</p>
+<pre class="r"><code>pseudo2 &lt;- generate.pseudobulk(cluster2, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo2 &lt;- filter.pseudobulk(pseudo2)
+d2 &lt;- DGEList(pseudo2$counts)
+d2 &lt;- calcNormFactors(d2)
+keep2 &lt;- filterByExpr(d2$counts)
+d2 &lt;- d2[keep2,]
+
+voomed2 &lt;- voomWithDreamWeights(d2, formde, pseudo2$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 20.6 Mb 
+Dividing work into 100 chunks...
+
+Total: 59 s</code></pre>
+<pre class="r"><code>fitmm2 = dream(voomed2, formde, pseudo2$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 94 s</code></pre>
+<pre class="r"><code># how many DE genes are there?
+try(topTable(fitmm2, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>[1] 2</code></pre>
+<pre class="r"><code>de.summary[3,1] &lt;- try(topTable(fitmm2, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()
+topTable(fitmm2, coef=&#39;stimoxidation&#39;, number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 2&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 2</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>KCNMB2-AS1</td>
+<td align="right">1.6808305</td>
+<td align="right">6.911388</td>
+<td align="right">7.191580</td>
+<td align="right">2.10e-06</td>
+<td align="right">0.0188930</td>
+<td align="right">4.739422</td>
+</tr>
+<tr class="even">
+<td>TST</td>
+<td align="right">1.0808506</td>
+<td align="right">4.061581</td>
+<td align="right">6.793099</td>
+<td align="right">8.20e-06</td>
+<td align="right">0.0359874</td>
+<td align="right">4.460810</td>
+</tr>
+<tr class="odd">
+<td>PLOD2</td>
+<td align="right">-1.0142178</td>
+<td align="right">6.780417</td>
+<td align="right">-6.167139</td>
+<td align="right">2.42e-05</td>
+<td align="right">0.0686172</td>
+<td align="right">-4.222531</td>
+</tr>
+<tr class="even">
+<td>KDM3A</td>
+<td align="right">-1.1038691</td>
+<td align="right">6.736834</td>
+<td align="right">-5.384320</td>
+<td align="right">4.07e-05</td>
+<td align="right">0.0686172</td>
+<td align="right">-4.103345</td>
+</tr>
+<tr class="odd">
+<td>USP28</td>
+<td align="right">-0.6191782</td>
+<td align="right">5.226682</td>
+<td align="right">-5.342008</td>
+<td align="right">4.46e-05</td>
+<td align="right">0.0686172</td>
+<td align="right">-4.082496</td>
+</tr>
+<tr class="even">
+<td>BHLHE40</td>
+<td align="right">-1.8191889</td>
+<td align="right">4.947712</td>
+<td align="right">-5.807033</td>
+<td align="right">4.67e-05</td>
+<td align="right">0.0686172</td>
+<td align="right">-4.071533</td>
+</tr>
+<tr class="odd">
+<td>TNIP1</td>
+<td align="right">-0.7455284</td>
+<td align="right">5.580226</td>
+<td align="right">-5.276279</td>
+<td align="right">7.46e-05</td>
+<td align="right">0.0854803</td>
+<td align="right">-3.961106</td>
+</tr>
+<tr class="even">
+<td>IL3RA</td>
+<td align="right">0.6308735</td>
+<td align="right">4.874700</td>
+<td align="right">5.430479</td>
+<td align="right">8.75e-05</td>
+<td align="right">0.0854803</td>
+<td align="right">3.922827</td>
+</tr>
+<tr class="odd">
+<td>DNHD1</td>
+<td align="right">0.6261556</td>
+<td align="right">5.362088</td>
+<td align="right">5.157846</td>
+<td align="right">9.52e-05</td>
+<td align="right">0.0854803</td>
+<td align="right">3.902416</td>
+</tr>
+<tr class="even">
+<td>DDIT4</td>
+<td align="right">-1.4384263</td>
+<td align="right">6.489583</td>
+<td align="right">-4.979899</td>
+<td align="right">9.70e-05</td>
+<td align="right">0.0854803</td>
+<td align="right">-3.898048</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm2, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[3,2] &lt;- try(topTable(fitmm2, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[3, 2] &lt;- try(topTable(fitmm2, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm2, coef=&#39;stimpff&#39;,number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 2&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 2</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>C11orf68</td>
+<td align="right">-0.7557572</td>
+<td align="right">4.124331</td>
+<td align="right">-4.523997</td>
+<td align="right">0.0004261</td>
+<td align="right">0.7374062</td>
+<td align="right">-3.523344</td>
+</tr>
+<tr class="even">
+<td>UBXN8</td>
+<td align="right">0.8924531</td>
+<td align="right">3.753099</td>
+<td align="right">4.343568</td>
+<td align="right">0.0005196</td>
+<td align="right">0.7374062</td>
+<td align="right">3.470448</td>
+</tr>
+<tr class="odd">
+<td>SIPA1L3</td>
+<td align="right">0.8199260</td>
+<td align="right">5.001799</td>
+<td align="right">4.130723</td>
+<td align="right">0.0008605</td>
+<td align="right">0.7374062</td>
+<td align="right">3.332553</td>
+</tr>
+<tr class="even">
+<td>DIP2C</td>
+<td align="right">0.4890461</td>
+<td align="right">7.244817</td>
+<td align="right">3.995254</td>
+<td align="right">0.0010257</td>
+<td align="right">0.7374062</td>
+<td align="right">3.283378</td>
+</tr>
+<tr class="odd">
+<td>LDLR</td>
+<td align="right">1.2693111</td>
+<td align="right">4.367016</td>
+<td align="right">3.731544</td>
+<td align="right">0.0018235</td>
+<td align="right">0.7374062</td>
+<td align="right">3.117573</td>
+</tr>
+<tr class="even">
+<td>GIGYF1</td>
+<td align="right">0.6348037</td>
+<td align="right">4.632985</td>
+<td align="right">3.727054</td>
+<td align="right">0.0018353</td>
+<td align="right">0.7374062</td>
+<td align="right">3.115671</td>
+</tr>
+<tr class="odd">
+<td>SESN2</td>
+<td align="right">0.7701828</td>
+<td align="right">4.362495</td>
+<td align="right">3.716132</td>
+<td align="right">0.0018735</td>
+<td align="right">0.7374062</td>
+<td align="right">3.109583</td>
+</tr>
+<tr class="even">
+<td>RFXAP</td>
+<td align="right">-0.7043532</td>
+<td align="right">4.402041</td>
+<td align="right">-3.714043</td>
+<td align="right">0.0018830</td>
+<td align="right">0.7374062</td>
+<td align="right">-3.108098</td>
+</tr>
+<tr class="odd">
+<td>NOP16</td>
+<td align="right">-0.5764720</td>
+<td align="right">3.785188</td>
+<td align="right">-3.736754</td>
+<td align="right">0.0021047</td>
+<td align="right">0.7374062</td>
+<td align="right">-3.075045</td>
+</tr>
+<tr class="even">
+<td>PDE4DIP</td>
+<td align="right">0.5185542</td>
+<td align="right">5.686796</td>
+<td align="right">3.744614</td>
+<td align="right">0.0021551</td>
+<td align="right">0.7374062</td>
+<td align="right">3.067981</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 3:</p>
+<pre class="r"><code>pseudo3 &lt;- generate.pseudobulk(cluster3, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo3 &lt;- filter.pseudobulk(pseudo3)
+d3 &lt;- DGEList(pseudo3$counts)
+d3 &lt;- calcNormFactors(d3)
+keep3 &lt;- filterByExpr(d3$counts)
+d3 &lt;- d3[keep3,]
+
+voomed3 &lt;- voomWithDreamWeights(d3, formde, pseudo3$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 22 Mb 
+Dividing work into 100 chunks...
+
+Total: 72 s</code></pre>
+<pre class="r"><code>fitmm3 = dream(voomed3, formde, pseudo3$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 96 s</code></pre>
+<pre class="r"><code>try(topTable(fitmm3, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[4,1] &lt;- try(topTable(fitmm3, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[4, 1] &lt;- try(topTable(fitmm3, coef = &quot;stimoxidation&quot;, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm3, coef=&#39;stimoxidation&#39;, number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 3&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 3</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PDK1</td>
+<td align="right">-2.0092735</td>
+<td align="right">5.529770</td>
+<td align="right">-6.207929</td>
+<td align="right">1.60e-05</td>
+<td align="right">0.0656336</td>
+<td align="right">-4.313937</td>
+</tr>
+<tr class="even">
+<td>HNRNPDL</td>
+<td align="right">-0.3093537</td>
+<td align="right">8.129910</td>
+<td align="right">-6.118600</td>
+<td align="right">1.94e-05</td>
+<td align="right">0.0656336</td>
+<td align="right">-4.272119</td>
+</tr>
+<tr class="odd">
+<td>PDK3</td>
+<td align="right">-0.8755125</td>
+<td align="right">4.706875</td>
+<td align="right">-5.905767</td>
+<td align="right">2.66e-05</td>
+<td align="right">0.0656336</td>
+<td align="right">-4.200679</td>
+</tr>
+<tr class="even">
+<td>RSRC2</td>
+<td align="right">-0.3312839</td>
+<td align="right">7.324291</td>
+<td align="right">-6.248004</td>
+<td align="right">2.70e-05</td>
+<td align="right">0.0656336</td>
+<td align="right">-4.197805</td>
+</tr>
+<tr class="odd">
+<td>GATAD1</td>
+<td align="right">0.3779854</td>
+<td align="right">4.702747</td>
+<td align="right">5.672362</td>
+<td align="right">4.31e-05</td>
+<td align="right">0.0683973</td>
+<td align="right">4.090078</td>
+</tr>
+<tr class="even">
+<td>CABIN1</td>
+<td align="right">-0.3864863</td>
+<td align="right">6.046013</td>
+<td align="right">-5.630471</td>
+<td align="right">4.40e-05</td>
+<td align="right">0.0683973</td>
+<td align="right">-4.085431</td>
+</tr>
+<tr class="odd">
+<td>RLF</td>
+<td align="right">-0.7995965</td>
+<td align="right">6.868031</td>
+<td align="right">-5.381993</td>
+<td align="right">4.97e-05</td>
+<td align="right">0.0683973</td>
+<td align="right">-4.057156</td>
+</tr>
+<tr class="even">
+<td>KDM3A</td>
+<td align="right">-1.3672136</td>
+<td align="right">5.571487</td>
+<td align="right">-5.594519</td>
+<td align="right">6.39e-05</td>
+<td align="right">0.0683973</td>
+<td align="right">-3.998023</td>
+</tr>
+<tr class="odd">
+<td>BEND5</td>
+<td align="right">-0.7751133</td>
+<td align="right">4.917685</td>
+<td align="right">-5.519901</td>
+<td align="right">7.00e-05</td>
+<td align="right">0.0683973</td>
+<td align="right">-3.976302</td>
+</tr>
+<tr class="even">
+<td>NRF1</td>
+<td align="right">0.2890879</td>
+<td align="right">6.051717</td>
+<td align="right">5.420375</td>
+<td align="right">7.02e-05</td>
+<td align="right">0.0683973</td>
+<td align="right">3.975553</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm3, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[4,2] &lt;- try(topTable(fitmm3, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[4, 2] &lt;- try(topTable(fitmm3, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm3, coef=&#39;stimpff&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 3&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 3</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AP002336.2</td>
+<td align="right">0.3789501</td>
+<td align="right">4.847525</td>
+<td align="right">5.615487</td>
+<td align="right">0.0000593</td>
+<td align="right">0.5771920</td>
+<td align="right">4.015763</td>
+</tr>
+<tr class="even">
+<td>RNF149</td>
+<td align="right">0.3745624</td>
+<td align="right">5.676493</td>
+<td align="right">4.048386</td>
+<td align="right">0.0008350</td>
+<td align="right">0.9993425</td>
+<td align="right">3.340939</td>
+</tr>
+<tr class="odd">
+<td>TUBGCP2</td>
+<td align="right">-0.3187108</td>
+<td align="right">6.083464</td>
+<td align="right">-3.764774</td>
+<td align="right">0.0015452</td>
+<td align="right">0.9993425</td>
+<td align="right">-3.166063</td>
+</tr>
+<tr class="even">
+<td>BCKDK</td>
+<td align="right">-0.9564277</td>
+<td align="right">3.551111</td>
+<td align="right">-3.713078</td>
+<td align="right">0.0018500</td>
+<td align="right">0.9993425</td>
+<td align="right">-3.113319</td>
+</tr>
+<tr class="odd">
+<td>ZNF574</td>
+<td align="right">0.7508787</td>
+<td align="right">3.504564</td>
+<td align="right">3.822957</td>
+<td align="right">0.0019135</td>
+<td align="right">0.9993425</td>
+<td align="right">3.103346</td>
+</tr>
+<tr class="even">
+<td>EGR1</td>
+<td align="right">1.4418412</td>
+<td align="right">4.252570</td>
+<td align="right">3.837431</td>
+<td align="right">0.0019361</td>
+<td align="right">0.9993425</td>
+<td align="right">3.099869</td>
+</tr>
+<tr class="odd">
+<td>NPTN</td>
+<td align="right">-0.4574924</td>
+<td align="right">6.495635</td>
+<td align="right">-3.708289</td>
+<td align="right">0.0020794</td>
+<td align="right">0.9993425</td>
+<td align="right">-3.078649</td>
+</tr>
+<tr class="even">
+<td>RNF167</td>
+<td align="right">-0.5062525</td>
+<td align="right">4.737623</td>
+<td align="right">-3.674569</td>
+<td align="right">0.0022610</td>
+<td align="right">0.9993425</td>
+<td align="right">-3.053624</td>
+</tr>
+<tr class="odd">
+<td>PPP2R5D</td>
+<td align="right">0.3176918</td>
+<td align="right">4.436295</td>
+<td align="right">3.507890</td>
+<td align="right">0.0026975</td>
+<td align="right">0.9993425</td>
+<td align="right">3.000259</td>
+</tr>
+<tr class="even">
+<td>NEK10</td>
+<td align="right">0.4676830</td>
+<td align="right">4.927746</td>
+<td align="right">3.583640</td>
+<td align="right">0.0027081</td>
+<td align="right">0.9993425</td>
+<td align="right">2.999064</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 4</p>
+<pre class="r"><code>pseudo4 &lt;- generate.pseudobulk(cluster4, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo4 &lt;- filter.pseudobulk(pseudo4)
+d4 &lt;- DGEList(pseudo4$counts)
+d4 &lt;- calcNormFactors(d4)
+keep4 &lt;- filterByExpr(d4$counts)
+d4 &lt;- d4[keep4,]
+
+voomed4 &lt;- voomWithDreamWeights(d4, formde, pseudo4$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 14.7 Mb 
+Dividing work into 100 chunks...
+
+Total: 50 s</code></pre>
+<pre class="r"><code>fitmm4 = dream(voomed4, formde, pseudo4$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 84 s</code></pre>
+<pre class="r"><code>try(topTable(fitmm4, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[5,1] &lt;- try(topTable(fitmm4, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[5, 1] &lt;- try(topTable(fitmm4, coef = &quot;stimoxidation&quot;, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm4, coef=&#39;stimoxidation&#39;, number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 4&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 4</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RCOR3</td>
+<td align="right">-0.5668632</td>
+<td align="right">6.580208</td>
+<td align="right">-6.453882</td>
+<td align="right">0.0000151</td>
+<td align="right">0.0953616</td>
+<td align="right">-4.326689</td>
+</tr>
+<tr class="even">
+<td>SPG7</td>
+<td align="right">0.7241983</td>
+<td align="right">5.855916</td>
+<td align="right">5.429171</td>
+<td align="right">0.0000878</td>
+<td align="right">0.1844501</td>
+<td align="right">3.921987</td>
+</tr>
+<tr class="odd">
+<td>GHITM</td>
+<td align="right">-0.3819500</td>
+<td align="right">6.658457</td>
+<td align="right">-4.892504</td>
+<td align="right">0.0001626</td>
+<td align="right">0.1844501</td>
+<td align="right">-3.770990</td>
+</tr>
+<tr class="even">
+<td>LINC00862</td>
+<td align="right">1.1033423</td>
+<td align="right">5.644298</td>
+<td align="right">4.961066</td>
+<td align="right">0.0002094</td>
+<td align="right">0.1844501</td>
+<td align="right">3.707420</td>
+</tr>
+<tr class="odd">
+<td>TMEM161B-AS1</td>
+<td align="right">0.7727657</td>
+<td align="right">8.409547</td>
+<td align="right">4.605344</td>
+<td align="right">0.0002919</td>
+<td align="right">0.1844501</td>
+<td align="right">3.622367</td>
+</tr>
+<tr class="even">
+<td>BNIP3</td>
+<td align="right">-1.1819865</td>
+<td align="right">8.607266</td>
+<td align="right">-4.606575</td>
+<td align="right">0.0002924</td>
+<td align="right">0.1844501</td>
+<td align="right">-3.621942</td>
+</tr>
+<tr class="odd">
+<td>DDIT4</td>
+<td align="right">-1.7345618</td>
+<td align="right">6.296508</td>
+<td align="right">-4.765691</td>
+<td align="right">0.0003026</td>
+<td align="right">0.1844501</td>
+<td align="right">-3.613023</td>
+</tr>
+<tr class="even">
+<td>PCCB</td>
+<td align="right">-0.6727572</td>
+<td align="right">5.370730</td>
+<td align="right">-4.726581</td>
+<td align="right">0.0003246</td>
+<td align="right">0.1844501</td>
+<td align="right">-3.594822</td>
+</tr>
+<tr class="odd">
+<td>KCNMB2-AS1</td>
+<td align="right">1.9289416</td>
+<td align="right">7.055366</td>
+<td align="right">4.709811</td>
+<td align="right">0.0003337</td>
+<td align="right">0.1844501</td>
+<td align="right">3.587637</td>
+</tr>
+<tr class="even">
+<td>STAG3</td>
+<td align="right">1.0663222</td>
+<td align="right">5.219553</td>
+<td align="right">4.656099</td>
+<td align="right">0.0003713</td>
+<td align="right">0.1844501</td>
+<td align="right">3.559676</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm4, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[5,2] &lt;- try(topTable(fitmm4, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[5, 2] &lt;- try(topTable(fitmm4, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm4, coef=&#39;stimpff&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 4&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 4</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SPRTN</td>
+<td align="right">-1.3220518</td>
+<td align="right">4.972094</td>
+<td align="right">-4.069846</td>
+<td align="right">0.0008912</td>
+<td align="right">0.9981919</td>
+<td align="right">-3.322807</td>
+</tr>
+<tr class="even">
+<td>RFTN2</td>
+<td align="right">-1.6490833</td>
+<td align="right">5.463649</td>
+<td align="right">-3.871490</td>
+<td align="right">0.0013524</td>
+<td align="right">0.9981919</td>
+<td align="right">-3.204616</td>
+</tr>
+<tr class="odd">
+<td>FAM91A1</td>
+<td align="right">-1.3245235</td>
+<td align="right">5.015177</td>
+<td align="right">-3.554067</td>
+<td align="right">0.0026456</td>
+<td align="right">0.9981919</td>
+<td align="right">-3.006171</td>
+</tr>
+<tr class="even">
+<td>ZNF35</td>
+<td align="right">-1.4978763</td>
+<td align="right">5.511707</td>
+<td align="right">-3.548256</td>
+<td align="right">0.0026804</td>
+<td align="right">0.9981919</td>
+<td align="right">-3.002199</td>
+</tr>
+<tr class="odd">
+<td>RCBTB2</td>
+<td align="right">-1.2286133</td>
+<td align="right">4.919230</td>
+<td align="right">-3.493621</td>
+<td align="right">0.0030086</td>
+<td align="right">0.9981919</td>
+<td align="right">-2.966855</td>
+</tr>
+<tr class="even">
+<td>NUP85</td>
+<td align="right">-1.3282726</td>
+<td align="right">4.866226</td>
+<td align="right">-3.481895</td>
+<td align="right">0.0030804</td>
+<td align="right">0.9981919</td>
+<td align="right">-2.959603</td>
+</tr>
+<tr class="odd">
+<td>MRPL50</td>
+<td align="right">-0.6859247</td>
+<td align="right">4.986156</td>
+<td align="right">-3.476959</td>
+<td align="right">0.0031085</td>
+<td align="right">0.9981919</td>
+<td align="right">-2.956796</td>
+</tr>
+<tr class="even">
+<td>PSD</td>
+<td align="right">-1.1556609</td>
+<td align="right">4.533603</td>
+<td align="right">-3.408640</td>
+<td align="right">0.0031310</td>
+<td align="right">0.9981919</td>
+<td align="right">-2.954574</td>
+</tr>
+<tr class="odd">
+<td>BEND5</td>
+<td align="right">-1.5294188</td>
+<td align="right">5.532576</td>
+<td align="right">-3.226843</td>
+<td align="right">0.0046780</td>
+<td align="right">0.9981919</td>
+<td align="right">-2.828411</td>
+</tr>
+<tr class="even">
+<td>SLC1A3</td>
+<td align="right">1.1166214</td>
+<td align="right">5.227476</td>
+<td align="right">3.313961</td>
+<td align="right">0.0047269</td>
+<td align="right">0.9981919</td>
+<td align="right">2.825080</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 5:</p>
+<pre class="r"><code>pseudo5 &lt;- generate.pseudobulk(cluster5, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo5 &lt;- filter.pseudobulk(pseudo5)
+d5 &lt;- DGEList(pseudo5$counts)
+d5 &lt;- calcNormFactors(d5)
+keep5 &lt;- filterByExpr(d5$counts)
+d5 &lt;- d5[keep5,]
+
+voomed5 &lt;- voomWithDreamWeights(d5, formde, pseudo5$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 24.9 Mb 
+Dividing work into 100 chunks...
+
+Total: 73 s</code></pre>
+<pre class="r"><code>fitmm5 = dream(voomed5, formde, pseudo5$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 99 s</code></pre>
+<pre class="r"><code>try(topTable(fitmm5, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>[1] 106</code></pre>
+<pre class="r"><code>de.summary[6,1] &lt;- try(topTable(fitmm5, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()
+topTable(fitmm5, coef=&#39;stimoxidation&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 5&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 5</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RLF</td>
+<td align="right">-0.8235939</td>
+<td align="right">6.182959</td>
+<td align="right">-7.477292</td>
+<td align="right">6.00e-07</td>
+<td align="right">0.0038436</td>
+<td align="right">-4.980933</td>
+</tr>
+<tr class="even">
+<td>ZNF608</td>
+<td align="right">-0.5796024</td>
+<td align="right">6.200429</td>
+<td align="right">-7.834275</td>
+<td align="right">7.00e-07</td>
+<td align="right">0.0038436</td>
+<td align="right">-4.956042</td>
+</tr>
+<tr class="odd">
+<td>FAM53B</td>
+<td align="right">-0.6530773</td>
+<td align="right">3.716325</td>
+<td align="right">-7.652308</td>
+<td align="right">2.20e-06</td>
+<td align="right">0.0065348</td>
+<td align="right">-4.731026</td>
+</tr>
+<tr class="even">
+<td>MRPS11</td>
+<td align="right">0.2438914</td>
+<td align="right">5.618348</td>
+<td align="right">7.581275</td>
+<td align="right">2.40e-06</td>
+<td align="right">0.0065348</td>
+<td align="right">4.712550</td>
+</tr>
+<tr class="odd">
+<td>PPP1R10</td>
+<td align="right">0.6377401</td>
+<td align="right">5.640160</td>
+<td align="right">6.404911</td>
+<td align="right">8.50e-06</td>
+<td align="right">0.0182592</td>
+<td align="right">4.451071</td>
+</tr>
+<tr class="even">
+<td>TUT4</td>
+<td align="right">-0.3050566</td>
+<td align="right">6.896438</td>
+<td align="right">-6.501252</td>
+<td align="right">1.39e-05</td>
+<td align="right">0.0237713</td>
+<td align="right">-4.344688</td>
+</tr>
+<tr class="odd">
+<td>SNRPA1</td>
+<td align="right">0.3371553</td>
+<td align="right">5.981669</td>
+<td align="right">6.013281</td>
+<td align="right">1.74e-05</td>
+<td align="right">0.0237713</td>
+<td align="right">4.295373</td>
+</tr>
+<tr class="even">
+<td>ZNF292</td>
+<td align="right">-0.6331496</td>
+<td align="right">7.437893</td>
+<td align="right">-5.933001</td>
+<td align="right">2.06e-05</td>
+<td align="right">0.0237713</td>
+<td align="right">-4.258089</td>
+</tr>
+<tr class="odd">
+<td>TET2</td>
+<td align="right">-0.5163878</td>
+<td align="right">6.235732</td>
+<td align="right">-5.910384</td>
+<td align="right">2.14e-05</td>
+<td align="right">0.0237713</td>
+<td align="right">-4.249384</td>
+</tr>
+<tr class="even">
+<td>HNRNPK</td>
+<td align="right">-0.2692450</td>
+<td align="right">8.457750</td>
+<td align="right">-6.094673</td>
+<td align="right">2.63e-05</td>
+<td align="right">0.0237713</td>
+<td align="right">-4.203125</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm5, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[6,2] &lt;- try(topTable(fitmm5, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[6, 2] &lt;- try(topTable(fitmm5, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm5, coef=&#39;stimpff&#39;,number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 5&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 5</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>JAZF1</td>
+<td align="right">-0.4248571</td>
+<td align="right">6.280738</td>
+<td align="right">-5.831393</td>
+<td align="right">0.0000273</td>
+<td align="right">0.1482115</td>
+<td align="right">-4.195205</td>
+</tr>
+<tr class="even">
+<td>MEA1</td>
+<td align="right">-0.2590041</td>
+<td align="right">6.503131</td>
+<td align="right">-5.899496</td>
+<td align="right">0.0000363</td>
+<td align="right">0.1482115</td>
+<td align="right">-4.129895</td>
+</tr>
+<tr class="odd">
+<td>BMPR1A</td>
+<td align="right">0.4357024</td>
+<td align="right">6.420371</td>
+<td align="right">5.766012</td>
+<td align="right">0.0000416</td>
+<td align="right">0.1482115</td>
+<td align="right">4.098337</td>
+</tr>
+<tr class="even">
+<td>SLC20A1</td>
+<td align="right">0.8280027</td>
+<td align="right">4.896803</td>
+<td align="right">4.644664</td>
+<td align="right">0.0002675</td>
+<td align="right">0.5801720</td>
+<td align="right">3.644898</td>
+</tr>
+<tr class="odd">
+<td>HEXB</td>
+<td align="right">0.5209916</td>
+<td align="right">5.125538</td>
+<td align="right">4.511174</td>
+<td align="right">0.0003147</td>
+<td align="right">0.5801720</td>
+<td align="right">3.602876</td>
+</tr>
+<tr class="even">
+<td>CMTM3</td>
+<td align="right">-0.5554904</td>
+<td align="right">5.127023</td>
+<td align="right">-4.397536</td>
+<td align="right">0.0003526</td>
+<td align="right">0.5801720</td>
+<td align="right">-3.573245</td>
+</tr>
+<tr class="odd">
+<td>CNNM2</td>
+<td align="right">0.5762317</td>
+<td align="right">4.814372</td>
+<td align="right">4.403860</td>
+<td align="right">0.0004573</td>
+<td align="right">0.5801720</td>
+<td align="right">3.504615</td>
+</tr>
+<tr class="even">
+<td>ZFHX4</td>
+<td align="right">0.7110171</td>
+<td align="right">6.946037</td>
+<td align="right">4.370088</td>
+<td align="right">0.0004788</td>
+<td align="right">0.5801720</td>
+<td align="right">3.492365</td>
+</tr>
+<tr class="odd">
+<td>SLC41A3</td>
+<td align="right">0.5289307</td>
+<td align="right">4.539164</td>
+<td align="right">4.359375</td>
+<td align="right">0.0004887</td>
+<td align="right">0.5801720</td>
+<td align="right">3.486886</td>
+</tr>
+<tr class="even">
+<td>CCDC66</td>
+<td align="right">-0.2861191</td>
+<td align="right">5.925478</td>
+<td align="right">-4.363465</td>
+<td align="right">0.0006332</td>
+<td align="right">0.6354614</td>
+<td align="right">-3.416959</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 6:</p>
+<pre class="r"><code>pseudo6 &lt;- generate.pseudobulk(cluster6, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo6 &lt;- filter.pseudobulk(pseudo6)
+d6 &lt;- DGEList(pseudo6$counts)
+d6 &lt;- calcNormFactors(d6)
+keep6 &lt;- filterByExpr(d6$counts)
+d6 &lt;- d6[keep6,]
+
+voomed6 &lt;- voomWithDreamWeights(d6, formde, pseudo6$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 20.2 Mb 
+Dividing work into 100 chunks...
+
+Total: 58 s</code></pre>
+<pre class="r"><code>fitmm6 = dream(voomed6, formde, pseudo6$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 93 s</code></pre>
+<pre class="r"><code>try(topTable(fitmm6, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>[1] 2</code></pre>
+<pre class="r"><code>de.summary[7,1] &lt;- try(topTable(fitmm6, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()
+topTable(fitmm6, coef=&#39;stimoxidation&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 6&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 6</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>VEGFA</td>
+<td align="right">-1.3623263</td>
+<td align="right">6.284338</td>
+<td align="right">-7.151345</td>
+<td align="right">2.30e-06</td>
+<td align="right">0.0199634</td>
+<td align="right">-4.724639</td>
+</tr>
+<tr class="even">
+<td>MTFP1</td>
+<td align="right">-1.3935174</td>
+<td align="right">4.492924</td>
+<td align="right">-6.612512</td>
+<td align="right">7.50e-06</td>
+<td align="right">0.0326826</td>
+<td align="right">-4.477621</td>
+</tr>
+<tr class="odd">
+<td>RSBN1</td>
+<td align="right">-0.6015254</td>
+<td align="right">5.546560</td>
+<td align="right">-5.620060</td>
+<td align="right">3.58e-05</td>
+<td align="right">0.0610258</td>
+<td align="right">-4.133188</td>
+</tr>
+<tr class="even">
+<td>P4HA1</td>
+<td align="right">-1.0299396</td>
+<td align="right">6.542822</td>
+<td align="right">-5.502450</td>
+<td align="right">4.71e-05</td>
+<td align="right">0.0610258</td>
+<td align="right">-4.069511</td>
+</tr>
+<tr class="odd">
+<td>NDUFA5</td>
+<td align="right">-0.2522137</td>
+<td align="right">6.610756</td>
+<td align="right">-5.463442</td>
+<td align="right">5.04e-05</td>
+<td align="right">0.0610258</td>
+<td align="right">-4.053710</td>
+</tr>
+<tr class="even">
+<td>TNIP1</td>
+<td align="right">-1.0124532</td>
+<td align="right">4.658695</td>
+<td align="right">-5.339106</td>
+<td align="right">5.71e-05</td>
+<td align="right">0.0610258</td>
+<td align="right">-4.024307</td>
+</tr>
+<tr class="odd">
+<td>EGLN3</td>
+<td align="right">-1.3210399</td>
+<td align="right">5.062193</td>
+<td align="right">-5.194207</td>
+<td align="right">6.11e-05</td>
+<td align="right">0.0610258</td>
+<td align="right">-4.008530</td>
+</tr>
+<tr class="even">
+<td>EGLN1</td>
+<td align="right">-0.5712953</td>
+<td align="right">6.076570</td>
+<td align="right">-5.423185</td>
+<td align="right">8.01e-05</td>
+<td align="right">0.0610258</td>
+<td align="right">-3.943957</td>
+</tr>
+<tr class="odd">
+<td>PDK1</td>
+<td align="right">-1.4453704</td>
+<td align="right">5.009367</td>
+<td align="right">-5.163221</td>
+<td align="right">8.27e-05</td>
+<td align="right">0.0610258</td>
+<td align="right">-3.936491</td>
+</tr>
+<tr class="even">
+<td>MT-ND1</td>
+<td align="right">0.3836314</td>
+<td align="right">10.209092</td>
+<td align="right">5.181155</td>
+<td align="right">9.09e-05</td>
+<td align="right">0.0610258</td>
+<td align="right">3.913551</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm6, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[7,2] &lt;- try(topTable(fitmm6, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[7, 2] &lt;- try(topTable(fitmm6, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm6, coef=&#39;stimpff&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 6&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 6</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ARPIN</td>
+<td align="right">-0.8802606</td>
+<td align="right">4.175936</td>
+<td align="right">-4.158313</td>
+<td align="right">0.0005905</td>
+<td align="right">0.9998067</td>
+<td align="right">-3.435959</td>
+</tr>
+<tr class="even">
+<td>FBXO9</td>
+<td align="right">-0.5570522</td>
+<td align="right">5.220738</td>
+<td align="right">-3.975078</td>
+<td align="right">0.0010524</td>
+<td align="right">0.9998067</td>
+<td align="right">-3.276130</td>
+</tr>
+<tr class="odd">
+<td>RECK</td>
+<td align="right">0.5340100</td>
+<td align="right">5.982061</td>
+<td align="right">3.774655</td>
+<td align="right">0.0017813</td>
+<td align="right">0.9998067</td>
+<td align="right">3.124458</td>
+</tr>
+<tr class="even">
+<td>SMS</td>
+<td align="right">-0.1143127</td>
+<td align="right">7.598095</td>
+<td align="right">-3.788325</td>
+<td align="right">0.0019912</td>
+<td align="right">0.9998067</td>
+<td align="right">-3.091545</td>
+</tr>
+<tr class="odd">
+<td>NECAP2</td>
+<td align="right">-0.6427500</td>
+<td align="right">4.686217</td>
+<td align="right">-3.533800</td>
+<td align="right">0.0023718</td>
+<td align="right">0.9998067</td>
+<td align="right">-3.039233</td>
+</tr>
+<tr class="even">
+<td>ARMH4</td>
+<td align="right">0.3623829</td>
+<td align="right">6.699630</td>
+<td align="right">3.668923</td>
+<td align="right">0.0023738</td>
+<td align="right">0.9998067</td>
+<td align="right">3.038984</td>
+</tr>
+<tr class="odd">
+<td>NUMB</td>
+<td align="right">0.4032493</td>
+<td align="right">5.848530</td>
+<td align="right">3.649241</td>
+<td align="right">0.0023849</td>
+<td align="right">0.9998067</td>
+<td align="right">3.037572</td>
+</tr>
+<tr class="even">
+<td>EIF4EBP1</td>
+<td align="right">-0.4830741</td>
+<td align="right">6.343679</td>
+<td align="right">-3.574893</td>
+<td align="right">0.0028718</td>
+<td align="right">0.9998067</td>
+<td align="right">-2.981133</td>
+</tr>
+<tr class="odd">
+<td>RAB27A</td>
+<td align="right">-0.6206274</td>
+<td align="right">4.486521</td>
+<td align="right">-3.477446</td>
+<td align="right">0.0031214</td>
+<td align="right">0.9998067</td>
+<td align="right">-2.955521</td>
+</tr>
+<tr class="even">
+<td>EID2</td>
+<td align="right">0.3863236</td>
+<td align="right">4.774959</td>
+<td align="right">3.349082</td>
+<td align="right">0.0036771</td>
+<td align="right">0.9998067</td>
+<td align="right">2.904612</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 7:</p>
+<pre class="r"><code>pseudo7 &lt;- generate.pseudobulk(cluster7, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo7 &lt;- filter.pseudobulk(pseudo7)
+d7 &lt;- DGEList(pseudo7$counts)
+d7 &lt;- calcNormFactors(d7)
+keep7 &lt;- filterByExpr(d7$counts)
+d7 &lt;- d7[keep7,]
+
+voomed7 &lt;- voomWithDreamWeights(d7, formde, pseudo7$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 14.4 Mb 
+Dividing work into 100 chunks...
+
+Total: 50 s</code></pre>
+<pre class="r"><code>fitmm7 = dream(voomed7, formde, pseudo7$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 84 s</code></pre>
+<pre class="r"><code>try(topTable(fitmm7, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[8,1] &lt;- try(topTable(fitmm7, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[8, 1] &lt;- try(topTable(fitmm7, coef = &quot;stimoxidation&quot;, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm7, coef=&#39;stimoxidation&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 7&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 7</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>EIF5</td>
+<td align="right">0.3771849</td>
+<td align="right">7.464590</td>
+<td align="right">4.932269</td>
+<td align="right">0.0002642</td>
+<td align="right">0.9083010</td>
+<td align="right">3.648118</td>
+</tr>
+<tr class="even">
+<td>ASPH</td>
+<td align="right">-0.5312133</td>
+<td align="right">6.253813</td>
+<td align="right">-4.635800</td>
+<td align="right">0.0003239</td>
+<td align="right">0.9083010</td>
+<td align="right">-3.595411</td>
+</tr>
+<tr class="odd">
+<td>P4HA1</td>
+<td align="right">-1.1110445</td>
+<td align="right">6.060685</td>
+<td align="right">-4.274479</td>
+<td align="right">0.0005678</td>
+<td align="right">0.9083010</td>
+<td align="right">-3.446566</td>
+</tr>
+<tr class="even">
+<td>SC5D</td>
+<td align="right">0.4822210</td>
+<td align="right">5.624546</td>
+<td align="right">4.345244</td>
+<td align="right">0.0005682</td>
+<td align="right">0.9083010</td>
+<td align="right">3.446347</td>
+</tr>
+<tr class="odd">
+<td>HMGXB4</td>
+<td align="right">-0.4746763</td>
+<td align="right">6.068834</td>
+<td align="right">-4.273972</td>
+<td align="right">0.0008026</td>
+<td align="right">0.9968325</td>
+<td align="right">-3.351881</td>
+</tr>
+<tr class="even">
+<td>ACTR1A</td>
+<td align="right">0.4223695</td>
+<td align="right">6.218545</td>
+<td align="right">3.926573</td>
+<td align="right">0.0010872</td>
+<td align="right">0.9968325</td>
+<td align="right">3.266934</td>
+</tr>
+<tr class="odd">
+<td>HEBP2</td>
+<td align="right">0.6446766</td>
+<td align="right">5.668354</td>
+<td align="right">3.811416</td>
+<td align="right">0.0021021</td>
+<td align="right">0.9968325</td>
+<td align="right">3.075416</td>
+</tr>
+<tr class="even">
+<td>NUP50-DT</td>
+<td align="right">0.6460234</td>
+<td align="right">4.772595</td>
+<td align="right">3.622666</td>
+<td align="right">0.0021029</td>
+<td align="right">0.9968325</td>
+<td align="right">3.075307</td>
+</tr>
+<tr class="odd">
+<td>TRIP11</td>
+<td align="right">-0.2625276</td>
+<td align="right">6.343411</td>
+<td align="right">-3.591890</td>
+<td align="right">0.0022481</td>
+<td align="right">0.9968325</td>
+<td align="right">-3.055330</td>
+</tr>
+<tr class="even">
+<td>VPS50</td>
+<td align="right">-0.3549334</td>
+<td align="right">6.366305</td>
+<td align="right">-3.663032</td>
+<td align="right">0.0025500</td>
+<td align="right">0.9968325</td>
+<td align="right">-3.017339</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm7, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[8,1] &lt;- try(topTable(fitmm7, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[8, 1] &lt;- try(topTable(fitmm7, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm7, coef=&#39;stimpff&#39;, number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 7&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 7</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TTF1</td>
+<td align="right">0.5574246</td>
+<td align="right">5.426418</td>
+<td align="right">5.439917</td>
+<td align="right">0.0001010</td>
+<td align="right">0.5783601</td>
+<td align="right">3.888144</td>
+</tr>
+<tr class="even">
+<td>AGTPBP1</td>
+<td align="right">-0.3601213</td>
+<td align="right">7.361106</td>
+<td align="right">-4.905171</td>
+<td align="right">0.0001809</td>
+<td align="right">0.5783601</td>
+<td align="right">-3.744286</td>
+</tr>
+<tr class="odd">
+<td>XIAP</td>
+<td align="right">0.5822451</td>
+<td align="right">6.236580</td>
+<td align="right">3.974827</td>
+<td align="right">0.0009792</td>
+<td align="right">0.9993595</td>
+<td align="right">3.296438</td>
+</tr>
+<tr class="even">
+<td>FAR1</td>
+<td align="right">0.4379898</td>
+<td align="right">6.476411</td>
+<td align="right">4.026504</td>
+<td align="right">0.0010572</td>
+<td align="right">0.9993595</td>
+<td align="right">3.274856</td>
+</tr>
+<tr class="odd">
+<td>C1D</td>
+<td align="right">-0.5493772</td>
+<td align="right">5.908386</td>
+<td align="right">-3.739880</td>
+<td align="right">0.0019796</td>
+<td align="right">0.9993595</td>
+<td align="right">-3.093281</td>
+</tr>
+<tr class="even">
+<td>HIKESHI</td>
+<td align="right">-0.4741887</td>
+<td align="right">5.925454</td>
+<td align="right">-3.553069</td>
+<td align="right">0.0024697</td>
+<td align="right">0.9993595</td>
+<td align="right">-3.027035</td>
+</tr>
+<tr class="odd">
+<td>FAM20C</td>
+<td align="right">-1.2486381</td>
+<td align="right">4.599426</td>
+<td align="right">-3.631901</td>
+<td align="right">0.0024900</td>
+<td align="right">0.9993595</td>
+<td align="right">-3.024553</td>
+</tr>
+<tr class="even">
+<td>TRAPPC1</td>
+<td align="right">-0.4067703</td>
+<td align="right">6.330722</td>
+<td align="right">-3.604006</td>
+<td align="right">0.0031620</td>
+<td align="right">0.9993595</td>
+<td align="right">-2.951532</td>
+</tr>
+<tr class="odd">
+<td>CKAP5</td>
+<td align="right">-0.4091256</td>
+<td align="right">6.597941</td>
+<td align="right">-3.409950</td>
+<td align="right">0.0033352</td>
+<td align="right">0.9993595</td>
+<td align="right">-2.935029</td>
+</tr>
+<tr class="even">
+<td>HERC3</td>
+<td align="right">-0.8764955</td>
+<td align="right">5.448249</td>
+<td align="right">-3.391694</td>
+<td align="right">0.0034696</td>
+<td align="right">0.9993595</td>
+<td align="right">-2.922747</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 8:</p>
+<pre class="r"><code>pseudo8 &lt;- generate.pseudobulk(cluster8, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo8 &lt;- filter.pseudobulk(pseudo8)
+d8 &lt;- DGEList(pseudo8$counts)
+d8 &lt;- calcNormFactors(d8)
+keep8 &lt;- filterByExpr(d8$counts)
+d8 &lt;- d8[keep8,]
+
+voomed8 &lt;- voomWithDreamWeights(d8, formde, pseudo8$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 12.2 Mb 
+Dividing work into 100 chunks...
+
+Total: 50 s</code></pre>
+<pre class="r"><code>fitmm8 = dream(voomed8, formde, pseudo8$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 81 s</code></pre>
+<pre class="r"><code>try(topTable(fitmm8, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>[1] 6</code></pre>
+<pre class="r"><code>de.summary[9,1] &lt;- try(topTable(fitmm8, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()
+topTable(fitmm8, coef=&#39;stimoxidation&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 8&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 8</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>KDM3A</td>
+<td align="right">-1.1073400</td>
+<td align="right">6.737180</td>
+<td align="right">-6.459001</td>
+<td align="right">0.0000045</td>
+<td align="right">0.0232992</td>
+<td align="right">-4.588546</td>
+</tr>
+<tr class="even">
+<td>MT-ND3</td>
+<td align="right">0.6793372</td>
+<td align="right">10.770647</td>
+<td align="right">6.008007</td>
+<td align="right">0.0000318</td>
+<td align="right">0.0438653</td>
+<td align="right">4.159843</td>
+</tr>
+<tr class="odd">
+<td>INSIG2</td>
+<td align="right">-0.9479804</td>
+<td align="right">5.819502</td>
+<td align="right">-5.676536</td>
+<td align="right">0.0000327</td>
+<td align="right">0.0438653</td>
+<td align="right">-4.153982</td>
+</tr>
+<tr class="even">
+<td>RLF</td>
+<td align="right">-1.0816593</td>
+<td align="right">7.051962</td>
+<td align="right">-5.438471</td>
+<td align="right">0.0000363</td>
+<td align="right">0.0438653</td>
+<td align="right">-4.129819</td>
+</tr>
+<tr class="odd">
+<td>BNIP3</td>
+<td align="right">-1.8836243</td>
+<td align="right">8.494318</td>
+<td align="right">-5.300867</td>
+<td align="right">0.0000486</td>
+<td align="right">0.0438653</td>
+<td align="right">-4.062085</td>
+</tr>
+<tr class="even">
+<td>MT-ATP6</td>
+<td align="right">0.6008453</td>
+<td align="right">11.940564</td>
+<td align="right">5.751708</td>
+<td align="right">0.0000504</td>
+<td align="right">0.0438653</td>
+<td align="right">4.053672</td>
+</tr>
+<tr class="odd">
+<td>TFRC</td>
+<td align="right">-0.9161122</td>
+<td align="right">5.449594</td>
+<td align="right">-5.005659</td>
+<td align="right">0.0001255</td>
+<td align="right">0.0936052</td>
+<td align="right">-3.835078</td>
+</tr>
+<tr class="even">
+<td>EGLN1</td>
+<td align="right">-0.9403687</td>
+<td align="right">6.362453</td>
+<td align="right">-4.815307</td>
+<td align="right">0.0001861</td>
+<td align="right">0.1124070</td>
+<td align="right">-3.737120</td>
+</tr>
+<tr class="odd">
+<td>MT-ND2</td>
+<td align="right">0.6718226</td>
+<td align="right">10.104942</td>
+<td align="right">4.971517</td>
+<td align="right">0.0002050</td>
+<td align="right">0.1124070</td>
+<td align="right">3.712757</td>
+</tr>
+<tr class="even">
+<td>ZNF654</td>
+<td align="right">-0.7337836</td>
+<td align="right">6.525535</td>
+<td align="right">-4.614369</td>
+<td align="right">0.0002153</td>
+<td align="right">0.1124070</td>
+<td align="right">-3.700307</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm8, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[9,2] &lt;- try(topTable(fitmm8, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[9, 2] &lt;- try(topTable(fitmm8, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm8, coef=&#39;stimpff&#39;, number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 8&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 8</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CLTA</td>
+<td align="right">-0.2986059</td>
+<td align="right">7.994616</td>
+<td align="right">-3.921724</td>
+<td align="right">0.0010197</td>
+<td align="right">0.9996485</td>
+<td align="right">-3.285027</td>
+</tr>
+<tr class="even">
+<td>SHARPIN</td>
+<td align="right">-0.9200308</td>
+<td align="right">5.126780</td>
+<td align="right">-3.848855</td>
+<td align="right">0.0011761</td>
+<td align="right">0.9996485</td>
+<td align="right">-3.244612</td>
+</tr>
+<tr class="odd">
+<td>ADI1</td>
+<td align="right">0.6215435</td>
+<td align="right">5.633741</td>
+<td align="right">3.561676</td>
+<td align="right">0.0026159</td>
+<td align="right">0.9996485</td>
+<td align="right">3.009597</td>
+</tr>
+<tr class="even">
+<td>HIST1H1E</td>
+<td align="right">-1.1944319</td>
+<td align="right">5.561786</td>
+<td align="right">-3.502133</td>
+<td align="right">0.0029328</td>
+<td align="right">0.9996485</td>
+<td align="right">-2.974691</td>
+</tr>
+<tr class="odd">
+<td>SBDS</td>
+<td align="right">-0.9343712</td>
+<td align="right">5.616090</td>
+<td align="right">-3.504053</td>
+<td align="right">0.0029337</td>
+<td align="right">0.9996485</td>
+<td align="right">-2.974604</td>
+</tr>
+<tr class="even">
+<td>VPS13B</td>
+<td align="right">-0.6511381</td>
+<td align="right">7.396343</td>
+<td align="right">-3.358324</td>
+<td align="right">0.0040143</td>
+<td align="right">0.9996485</td>
+<td align="right">-2.877040</td>
+</tr>
+<tr class="odd">
+<td>DKC1</td>
+<td align="right">0.8997101</td>
+<td align="right">5.305491</td>
+<td align="right">3.329226</td>
+<td align="right">0.0043621</td>
+<td align="right">0.9996485</td>
+<td align="right">2.850714</td>
+</tr>
+<tr class="even">
+<td>PLEKHA1</td>
+<td align="right">0.8670337</td>
+<td align="right">5.009912</td>
+<td align="right">3.196309</td>
+<td align="right">0.0050029</td>
+<td align="right">0.9996485</td>
+<td align="right">2.806846</td>
+</tr>
+<tr class="odd">
+<td>GRIPAP1</td>
+<td align="right">-0.8643420</td>
+<td align="right">5.786771</td>
+<td align="right">-3.250798</td>
+<td align="right">0.0050864</td>
+<td align="right">0.9996485</td>
+<td align="right">-2.801509</td>
+</tr>
+<tr class="even">
+<td>FRA10AC1</td>
+<td align="right">-1.0141525</td>
+<td align="right">6.054358</td>
+<td align="right">-3.164181</td>
+<td align="right">0.0053687</td>
+<td align="right">0.9996485</td>
+<td align="right">-2.784038</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 9:</p>
+<pre class="r"><code>pseudo9 &lt;- generate.pseudobulk(cluster9, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo9 &lt;- filter.pseudobulk(pseudo9)
+d9 &lt;- DGEList(pseudo9$counts)
+d9 &lt;- calcNormFactors(d9)
+keep9 &lt;- filterByExpr(d9$counts)
+d9 &lt;- d9[keep9,]
+
+voomed9 &lt;- voomWithDreamWeights(d9, formde, pseudo9$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 17.6 Mb 
+Dividing work into 100 chunks...
+
+Total: 56 s</code></pre>
+<pre class="r"><code>fitmm9 = dream(voomed9, formde, pseudo9$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 89 s</code></pre>
+<pre class="r"><code>try(topTable(fitmm9, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[10,1] &lt;- try(topTable(fitmm9, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[10, 1] &lt;- try(topTable(fitmm9, coef = &quot;stimoxidation&quot;, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm9, coef=&#39;stimoxidation&#39;, number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 9&quot;)</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 9</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CXCR4</td>
+<td align="right">-0.9883773</td>
+<td align="right">5.197355</td>
+<td align="right">-5.494570</td>
+<td align="right">0.0000476</td>
+<td align="right">0.1784489</td>
+<td align="right">-4.066867</td>
+</tr>
+<tr class="even">
+<td>RFX3-AS1</td>
+<td align="right">0.8522912</td>
+<td align="right">6.274581</td>
+<td align="right">5.163801</td>
+<td align="right">0.0000889</td>
+<td align="right">0.1784489</td>
+<td align="right">3.919132</td>
+</tr>
+<tr class="odd">
+<td>MAT2A</td>
+<td align="right">0.4864505</td>
+<td align="right">6.749604</td>
+<td align="right">5.317328</td>
+<td align="right">0.0000908</td>
+<td align="right">0.1784489</td>
+<td align="right">3.914069</td>
+</tr>
+<tr class="even">
+<td>UBALD2</td>
+<td align="right">-0.5523111</td>
+<td align="right">6.634178</td>
+<td align="right">-5.086824</td>
+<td align="right">0.0001093</td>
+<td align="right">0.1784489</td>
+<td align="right">-3.869020</td>
+</tr>
+<tr class="odd">
+<td>RNF126</td>
+<td align="right">-0.5170957</td>
+<td align="right">5.340936</td>
+<td align="right">-5.097806</td>
+<td align="right">0.0001292</td>
+<td align="right">0.1784489</td>
+<td align="right">-3.828056</td>
+</tr>
+<tr class="even">
+<td>SRSF2</td>
+<td align="right">0.3693649</td>
+<td align="right">7.080060</td>
+<td align="right">4.973408</td>
+<td align="right">0.0001417</td>
+<td align="right">0.1784489</td>
+<td align="right">3.805115</td>
+</tr>
+<tr class="odd">
+<td>PSMD6</td>
+<td align="right">-0.2776615</td>
+<td align="right">6.106617</td>
+<td align="right">-4.492081</td>
+<td align="right">0.0002819</td>
+<td align="right">0.2589056</td>
+<td align="right">-3.631407</td>
+</tr>
+<tr class="even">
+<td>STK17B</td>
+<td align="right">-0.5881371</td>
+<td align="right">5.664219</td>
+<td align="right">-4.379740</td>
+<td align="right">0.0004162</td>
+<td align="right">0.2589056</td>
+<td align="right">-3.529577</td>
+</tr>
+<tr class="odd">
+<td>DDIT4</td>
+<td align="right">-1.8983966</td>
+<td align="right">5.729104</td>
+<td align="right">-4.361817</td>
+<td align="right">0.0004556</td>
+<td align="right">0.2589056</td>
+<td align="right">-3.505570</td>
+</tr>
+<tr class="even">
+<td>RANBP17</td>
+<td align="right">0.4415795</td>
+<td align="right">5.924088</td>
+<td align="right">4.497595</td>
+<td align="right">0.0005044</td>
+<td align="right">0.2589056</td>
+<td align="right">3.478409</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm9, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[10,2] &lt;- try(topTable(fitmm9, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[10, 2] &lt;- try(topTable(fitmm9, coef = &quot;stimpff&quot;, p.value = 0.05, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>topTable(fitmm9, coef=&#39;stimpff&#39;,  number = 10000) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 9&quot;)</code></pre>
+<table>
+<caption>PFF DE genes, cluster 9</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">logFC</th>
+<th align="right">AveExpr</th>
+<th align="right">t</th>
+<th align="right">P.Value</th>
+<th align="right">adj.P.Val</th>
+<th align="right">z.std</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DENND4A</td>
+<td align="right">0.8224607</td>
+<td align="right">5.597289</td>
+<td align="right">4.841896</td>
+<td align="right">0.0001912</td>
+<td align="right">0.9994034</td>
+<td align="right">3.730404</td>
+</tr>
+<tr class="even">
+<td>SYNGAP1</td>
+<td align="right">0.6803494</td>
+<td align="right">4.346523</td>
+<td align="right">3.920120</td>
+<td align="right">0.0010637</td>
+<td align="right">0.9994034</td>
+<td align="right">3.273107</td>
+</tr>
+<tr class="odd">
+<td>KIF20B</td>
+<td align="right">-0.3248719</td>
+<td align="right">8.389946</td>
+<td align="right">-3.919515</td>
+<td align="right">0.0012447</td>
+<td align="right">0.9994034</td>
+<td align="right">-3.228425</td>
+</tr>
+<tr class="even">
+<td>DNAJB12</td>
+<td align="right">-0.4464502</td>
+<td align="right">5.012945</td>
+<td align="right">-3.700557</td>
+<td align="right">0.0016432</td>
+<td align="right">0.9994034</td>
+<td align="right">-3.148130</td>
+</tr>
+<tr class="odd">
+<td>SCLY</td>
+<td align="right">0.7875905</td>
+<td align="right">4.738007</td>
+<td align="right">3.491861</td>
+<td align="right">0.0026033</td>
+<td align="right">0.9994034</td>
+<td align="right">3.011063</td>
+</tr>
+<tr class="even">
+<td>AC023480.1</td>
+<td align="right">-0.8404295</td>
+<td align="right">5.975734</td>
+<td align="right">-3.550889</td>
+<td align="right">0.0026354</td>
+<td align="right">0.9994034</td>
+<td align="right">-3.007340</td>
+</tr>
+<tr class="odd">
+<td>SCRN3</td>
+<td align="right">-0.4898406</td>
+<td align="right">5.173245</td>
+<td align="right">-3.494219</td>
+<td align="right">0.0029319</td>
+<td align="right">0.9994034</td>
+<td align="right">-2.974790</td>
+</tr>
+<tr class="even">
+<td>VPS26B</td>
+<td align="right">0.5145471</td>
+<td align="right">4.843134</td>
+<td align="right">3.407660</td>
+<td align="right">0.0041014</td>
+<td align="right">0.9994034</td>
+<td align="right">2.870252</td>
+</tr>
+<tr class="odd">
+<td>NOP58</td>
+<td align="right">0.4233996</td>
+<td align="right">6.358845</td>
+<td align="right">3.341435</td>
+<td align="right">0.0041194</td>
+<td align="right">0.9994034</td>
+<td align="right">2.868870</td>
+</tr>
+<tr class="even">
+<td>AC008771.1</td>
+<td align="right">0.3879828</td>
+<td align="right">5.429752</td>
+<td align="right">3.357971</td>
+<td align="right">0.0043465</td>
+<td align="right">0.9994034</td>
+<td align="right">2.851855</td>
+</tr>
+</tbody>
+</table>
+<p>Cluster 10:</p>
+<pre class="r"><code>pseudo10 &lt;- generate.pseudobulk(cluster10, labels = c(&quot;cell.line&quot;, &quot;stim&quot;, &quot;replicate&quot;))
+pseudo10 &lt;- filter.pseudobulk(pseudo10)
+d10 &lt;- DGEList(pseudo10$counts)
+d10 &lt;- calcNormFactors(d10)
+keep10 &lt;- filterByExpr(d10$counts)
+d10 &lt;- d10[keep10,]
+
+voomed10 &lt;- voomWithDreamWeights(d10, formde, pseudo10$meta, plot=FALSE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 2.6 Mb 
+Dividing work into 100 chunks...
+
+Total: 31 s</code></pre>
+<pre class="r"><code>fitmm10 = dream(voomed10, formde, pseudo10$meta)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 34 s</code></pre>
+<pre class="r"><code>try(topTable(fitmm10, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[11,1] &lt;- try(topTable(fitmm10, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[11, 1] &lt;- try(topTable(fitmm10, coef = &quot;stimoxidation&quot;, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>try(topTable(fitmm10, coef=&#39;stimoxidation&#39;, p.value = 0.05, number = 10000)) %&gt;% head(10) %&gt;% kable(caption = &quot;Oxidation DE genes, cluster 10&quot;)</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<table>
+<caption>Oxidation DE genes, cluster 10</caption>
+<thead>
+<tr class="header">
+<th align="left">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Error in sign(tab$t) : non-numeric argument to mathematical function</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>try(topTable(fitmm10, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>NULL</code></pre>
+<pre class="r"><code>de.summary[11,2] &lt;- try(topTable(fitmm10, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% nrow()</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<pre><code>Error in de.summary[11, 2] &lt;- try(topTable(fitmm10, coef = &quot;stimpff&quot;, : number of items to replace is not a multiple of replacement length</code></pre>
+<pre class="r"><code>try(topTable(fitmm10, coef=&#39;stimpff&#39;, p.value = 0.05, number = 10000)) %&gt;% head(10) %&gt;% kable(caption = &quot;PFF DE genes, cluster 10&quot;)</code></pre>
+<pre><code>Error in sign(tab$t) : non-numeric argument to mathematical function</code></pre>
+<table>
+<caption>PFF DE genes, cluster 10</caption>
+<thead>
+<tr class="header">
+<th align="left">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Error in sign(tab$t) : non-numeric argument to mathematical function</td>
+</tr>
+</tbody>
+</table>
+<p>To summarize, at 5% FDR threshold, I detect the following number of DE genes in each cluster:</p>
+<pre class="r"><code>de.summary %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">oxidation</th>
+<th align="right">pff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cluster0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>cluster1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>cluster2</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>cluster3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>cluster4</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>cluster5</td>
+<td align="right">106</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>cluster6</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>cluster7</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>cluster8</td>
+<td align="right">6</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>cluster9</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>cluster10</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.6.1 (2019-07-05)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Scientific Linux 7.4 (Nitrogen)
+
+Matrix products: default
+BLAS/LAPACK: /software/openblas-0.2.19-el7-x86_64/lib/libopenblas_haswellp-r0.2.19.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] parallel  stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] knitr_1.23               cowplot_1.0.0           
+ [3] RColorBrewer_1.1-2       forcats_0.5.1           
+ [5] stringr_1.4.0            dplyr_1.0.7             
+ [7] purrr_0.3.4              readr_1.4.0             
+ [9] tidyr_1.1.3              tibble_3.1.2            
+[11] tidyverse_1.3.1          Seurat_3.1.3            
+[13] BiocParallel_1.18.0      variancePartition_1.14.1
+[15] Biobase_2.44.0           BiocGenerics_0.30.0     
+[17] scales_1.1.1             foreach_1.5.1           
+[19] ggplot2_3.3.5            edgeR_3.26.5            
+[21] limma_3.40.6             workflowr_1.6.2         
+
+loaded via a namespace (and not attached):
+  [1] snow_0.4-3          readxl_1.3.1        backports_1.2.1    
+  [4] plyr_1.8.6          igraph_1.2.4.1      lazyeval_0.2.2     
+  [7] splines_3.6.1       listenv_0.7.0       digest_0.6.27      
+ [10] htmltools_0.5.1.1   lmerTest_3.1-0      gdata_2.18.0       
+ [13] fansi_0.5.0         magrittr_2.0.1      cluster_2.1.0      
+ [16] doParallel_1.0.14   ROCR_1.0-7          globals_0.12.4     
+ [19] modelr_0.1.8        RcppParallel_5.1.4  prettyunits_1.1.1  
+ [22] colorspace_2.0-2    rvest_1.0.0         rappdirs_0.3.1     
+ [25] ggrepel_0.8.1       haven_2.3.1         xfun_0.24          
+ [28] crayon_1.4.1        jsonlite_1.7.2      lme4_1.1-21        
+ [31] survival_3.2-11     zoo_1.8-6           iterators_1.0.13   
+ [34] ape_5.4-1           glue_1.4.2          gtable_0.3.0       
+ [37] leiden_0.3.1        future.apply_1.3.0  DBI_1.1.0          
+ [40] bibtex_0.4.2        Rcpp_1.0.6          metap_1.1          
+ [43] viridisLite_0.3.0   progress_1.2.2      reticulate_1.16    
+ [46] rsvd_1.0.1          tsne_0.1-3          htmlwidgets_1.5.3  
+ [49] httr_1.4.2          gplots_3.0.1.1      ellipsis_0.3.2     
+ [52] ica_1.0-2           pkgconfig_2.0.3     uwot_0.1.5         
+ [55] dbplyr_2.1.1        locfit_1.5-9.1      utf8_1.1.4         
+ [58] tidyselect_1.1.0    rlang_0.4.11        reshape2_1.4.4     
+ [61] later_1.2.0         cellranger_1.1.0    munsell_0.5.0      
+ [64] tools_3.6.1         cli_2.5.0           generics_0.1.0     
+ [67] pacman_0.5.1        broom_0.7.8         ggridges_0.5.1     
+ [70] evaluate_0.14       yaml_2.2.1          npsurv_0.4-0       
+ [73] fs_1.3.1            fitdistrplus_1.0-14 caTools_1.17.1.2   
+ [76] RANN_2.6.1          pbapply_1.4-0       future_1.14.0      
+ [79] nlme_3.1-140        whisker_0.3-2       xml2_1.3.2         
+ [82] rstudioapi_0.13     compiler_3.6.1      pbkrtest_0.4-7     
+ [85] plotly_4.9.4.1      png_0.1-7           lsei_1.2-0         
+ [88] reprex_2.0.0        stringi_1.6.2       highr_0.8          
+ [91] lattice_0.20-38     Matrix_1.2-18       nloptr_1.2.2.1     
+ [94] vctrs_0.3.8         pillar_1.6.1        lifecycle_1.0.0    
+ [97] Rdpack_0.11-0       lmtest_0.9-37       RcppAnnoy_0.0.12   
+[100] data.table_1.14.0   bitops_1.0-6        irlba_2.3.3        
+[103] gbRd_0.4-11         httpuv_1.6.1        colorRamps_2.3     
+[106] R6_2.5.0            promises_1.2.0.1    KernSmooth_2.23-15 
+[109] gridExtra_2.3       codetools_0.2-16    boot_1.3-23        
+[112] MASS_7.3-51.4       gtools_3.8.1        assertthat_0.2.1   
+[115] rprojroot_2.0.2     withr_2.4.2         sctransform_0.2.0  
+[118] hms_1.1.0           grid_3.6.1          minqa_1.2.4        
+[121] rmarkdown_1.13      Rtsne_0.15          git2r_0.26.1       
+[124] numDeriv_2016.8-1.1 lubridate_1.7.10   </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
