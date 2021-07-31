@@ -1,0 +1,252 @@
+---
+title: "merge_full_data"
+author: "Ben Umans"
+date: "2021-07-28"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+I have now received more extensive sequencing data from these libraries and run the combined data (from the S1 and S2 chips) through `cellranger` together to generate combined data, and through `demuxlet` to resolve each library into the 3 constituent individuals.  Here, I will combine the (now much larger) Seurat objects like before, integrate them, and create both a combined total object and a combined neural-specific object.
+
+##Combined Seurat objects
+Helpfully, the `demuxlet` pipeline we have preprocesses each library with SCTransform and saves a Seurat object, so combining them in much easier.
+
+```{r setup, message=FALSE}
+pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(cowplot)
+library(knitr)
+```
+
+```{r combine-data}
+control1 <- readRDS(file = "data_S2/YG-BU-01_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames1 <- control1$individual
+newnames1 <- str_replace(oldnames1, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+control1 <- AddMetaData(control1, newnames1, col.name = "cell.line")
+control1$replicate <- "2"
+control1$stim <- "control"
+
+
+oxid1 <- readRDS(file = "data_S2/YG-BU-02_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames2 <- oxid1$individual
+newnames2 <- str_replace(oldnames2, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+oxid1 <- AddMetaData(oxid1, newnames2, col.name = "cell.line")
+oxid1$replicate <- "2"
+oxid1$stim <- "oxidation"
+
+pff1 <- readRDS(file = "data_S2/YG-BU-03_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames3 <- pff1$individual
+newnames3 <- str_replace(oldnames3, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+pff1 <- AddMetaData(pff1, newnames3, col.name = "cell.line")
+pff1$replicate <- "2"
+pff1$stim <- "pff"
+
+control2 <- readRDS(file = "data_S2/YG-BU-06_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames6 <- control2$individual
+newnames6 <- str_replace(oldnames6, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+control2 <- AddMetaData(control2, newnames6, col.name = "cell.line")
+control2$replicate <- "3"
+control2$stim <- "control"
+
+
+oxid2 <- readRDS(file = "data_S2/YG-BU-07_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames7 <- oxid2$individual
+newnames7 <- str_replace(oldnames7, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+oxid2 <- AddMetaData(oxid2, newnames7, col.name = "cell.line")
+oxid2$replicate <- "3"
+oxid2$stim <- "oxidation"
+
+
+control3 <- readRDS(file = "data_S2/YG-BU-09_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames9 <- control3$individual
+newnames9 <- str_replace(oldnames9, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+control3 <- AddMetaData(control3, newnames9, col.name = "cell.line")
+control3$replicate <- "4"
+control3$stim <- "control"
+
+oxid3 <- readRDS(file = "data_S2/YG-BU-10_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames10 <- oxid3$individual
+newnames10 <- str_replace(oldnames10, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+oxid3 <- AddMetaData(oxid3, newnames10, col.name = "cell.line")
+oxid3$replicate <- "4"
+oxid3$stim <- "oxidation"
+
+pff3 <- readRDS(file = "data_S2/YG-BU-11_human/obj.rds")
+#replace the names of all individuals with the actual line names
+oldnames11 <- pff3$individual
+newnames11 <- str_replace(oldnames11, "SCM-10", "28126") %>% str_replace("SCM-12", "20157") %>% str_replace("SCM-13", "23555")
+pff3 <- AddMetaData(pff3, newnames11, col.name = "cell.line")
+pff3$replicate <- "4"
+pff3$stim <- "oxidation"
+
+
+combined.data <- list(control1, control2, control3, oxid1, oxid2, oxid3, pff1, pff3)
+
+rm(control1, control2, control3, oxid1, oxid2, oxid3, pff1, pff3)
+```
+
+
+Because each of these datasets was prepared using `SCTransform` it should be straightforward to now integrate them.  Following the [guide](https://satijalab.org/seurat/articles/integration_introduction.html#performing-integration-on-datasets-normalized-with-sctransform-1) from the Satija lab for integrating these datasets, I run the following steps:
+
+```{r integrate}
+features <- SelectIntegrationFeatures(object.list = combined.data, nfeatures = 5000, verbose = F)
+combined.data <- PrepSCTIntegration(object.list = combined.data, anchor.features = features)
+
+organoid.anchors <- FindIntegrationAnchors(object.list = combined.data, normalization.method = "SCT",
+    anchor.features = features)
+organoid.combined.sct <- IntegrateData(anchorset = organoid.anchors, normalization.method = "SCT")
+DefaultAssay(organoid.combined.sct) <- "integrated"
+rm(combined.data)
+```
+
+###Evaluate QC for further filtering
+The pre-processing script already subsetted to less than 15% mitochondrial reads, but this is still pretty liberal.
+```{r pre-qc, message=FALSE}
+FeatureScatter(organoid.combined.sct, feature1 = "nCount_RNA", feature2 = "percent.mt") + theme(legend.position = "none") + ggtitle("")
+FeatureScatter(organoid.combined.sct, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + theme(legend.position = "none") + ggtitle("")
+FeatureScatter(organoid.combined.sct, feature1 = "nFeature_RNA", feature2 = "percent.mt") + theme(legend.position = "none") + ggtitle("")
+
+
+organoid.combined.sct@meta.data %>% 
+  ggplot(aes(x=percent.mt)) +
+  geom_freqpoly() +
+  ggtitle("Mitochondrial read percent per cell")
+```
+15% is not a terrible cutoff, but we could easily do 8% and not lose anything worth missing.  Let's also check the number of genes detected, understanding that with low-pass sequencing there's a lot less data here.
+
+```{r genes-cell}
+organoid.combined.sct@meta.data %>% 
+  ggplot(aes(x=nFeature_RNA)) +
+  geom_freqpoly() +
+  ggtitle("Number of genes per cell")
+
+```
+
+We could set a minimum threshold of 2500 genes/cell to be safe.  This would certainly hit some clusters, which might actually be synthetic owing to their low gene counts
+
+```{r subset}
+organoid.combined.sct <- subset(organoid.combined.sct, subset = percent.mt < 8 & nFeature_RNA > 2500 )
+```
+
+###Dimensionality reduction and clustering
+Now, I go ahead and perform dimensionality reduction and clustering using the integrated dataset.
+```{r integrated-umap}
+organoid.combined.sct <- RunPCA(organoid.combined.sct, npcs = 100)
+organoid.combined.sct <- RunUMAP(organoid.combined.sct, reduction = "pca", dims = 1:100)
+
+```
+
+```{r integrated-umap-plots}
+FeaturePlot(organoid.combined.sct, features = c("rna_PAX6", "rna_MAP2"), max.cutoff = 50)
+
+DimPlot(organoid.combined.sct, reduction = "umap", group.by = "stim")
+DimPlot(organoid.combined.sct, reduction = "umap", group.by = "replicate")
+```
+
+
+And now we can look for clusters:
+```{r integrated-clustering, message=FALSE}
+organoid.combined.sct <- FindNeighbors(organoid.combined.sct, dims=1:100)
+organoid.combined.sct <- FindClusters(organoid.combined.sct, resolution=0.3)
+
+```
+
+```{r integrated-clusters}
+DimPlot(organoid.combined.sct, reduction = "umap") + ggtitle("resolution=0.3")
+
+```
+
+This is a good time to save this output.
+```{r save, eval=FALSE}
+saveRDS(organoid.combined.sct, file = "output/merged_full_dataset.RDS")
+```
+
+##Filter to just neurons
+Once again, I want to check that that large cluster isn't something I want to hold onto.  Markers that Genevieve uses for chondrogenic differentiation include:
+```{r chondro}
+FeaturePlot(organoid.combined.sct, features = c("COL2A1", "SOX5", "SOX6", "ACAN"))
+```
+
+Yikes!!  One pole of this cell cluster still looks pretty mesenchymal, with particularly high expression of collagen 2 and aggregan, which could mean any number of things.  
+
+At the other end of this cluster I definitely saw expression of some glial genes, for instance:
+```{r glia-cluster}
+FeaturePlot(organoid.combined.sct, features = c("APOE"))
+```
+
+What could be going on here?  Neural crest that started to differentiate?  Consider looking at the CNCC marker trajectory that Sara Prescott worked out for her human-chimp paper, which was mostly designed for FACS but found some good markers (CD99, CD266(TNFRSF12A), CD10(MME), CD105(ENG), p75(NGFR)).  
+
+```{r CNCC}
+FeaturePlot(organoid.combined.sct, features = c("sct_CD99", "sct_TNFRSF12A", "sct_MME", "sct_ENG", "sct_NGFR"))
+
+FeaturePlot(organoid.combined.sct, features = c("sct_SOX10", "sct_TUBB3"))
+```
+There's pretty good expression of all of these in the non-chondrogenic lobe of the cluster.  BUT, SOX10 is strongly expressed in that smaller separate cluster, which would tend to indicate those are bona fide NCC.  Hmm!
+
+Any chance that these cells are microglia?
+```{r microglia}
+FeaturePlot(organoid.combined.sct, features = c("sct_MMP9", "sct_SALL1", "sct_P2RY12", "sct_TMEM119", "sct_CX3CR1"))
+FeaturePlot(organoid.combined.sct, features = c("sct_ITGAM", "sct_AIF1"), max.cutoff = 0.5)
+
+```
+There's some expression of MMP9, TMEM119, and a tiny bit of IBA1 throughout the cluster, but not in the APOE-positive area and not in the COL2A1/ACAN area. 
+
+This cluster is probably not homogenously any one cell type, but it's not neuronal.
+
+```{r subset-data}
+# p1 <- DimPlot(organoid.combined.sct)
+# select.cells <- CellSelector(plot = p1)
+# saveRDS(select.cells, "data/exclude_fulldata.rds")
+select.cells <- readRDS(file = "data/exclude_fulldata.rds")
+organoid.combined.sct.neuron <- subset(organoid.combined.sct, cells = select.cells, invert=TRUE)
+DimPlot(organoid.combined.sct, cells.highlight = select.cells)
+```
+
+```{r save-data-neuron, eval=FALSE}
+saveRDS(organoid.combined.sct.neuron, file = "output/organoid.combined.full.sct.neuron.RDS")
+
+```
+
+
+Now recluster with this reduced dataset
+```{r recluster, message=FALSE, eval=FALSE}
+organoid.combined.sct.neuron <- RunPCA(organoid.combined.sct.neuron, npcs = 100)
+organoid.combined.sct.neuron <- RunUMAP(organoid.combined.sct.neuron, reduction = "pca", dims = 1:100)
+
+DimPlot(organoid.combined.sct.neuron, reduction = "umap", group.by = "stim")
+DimPlot(organoid.combined.sct.neuron, reduction = "umap", group.by = "replicate")
+
+organoid.combined.sct.neuron <- FindNeighbors(organoid.combined.sct.neuron, dims=1:100)
+organoid.combined.sct.neuron <- FindClusters(organoid.combined.sct.neuron, resolution=0.3)
+
+DimPlot(organoid.combined.sct.neuron, reduction = "umap") + ggtitle("resolution=0.3")
+
+organoid.combined.sct.neuron.markers <- FindAllMarkers(organoid.combined.sct.neuron, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+saveRDS(organoid.combined.sct.neuron.markers, file="output/organoid.combined.sct.neuron.markers.RDS")
+organoid.combined.sct.neuron.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+
+#saveRDS(organoid.combined.sct.neuron, file = "data/organoid.combined.full.sct.neuron.RDS")
+# organoid.combined.sct.neuron <- readRDS(file = "data/organoid.combined.full.sct.neuron.RDS")
+```
+
+The relevant output of the above markers and the cluster-labeled UMAP representation:
+```{r, message=FALSE}
+organoid.combined.sct.neuron.markers <- readRDS(file="output/organoid.combined.sct.neuron.markers.RDS")
+DimPlot(organoid.combined.sct.neuron, reduction = "umap") + ggtitle("resolution=0.3")
+organoid.combined.sct.neuron.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+
+```
+
+

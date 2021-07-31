@@ -135,7 +135,7 @@ DimPlot(organoid.combined.sct1, reduction = "umap") + ggtitle("resolution=1")
 ```
 A lot of these possibilities _seem_ reasonable.  Can cluster markers give us any idea of which of them make sense to pursue?
 
-```{r cluster-markers, message=FALSE}
+```{r cluster-markers, message=FALSE, eval=FALSE}
 organoid.combined.sct03.markers <- FindAllMarkers(organoid.combined.sct03, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 organoid.combined.sct03.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
 

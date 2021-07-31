@@ -22,6 +22,7 @@ library(Seurat)
 library(tidyverse)
 library(ggplot2)
 library(RColorBrewer)
+library(qvalue)
 library(cowplot)
 library(knitr)
 
@@ -121,7 +122,7 @@ cluster8 <- subset(organoid.combined.sct01, subset = seurat_clusters == '8')
 
 Now, obtain pseudobulk counts for each cluster
 
-```{r cluster0}
+```{r cluster0, message=FALSE}
 param = SnowParam(20, "SOCK", progressbar=TRUE)
 register(param)
 pseudo0 <- generate.pseudobulk(cluster0, labels = c("cell.line", "stim", "replicate"))
@@ -132,16 +133,15 @@ keep0 <- filterByExpr(d0$counts)
 d0 <- d0[keep0,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed0 <- voomWithDreamWeights(d0, fbase, pseudo0$meta, plot=TRUE)
+voomed0 <- voomWithDreamWeights(d0, fbase, pseudo0$meta, plot=FALSE)
 varpart0 <- fitExtractVarPartModel(voomed0, fbase, pseudo0$meta)
 
 vp0 <- sortCols(varpart0)
 # plotPercentBars(vp1[1:10,])
 plotVarPart(vp0) + ggtitle("Variance partition cluster 0 (resolution=0.1)")
-
 ```
 
-```{r cluster1}
+```{r cluster1, message=FALSE}
 pseudo1 <- generate.pseudobulk(cluster1, labels = c("cell.line", "stim", "replicate"))
 pseudo1 <- filter.pseudobulk(pseudo1)
 d1 <- DGEList(pseudo1$counts)
@@ -150,7 +150,7 @@ keep1 <- filterByExpr(d1$counts)
 d1 <- d1[keep1,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed1 <- voomWithDreamWeights(d1, fbase, pseudo1$meta, plot=TRUE)
+voomed1 <- voomWithDreamWeights(d1, fbase, pseudo1$meta, plot=FALSE)
 varpart1 <- fitExtractVarPartModel(voomed1, fbase, pseudo1$meta)
 
 vp1 <- sortCols(varpart1)
@@ -159,7 +159,7 @@ plotVarPart(vp1) + ggtitle("Variance partition cluster 1 (resolution=0.1)")
 
 ```
 
-```{r cluster2}
+```{r cluster2, message=FALSE}
 pseudo2 <- generate.pseudobulk(cluster2, labels = c("cell.line", "stim", "replicate"))
 pseudo2 <- filter.pseudobulk(pseudo2)
 d2 <- DGEList(pseudo2$counts)
@@ -168,7 +168,7 @@ keep2 <- filterByExpr(d2$counts)
 d2 <- d2[keep2,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed2 <- voomWithDreamWeights(d2, fbase, pseudo2$meta, plot=TRUE)
+voomed2 <- voomWithDreamWeights(d2, fbase, pseudo2$meta, plot=FALSE)
 varpart2 <- fitExtractVarPartModel(voomed2, fbase, pseudo2$meta)
 
 vp2 <- sortCols(varpart2)
@@ -177,7 +177,7 @@ plotVarPart(vp2) + ggtitle("Variance partition cluster 2 (resolution=0.1)")
 
 ```
 
-```{r cluster3}
+```{r cluster3, message=FALSE}
 pseudo3 <- generate.pseudobulk(cluster3, labels = c("cell.line", "stim", "replicate"))
 pseudo3 <- filter.pseudobulk(pseudo3)
 d3 <- DGEList(pseudo3$counts)
@@ -186,7 +186,7 @@ keep3 <- filterByExpr(d3$counts)
 d3 <- d3[keep3,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed3 <- voomWithDreamWeights(d3, fbase, pseudo3$meta, plot=TRUE)
+voomed3 <- voomWithDreamWeights(d3, fbase, pseudo3$meta, plot=FALSE)
 varpart3 <- fitExtractVarPartModel(voomed3, fbase, pseudo3$meta)
 
 vp3 <- sortCols(varpart3)
@@ -195,7 +195,7 @@ plotVarPart(vp3) + ggtitle("Variance partition cluster 3 (resolution=0.1)")
 
 ```
 
-```{r cluster4}
+```{r cluster4, message=FALSE}
 pseudo4 <- generate.pseudobulk(cluster4, labels = c("cell.line", "stim", "replicate"))
 pseudo4 <- filter.pseudobulk(pseudo4)
 d4 <- DGEList(pseudo4$counts)
@@ -204,7 +204,7 @@ keep4 <- filterByExpr(d4$counts)
 d4 <- d4[keep4,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed4 <- voomWithDreamWeights(d4, fbase, pseudo4$meta, plot=TRUE)
+voomed4 <- voomWithDreamWeights(d4, fbase, pseudo4$meta, plot=FALSE)
 varpart4 <- fitExtractVarPartModel(voomed4, fbase, pseudo4$meta)
 
 vp4 <- sortCols(varpart4)
@@ -213,7 +213,7 @@ plotVarPart(vp4) + ggtitle("Variance partition cluster 1 (resolution=0.1)")
 
 ```
 
-```{r cluster5}
+```{r cluster5, message=FALSE}
 pseudo5 <- generate.pseudobulk(cluster5, labels = c("cell.line", "stim", "replicate"))
 pseudo5 <- filter.pseudobulk(pseudo5)
 d5 <- DGEList(pseudo5$counts)
@@ -222,7 +222,7 @@ keep5 <- filterByExpr(d5$counts)
 d5 <- d5[keep5,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed5 <- voomWithDreamWeights(d5, fbase, pseudo5$meta, plot=TRUE)
+voomed5 <- voomWithDreamWeights(d5, fbase, pseudo5$meta, plot=FALSE)
 varpart5 <- fitExtractVarPartModel(voomed5, fbase, pseudo5$meta)
 
 vp5 <- sortCols(varpart5)
@@ -231,7 +231,7 @@ plotVarPart(vp5) + ggtitle("Variance partition cluster 5 (resolution=0.1)")
 
 ```
 
-```{r cluster6}
+```{r cluster6, message=FALSE}
 pseudo6 <- generate.pseudobulk(cluster6, labels = c("cell.line", "stim", "replicate"))
 pseudo6 <- filter.pseudobulk(pseudo6)
 d6 <- DGEList(pseudo6$counts)
@@ -240,7 +240,7 @@ keep6 <- filterByExpr(d6$counts)
 d6 <- d6[keep6,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed6 <- voomWithDreamWeights(d6, fbase, pseudo6$meta, plot=TRUE)
+voomed6 <- voomWithDreamWeights(d6, fbase, pseudo6$meta, plot=FALSE)
 varpart6 <- fitExtractVarPartModel(voomed6, fbase, pseudo6$meta)
 
 vp6 <- sortCols(varpart6)
@@ -250,7 +250,7 @@ plotVarPart(vp6) + ggtitle("Variance partition cluster 6 (resolution=0.1)")
 ```
 
 
-```{r cluster7}
+```{r cluster7, message=FALSE}
 pseudo7 <- generate.pseudobulk(cluster7, labels = c("cell.line", "stim", "replicate"))
 pseudo7 <- filter.pseudobulk(pseudo7)
 d7 <- DGEList(pseudo7$counts)
@@ -259,7 +259,7 @@ keep7 <- filterByExpr(d7$counts)
 d7 <- d7[keep7,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed7 <- voomWithDreamWeights(d7, fbase, pseudo7$meta, plot=TRUE)
+voomed7 <- voomWithDreamWeights(d7, fbase, pseudo7$meta, plot=FALSE)
 varpart7 <- fitExtractVarPartModel(voomed7, fbase, pseudo7$meta)
 
 vp7 <- sortCols(varpart7)
@@ -268,7 +268,7 @@ plotVarPart(vp7) + ggtitle("Variance partition cluster 7 (resolution=0.1)")
 
 ```
 
-```{r cluster8}
+```{r cluster8, message=FALSE}
 pseudo8 <- generate.pseudobulk(cluster8, labels = c("cell.line", "stim", "replicate"))
 pseudo8 <- filter.pseudobulk(pseudo8)
 d8 <- DGEList(pseudo8$counts)
@@ -277,7 +277,7 @@ keep8 <- filterByExpr(d8$counts)
 d8 <- d8[keep8,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed8 <- voomWithDreamWeights(d8, fbase, pseudo8$meta, plot=TRUE)
+voomed8 <- voomWithDreamWeights(d8, fbase, pseudo8$meta, plot=FALSE)
 varpart8 <- fitExtractVarPartModel(voomed8, fbase, pseudo8$meta)
 
 vp8 <- sortCols(varpart8)
@@ -299,7 +299,7 @@ organoid.combined.sct01@meta.data$seurat_clusters %>% table()
 ```
 The range of cluster sizes here ranges from just 406 to over 17,000.  I will try downsampling the largest three clusters (0, 1, 2) to contain 5000 cells, 2000 cells, and 500 cells, and see whether a similar relationship holds.
 
-```{r downsample}
+```{r downsample, message=FALSE}
 cluster0.5000 <- subset(cluster0, downsample = 5000)
 cluster0.2000 <- subset(cluster0, downsample = 2000)
 cluster0.500 <- subset(cluster0, downsample = 500)
@@ -315,7 +315,7 @@ cluster2.500 <- subset(cluster2, downsample = 500)
 ```
 Now I repeat the variance partitioning workflow on these and compare to their corresponding original results.
 
-```{r vp-downsampled0}
+```{r vp-downsampled0, message=FALSE}
 pseudo0.5000 <- generate.pseudobulk(cluster0.5000, labels = c("cell.line", "stim", "replicate"))
 pseudo0.5000 <- filter.pseudobulk(pseudo0.5000)
 d0.5000 <- DGEList(pseudo0.5000$counts)
@@ -323,7 +323,7 @@ d0.5000 <- calcNormFactors(d0.5000)
 keep0.5000 <- filterByExpr(d0.5000$counts)
 d0.5000 <- d0.5000[keep0.5000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed0.5000 <- voomWithDreamWeights(d0.5000, fbase, pseudo0.5000$meta, plot=TRUE)
+voomed0.5000 <- voomWithDreamWeights(d0.5000, fbase, pseudo0.5000$meta, plot=FALSE)
 varpart0.5000 <- fitExtractVarPartModel(voomed0.5000, fbase, pseudo0.5000$meta)
 vp0.5000 <- sortCols(varpart0.5000)
 # plotPercentBars(vp1[1:10,])
@@ -335,7 +335,7 @@ d0.2000 <- calcNormFactors(d0.2000)
 keep0.2000 <- filterByExpr(d0.2000$counts)
 d0.2000 <- d0.2000[keep0.2000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed0.2000 <- voomWithDreamWeights(d0.2000, fbase, pseudo0.2000$meta, plot=TRUE)
+voomed0.2000 <- voomWithDreamWeights(d0.2000, fbase, pseudo0.2000$meta, plot=FALSE)
 varpart0.2000 <- fitExtractVarPartModel(voomed0.2000, fbase, pseudo0.2000$meta)
 vp0.2000 <- sortCols(varpart0.2000)
 # plotPercentBars(vp1[1:10,])
@@ -347,7 +347,7 @@ d0.500 <- calcNormFactors(d0.500)
 keep0.500 <- filterByExpr(d0.500$counts)
 d0.500 <- d0.500[keep0.500,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed0.500 <- voomWithDreamWeights(d0.500, fbase, pseudo0.500$meta, plot=TRUE)
+voomed0.500 <- voomWithDreamWeights(d0.500, fbase, pseudo0.500$meta, plot=FALSE)
 varpart0.500 <- fitExtractVarPartModel(voomed0.500, fbase, pseudo0.500$meta)
 vp0.500 <- sortCols(varpart0.500)
 # plotPercentBars(vp1[1:10,])
@@ -357,7 +357,7 @@ plotVarPart(vp0.2000) + ggtitle("Variance partition cluster 0.2000 (resolution=0
 plotVarPart(vp0.500) + ggtitle("Variance partition cluster 0.500 (resolution=0.1)")
 ```
 
-```{r vp-downsampled1}
+```{r vp-downsampled1, message=FALSE}
 pseudo1.5000 <- generate.pseudobulk(cluster1.5000, labels = c("cell.line", "stim", "replicate"))
 pseudo1.5000 <- filter.pseudobulk(pseudo1.5000)
 d1.5000 <- DGEList(pseudo1.5000$counts)
@@ -365,7 +365,7 @@ d1.5000 <- calcNormFactors(d1.5000)
 keep1.5000 <- filterByExpr(d1.5000$counts)
 d1.5000 <- d1.5000[keep1.5000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed1.5000 <- voomWithDreamWeights(d1.5000, fbase, pseudo1.5000$meta, plot=TRUE)
+voomed1.5000 <- voomWithDreamWeights(d1.5000, fbase, pseudo1.5000$meta, plot=FALSE)
 varpart1.5000 <- fitExtractVarPartModel(voomed1.5000, fbase, pseudo1.5000$meta)
 vp1.5000 <- sortCols(varpart1.5000)
 # plotPercentBars(vp1[1:10,])
@@ -377,7 +377,7 @@ d1.2000 <- calcNormFactors(d1.2000)
 keep1.2000 <- filterByExpr(d1.2000$counts)
 d1.2000 <- d1.2000[keep1.2000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed1.2000 <- voomWithDreamWeights(d1.2000, fbase, pseudo1.2000$meta, plot=TRUE)
+voomed1.2000 <- voomWithDreamWeights(d1.2000, fbase, pseudo1.2000$meta, plot=FALSE)
 varpart1.2000 <- fitExtractVarPartModel(voomed1.2000, fbase, pseudo1.2000$meta)
 vp1.2000 <- sortCols(varpart1.2000)
 # plotPercentBars(vp1[1:10,])
@@ -389,7 +389,7 @@ d1.500 <- calcNormFactors(d1.500)
 keep1.500 <- filterByExpr(d1.500$counts)
 d1.500 <- d1.500[keep1.500,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed1.500 <- voomWithDreamWeights(d1.500, fbase, pseudo1.500$meta, plot=TRUE)
+voomed1.500 <- voomWithDreamWeights(d1.500, fbase, pseudo1.500$meta, plot=FALSE)
 varpart1.500 <- fitExtractVarPartModel(voomed1.500, fbase, pseudo1.500$meta)
 vp1.500 <- sortCols(varpart1.500)
 # plotPercentBars(vp1[1:10,])
@@ -399,7 +399,7 @@ plotVarPart(vp1.2000) + ggtitle("Variance partition cluster 1.2000 (resolution=0
 plotVarPart(vp1.500) + ggtitle("Variance partition cluster 1.500 (resolution=0.1)")
 ```
 
-```{r vp-downsampled2}
+```{r vp-downsampled2, message=FALSE}
 pseudo2.5000 <- generate.pseudobulk(cluster2.5000, labels = c("cell.line", "stim", "replicate"))
 pseudo2.5000 <- filter.pseudobulk(pseudo2.5000)
 d2.5000 <- DGEList(pseudo2.5000$counts)
@@ -407,7 +407,7 @@ d2.5000 <- calcNormFactors(d2.5000)
 keep2.5000 <- filterByExpr(d2.5000$counts)
 d2.5000 <- d2.5000[keep2.5000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed2.5000 <- voomWithDreamWeights(d2.5000, fbase, pseudo2.5000$meta, plot=TRUE)
+voomed2.5000 <- voomWithDreamWeights(d2.5000, fbase, pseudo2.5000$meta, plot=FALSE)
 varpart2.5000 <- fitExtractVarPartModel(voomed2.5000, fbase, pseudo2.5000$meta)
 vp2.5000 <- sortCols(varpart2.5000)
 # plotPercentBars(vp1[1:10,])
@@ -419,7 +419,7 @@ d2.2000 <- calcNormFactors(d2.2000)
 keep2.2000 <- filterByExpr(d2.2000$counts)
 d2.2000 <- d2.2000[keep2.2000,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed2.2000 <- voomWithDreamWeights(d2.2000, fbase, pseudo2.2000$meta, plot=TRUE)
+voomed2.2000 <- voomWithDreamWeights(d2.2000, fbase, pseudo2.2000$meta, plot=FALSE)
 varpart2.2000 <- fitExtractVarPartModel(voomed2.2000, fbase, pseudo2.2000$meta)
 vp2.2000 <- sortCols(varpart2.2000)
 # plotPercentBars(vp1[1:10,])
@@ -431,7 +431,7 @@ d2.500 <- calcNormFactors(d2.500)
 keep2.500 <- filterByExpr(d2.500$counts)
 d2.500 <- d2.500[keep2.500,]
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed2.500 <- voomWithDreamWeights(d2.500, fbase, pseudo2.500$meta, plot=TRUE)
+voomed2.500 <- voomWithDreamWeights(d2.500, fbase, pseudo2.500$meta, plot=FALSE)
 varpart2.500 <- fitExtractVarPartModel(voomed2.500, fbase, pseudo2.500$meta)
 vp2.500 <- sortCols(varpart2.500)
 # plotPercentBars(vp1[1:10,])
@@ -443,9 +443,33 @@ plotVarPart(vp2.500) + ggtitle("Variance partition cluster 2.500 (resolution=0.1
 
 These results certainly seem to argue that the smaller numbers of cells severely curtail the variance attributable to one of the input factors of the experiment.
 
+###Stability of gene expression means across cluster sizes
+
+As we decrease the size of clusters, at what point do mean expression levels become inconsistent?
+
+```{r, message=FALSE, eval=FALSE}
+organoid.combined.sct03@meta.data$seurat_clusters %>% table()
+
+
+cluster.averages <- AverageExpression(organoid.combined.sct03, assays = "RNA", slot = "counts")
+head(cluster.averages[["RNA"]][, 1:5])
+
+organoid.combined.sct03.5000 <- subset(organoid.combined.sct03, downsample = 5000)
+cluster.averages.5000 <- AverageExpression(organoid.combined.sct03)
+head(cluster.averages.5000[["RNA"]][, 1:5])
+
+cluster.averages <- list()
+for (i in c(5000, 1000)){
+  cluster.averages[[i]] <- AverageExpression(subset(organoid.combined.sct03, downsample = i), assays = "RNA", slot="counts")
+}
+
+
+```
+
+
 ###Less clustering, better variance characterization?
 The converse of clustering finely and looking at constituent sources of variation is to cluster less aggressively or not at all.  If I obtain pseudobulk counts from the whole Seurat object, disregarding cell cluster identity, I obtain the following result.
-```{r varpart-alldata}
+```{r varpart-alldata, message=FALSE}
 pseudo_all <- generate.pseudobulk(organoid.combined.sct01, labels = c("cell.line", "stim", "replicate"))
 pseudo_all <- filter.pseudobulk(pseudo_all)
 d_all <- DGEList(pseudo_all$counts)
@@ -454,7 +478,7 @@ keep_all <- filterByExpr(d_all$counts)
 d_all <- d_all[keep_all,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
-voomed_all <- voomWithDreamWeights(d_all, fbase, pseudo_all$meta, plot=TRUE)
+voomed_all <- voomWithDreamWeights(d_all, fbase, pseudo_all$meta, plot=FALSE)
 varpart_all <- fitExtractVarPartModel(voomed_all, fbase, pseudo_all$meta)
 
 vp_all <- sortCols(varpart_all)
@@ -465,14 +489,87 @@ plotVarPart(vp_all) + ggtitle("Variance partition cluster all (resolution=0.1)")
 To the extent that cell cluster and cell line are related, this surely inflates the variation attributable to cell line alone.  
 
 
-###Adding fixed effect metadata to variance partition
+###Adding other fixed effect metadata to variance partition
 
-```{r cluster1-readdepth}
-faugmented <- ~  ncounts + (1|cell.line) + (1|stim) + (1|replicate)
-voomed1aug <- voomWithDreamWeights(d1, faugmented, pseudo1$meta, plot=TRUE)
+```{r cluster1-readdepth, message=FALSE}
+faugmented <- ~  ncounts + ncells + (1|cell.line) + (1|stim) + (1|replicate)
+voomed1aug <- voomWithDreamWeights(d1, faugmented, pseudo1$meta, plot=FALSE)
 varpart1aug <- fitExtractVarPartModel(voomed1aug, faugmented, pseudo1$meta)
 vp1aug <- sortCols(varpart1aug)
 plotVarPart(vp1aug) + ggtitle("Variance partition cluster 1 (resolution=0.1)")
 
 ```
-Here, the `ncounts` effect is just the total size of the pseudobulk matrix (as in, sum of all elements) for each partition, divided by the largest sum.  This is...maybe not quite right, but it's a start.
+Here, the `ncounts` effect is just the total size of the pseudobulk matrix (as in, sum of all elements) for each partition, divided by the largest sum.  This is...maybe not quite right, but it's a start.  The ncells term is the number of cells contributing to the pseudobulk data.  It's a little weird that it should have such a large effect, given that we've already separated things out by cluster.  Still, this leaves the vast majority of variance for each gene unexplained, and there aren't many other input variables that differed among samples that can be used to explain this...
+
+
+##Variance explained by PCs
+
+```{r}
+organoid.combined.sct03 <- RunPCA(organoid.combined.sct03, verbose = FALSE)
+mat <- Seurat::GetAssayData(organoid.combined.sct03, assay = "integrated", slot = "scale.data")
+pca <- organoid.combined.sct03[["pca"]]
+
+# Get the total variance:
+total_variance <- sum(matrixStats::rowVars(mat))
+
+eigValues = (pca@stdev)^2  ## EigenValues
+varExplained = eigValues / total_variance
+
+
+FeaturePlot(organoid.combined.sct03, features = c("PC_1"))
+DimPlot(organoid.combined.sct03, reduction = "pca", group.by = "seurat_clusters", dims = c(1,2)) + ggtitle("PCA by cluster (resolution=0.3)")
+
+organoid.combined.sct03@reductions$pca %>% dim()
+cluster0@reductions$pca %>% dim()
+```
+
+
+
+##Test DE, first pass
+First, look in cluster 0.  We can start with a simple t-test between (stimulation) groups, summing over different individuals and treating replicates as resplicates.  
+```{r}
+pseudo0.stim <- generate.pseudobulk(cluster0, labels = c("stim", "replicate", "cell.line"))
+pseudo0.stim <- filter.pseudobulk(pseudo0.stim)
+
+control <- pseudo0.stim$counts[,which(pseudo0.stim$meta$stim == "control")]
+oxidation <- pseudo0.stim$counts[,which(pseudo0.stim$meta$stim == "oxidation")]
+pff <- pseudo0.stim$counts[,which(pseudo0.stim$meta$stim == "pff")]
+
+results.oxid <- c()
+for (i in 1:36601){
+  results.oxid[i] <- try(t.test(control[i,], oxidation[i,])$p.value) 
+}
+results.oxid <- as.numeric(results.oxid)
+ggplot(data.frame(x=results.oxid), aes(x=results.oxid)) + geom_histogram()
+qs.oxid <- qvalue(results.oxid)
+sum(qs.oxid$qvalues<0.1, na.rm = T)
+min(qs.oxid$qvalues, na.rm = T)
+
+sum(results.oxid<0.005, na.rm = T)
+rownames(control)[which(results.oxid<0.005)]
+
+
+results.pff <- c()
+for (i in 1:36601){
+  results.pff[i] <- try(t.test(control[i,], pff[i,])$p.value) 
+}
+results.pff <- as.numeric(results.pff)
+ggplot(data.frame(x=results.pff), aes(x=results.pff)) + geom_histogram()
+sum(results.pff<0.05, na.rm = T)
+rownames(control)[which(results.pff<0.05)]
+qs.pff <- qvalue(results.pff)
+sum(qs.pff$qvalues<0.1, na.rm = T)
+min(qs.pff$qvalues, na.rm = T)
+
+
+results.wilcox <- c()
+for (i in 1:36601){
+  results.wilcox[i] <- try(wilcox.test(control[i,], pff[i,])$p.value) 
+}
+results.wilcox <- as.numeric(results.wilcox)
+ggplot(data.frame(x=results.wilcox), aes(x=results.wilcox)) + geom_histogram()
+sum(results.wilcox<0.05, na.rm = T)
+rownames(control)[which(results.wilcox<0.05)]
+```
+
+Okay, so there _are_ differentially expressed genes.  Maybe?  Nothing with the FDR correction.  I'll look into this more properly next.
