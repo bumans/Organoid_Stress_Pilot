@@ -345,7 +345,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-07-29
+<strong>Last updated:</strong> 2021-08-02
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -376,16 +376,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree1722f300fa1f927b33833b267b03b1995f89673atargetblank1722f30a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/1722f300fa1f927b33833b267b03b1995f89673a" target="_blank">1722f30</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree2b88108674514c625c892dd3196dcc740e2f93a8targetblank2b88108a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/2b88108674514c625c892dd3196dcc740e2f93a8" target="_blank">2b88108</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree1722f300fa1f927b33833b267b03b1995f89673atargetblank1722f30a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree2b88108674514c625c892dd3196dcc740e2f93a8targetblank2b88108a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/1722f300fa1f927b33833b267b03b1995f89673a" target="_blank">1722f30</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/2b88108674514c625c892dd3196dcc740e2f93a8" target="_blank">2b88108</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -394,6 +394,7 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
+    Ignored:    data/.DS_Store
     Ignored:    data/fastq/
     Ignored:    output/.DS_Store
     Ignored:    output/YG-BU-01_human/
@@ -408,13 +409,13 @@ Ignored files:
     Ignored:    output/YG-BU-10_human/
     Ignored:    output/YG-BU-11_human/
     Ignored:    output/merged_full_dataset.RDS
+    Ignored:    output/organoid.combined.full.sct.neuron.RDS
     Ignored:    output/organoid.combined.sct.neuron.markers.RDS
     Ignored:    output/organoid.combined.sct03.RDS
     Ignored:    output/organoid.combined.sct05.RDS
     Ignored:    output/organoid.combined.sct1.RDS
 
 Untracked files:
-    Untracked:  analysis/merge_full_data.Rmd
     Untracked:  data/Snakefile_cellranger
     Untracked:  data/all.vcf.bed
     Untracked:  data/australia.rds
@@ -429,7 +430,6 @@ Untracked files:
     Untracked:  data/library9.rds
     Untracked:  data/log/
     Untracked:  data/mysterycell.rds
-    Untracked:  data/organoid.combined.full.sct.neuron.RDS
     Untracked:  data/organoid.combined.sct03.neuron.RDS
     Untracked:  data/organoid_combined_sct03.RDS
     Untracked:  data/reheaded.vcf
@@ -443,10 +443,10 @@ Untracked files:
 
 Unstaged changes:
     Modified:   .gitignore
-    Modified:   analysis/combine_experiments.Rmd
+    Modified:   analysis/de_full.Rmd
+    Modified:   analysis/merge_full_data.Rmd
     Modified:   analysis/precheck.Rmd
     Modified:   analysis/remove-mesenchyme.Rmd
-    Modified:   analysis/variance-estimation.Rmd
 
 </code></pre>
 <p>
@@ -485,6 +485,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/2b88108674514c625c892dd3196dcc740e2f93a8/analysis/index.Rmd" target="_blank">2b88108</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-08-02
+</td>
+<td>
+wflow_publish(files = c(“analysis/index.Rmd”))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bumans/Organoid_Stress_Pilot/65cfdc535cf9d00fefc85dc5fa8e8fda3ec828f6/docs/index.html" target="_blank">65cfdc5</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -679,13 +713,20 @@ Start workflowr project.
 </div>
 </div>
 </div>
-<p>This is the <code>workflowr</code> project for initial analysis of low-pass sequencing from my organoid pilot project. Three individuals were used to differentiate cerebral organoids in triplicate, which were then left as controls or stimulated before single-cell (10x) data were collected. A total of 11 libraries were constructed, of which 9 are immediately relevant to this project.</p>
-<p>To <a href="precheck.html">start</a>, I used one of the control libraries to check the quality of the data and its correspondence to previous datasets.</p>
+<p>This is the <code>workflowr</code> project for analysis of single-cell RNA sequencing from my organoid pilot project. Three individuals were used to differentiate cerebral organoids in triplicate, which were then left as controls or stimulated before single-cell (10x) data were collected. A total of 11 libraries were constructed, of which 9 are immediately relevant to this project.</p>
+<div id="shallow-sequencing-data-analysis" class="section level3">
+<h3>Shallow sequencing data analysis</h3>
+<p>Initially, we sequenced these libraries with an aim to collect ~50,000 reads/cell in order to assess cell type composition. To <a href="precheck.html">start</a>, I used one of the control libraries to check the quality of the data and its correspondence to previous datasets.</p>
 <p><a href="combine_experiments.html">Next</a>, I used SCTransform-ed versions of all datasets to create an integrated Seurat object for clustering and expression analysis. In this document I also look for expression of a few stress-related genes and begin to use the <code>variancePartition</code> package to assess reproducibility and the factors contributing to gene expression variation in my dataset. I also include suggestions from KB and YG after an initial discussion of these findings.</p>
 <p><a href="variance-estimation.html">To explore their suggestions further</a>, I looked at the effect or running the analysis on separated clusters and downsampling cell numbers.</p>
 <p>Not all of the cells collected during this experiment appear to fall along the neural development trajectory. In order to remove overtly different cells, I subsetted out the “mesenchyme” and reclustered using the remaining cells <a href="remove-mesenchyme.html">here</a>.</p>
 <p><a href="de.html">Next</a>, I used this filtered dataset to test for differential expression across stimulus conditions.</p>
+</div>
+<div id="full-dataset" class="section level3">
+<h3>Full dataset</h3>
 <p>After completing these analyses, we sent these sequencing libraries back for further sequencing using a NovaSeq S2 chip, with the library composition rebalanced to yield equal numbers of reads across all samples (which will yield slightly different numbers of reads/cell owing to differing capture rates of cells between replicates). Upon receipt of these new data, the combined fastq files from the first and second sequencing batches were processed using <code>cellranger</code> and <code>demuxlet</code> and then filtered and <a href="merge_full_data.html">merged</a> to form integrated datasets.</p>
+<p>From these datasets, I attempted 3 forms of analysis. First, <a href="de_full.html">differential expression</a>, going cluster by cluster. Second, <a href="variance_full.html">variance decomposition</a>, using what is essentially an ANOVA framework implemented in the <code>variancePartition</code> package. Third, <a href="pca_full.html">PCA</a> to compare overall variation with known parameters of the experiment and samples.</p>
+</div>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
