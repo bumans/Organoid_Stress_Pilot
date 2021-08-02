@@ -8,10 +8,10 @@ editor_options:
   chunk_output_type: console
 ---
 
-This is the `workflowr` project for initial analysis of low-pass sequencing from my organoid pilot project.  Three individuals were used to differentiate cerebral organoids in triplicate, which were then left as controls or stimulated before single-cell (10x) data were collected.  A total of 11 libraries were constructed, of which 9 are immediately relevant to this project.
+This is the `workflowr` project for analysis of single-cell RNA sequencing from my organoid pilot project.  Three individuals were used to differentiate cerebral organoids in triplicate, which were then left as controls or stimulated before single-cell (10x) data were collected.  A total of 11 libraries were constructed, of which 9 are immediately relevant to this project.
 
-To [start](precheck.html), I used one of the control libraries to check the quality of the data and its 
-correspondence to previous datasets.
+###Shallow sequencing data analysis
+Initially, we sequenced these libraries with an aim to collect ~50,000 reads/cell in order to assess cell type composition.  To [start](precheck.html), I used one of the control libraries to check the quality of the data and its correspondence to previous datasets.
 
 [Next](combine_experiments.html), I used SCTransform-ed versions of all datasets to create an integrated Seurat object for clustering and expression analysis.  In this document I also look for expression of a few stress-related genes and begin to use the `variancePartition` package to assess reproducibility and the factors contributing to gene expression variation in my dataset.  I also include suggestions from KB and YG after an initial discussion of these findings.
 
@@ -21,5 +21,7 @@ Not all of the cells collected during this experiment appear to fall along the n
 
 [Next](de.html), I used this filtered dataset to test for differential expression across stimulus conditions.
 
+###Full dataset
 After completing these analyses, we sent these sequencing libraries back for further sequencing using a NovaSeq S2 chip, with the library composition rebalanced to yield equal numbers of reads across all samples (which will yield slightly different numbers of reads/cell owing to differing capture rates of cells between replicates).  Upon receipt of these new data, the combined fastq files from the first and second sequencing batches were processed using `cellranger` and `demuxlet` and then filtered and [merged](merge_full_data.html) to form integrated datasets.
 
+From these datasets, I attempted 3 forms of analysis.  First, [differential expression](de_full.html), going cluster by cluster.  Second, [variance decomposition](variance_full.html), using what is essentially an ANOVA framework implemented in the `variancePartition` package.  Third, [PCA](pca_full.html) to compare overall variation with known parameters of the experiment and samples.
