@@ -1,0 +1,224 @@
+---
+title: "variance_estimation_full"
+author: "Ben Umans"
+date: "2021-08-06"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+Instead of looking individually at each cluster, in order to assess the contributors to variation in the whole experiment I'll consider the whole dataset(s), pseudobulked into their respective clusters.
+
+```{r setup}
+pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(cowplot)
+library(knitr)
+Sys.setenv(TZ='America/Chicago')
+
+generate.pseudobulk <- function(object, labels, assay="RNA",slot="counts") {
+  factorlist <- list()
+  for (i in labels) factorlist[[i]] <- unique(object@meta.data[,i])
+  meta <- expand.grid(factorlist, stringsAsFactors = FALSE)
+  rownames(meta) <- apply(meta, 1, function(x) paste0(x, collapse = '.'))
+  # build the output matrix
+  n <- nrow(meta)
+  out <- matrix(nrow=dim(object[[assay]])[1], ncol=n, data=0)
+  rownames(out) <- rownames(object[[assay]])
+  colnames(out) <- rownames(meta)
+  ncells <- c()
+  ncounts <- c()
+  total.cells <- dim(object[[assay]])[2]
+  for (i in 1:n)
+  {
+    #prog(i,n)
+    cells <- 1:total.cells
+    for (j in names(meta)) {
+      keep  <- which(object@meta.data[[j]] == meta[i,j])
+      cells <- cells[cells %in% keep]
+    }
+    ncells[i] <- length(cells)
+    ncounts[i] <- sum(slot(object[[assay]], slot)[,cells])
+    #some other thing to measure
+    if (length(cells)==1) {
+      out[,i] <- slot(object[[assay]], slot)[,cells]
+    } else {
+      out[,i] <- Matrix::rowSums(slot(object[[assay]], slot)[,cells])
+    }
+  }
+  meta$ncells <- ncells
+  meta$ncounts <- ncounts/max(ncounts)
+  #add that something else as metadata
+  return(list(counts=out, meta=meta))
+}
+
+# keep only levels with more than 'threshold' cells
+filter.pseudobulk <- function(pseudobulk, threshold = 0) {
+  w <- which(pseudobulk$meta$ncells > threshold)
+  pseudobulk$counts <- pseudobulk$counts[,w]
+  pseudobulk$meta <- pseudobulk$meta[w,]
+  pseudobulk
+}
+
+newqqplot=function(pvals, quant, title){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+  plot(res$x,res$y, main=title, xlab="Theoretical", ylab="Actual", col=ifelse(res$y>as.numeric(quantile(res$y, quant[1])), ifelse(res$y>as.numeric(quantile(res$y, quant[2])), "red", "blue"), "black"))
+  abline(0, 1)
+}
+
+organoid.combined.sct <- readRDS(file = "output/merged_full_dataset.RDS")
+organoid.combined.sct.neuron <- readRDS(file = "output/organoid.combined.full.sct.neuron.RDS")
+param = SnowParam(20, "SOCK", progressbar=TRUE)
+register(param)
+```
+
+
+I'll start by looking at the whole neuronal dataset in aggregate.
+```{r varpart-neuron, message=FALSE}
+pseudo.neuron <- generate.pseudobulk(organoid.combined.sct.neuron, labels = c("seurat_clusters", "stim", "replicate", "cell.line"))
+pseudo.neuron <- filter.pseudobulk(pseudo.neuron)
+d.neuron <- DGEList(pseudo.neuron$counts)
+meta_d.neuron <- d.neuron$samples[,c("lib.size","norm.factors")]
+meta_d.neuron <- cbind(meta_d.neuron, pseudo.neuron$meta)
+d.neuron$samples <- meta_d.neuron
+keep.neuron <- filterByExpr(d.neuron) #, group=d10.full$samples$stim
+d.neuron <- d.neuron[keep.neuron,]
+d.neuron <- calcNormFactors(d.neuron, method = "TMM")
+
+fbase <- ~  (1|seurat_clusters) + (1|cell.line) + (1|stim) + (1|replicate)
+voomed.varpart.neuron <- voomWithDreamWeights(d.neuron, fbase, d.neuron$samples, plot=TRUE)
+
+varpart.neuron <- fitExtractVarPartModel(voomed.varpart.neuron, fbase, d.neuron$samples)
+head(varpart.neuron[order(varpart.neuron$stim, decreasing=TRUE),])
+vp.neuron <- sortCols(varpart.neuron)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp.neuron) + ggtitle("Variance partition neurons (resolution=0.1)")
+ggsave("docs/figure/neuronal_varpart.png")
+
+```
+
+How many cells are in each group here?
+
+```{r tables}
+table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$stim) %>% kable(caption="Cells by cluster and treatment, neuronal datset")
+
+table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$replicate) %>% kable(caption="Cells by cluster and replicate, neuronal datset")
+
+table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$cell.line) %>% kable(caption="Cells by cluster and cell line, neuronal datset")
+
+table(organoid.combined.sct.neuron$stim, organoid.combined.sct.neuron$cell.line) %>% kable(caption="Cells by treatment and individual, full datset")
+
+groups <- table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$cell.line, organoid.combined.sct.neuron$replicate, organoid.combined.sct.neuron$stim)
+
+ggplot(data.frame(x=as.vector(groups)), aes(x=x)) + geom_histogram() + xlab("Cells per pseudobulk cluster") + ggtitle("Nummber of cells by grouping (Treatment, Cluster, Replicate, Cell line)")
+ggsave("docs/figure/pseudobulk_histo.png")
+
+#because we filtered empty categories from the pseudobulk data used for testing, instead we're really using something a little different
+ggplot(data.frame(x=d.neuron$samples$ncells), aes(x=x)) + geom_histogram() + xlab("Cells per pseudobulk cluster") + ggtitle("Pseudobulk cluster sizes (Treatment, Cluster, Replicate, Cell line)")
+sum(d.neuron$samples$ncells < 50)
+sum(as.vector(groups) ==0)
+
+```
+
+##PCA
+
+How does the variation we see in the pseudobulk data compare to the PCA of the single-cell data?  First, are our experimental inputs evenly distributed across the UMAP space?
+```{r}
+# DimPlot(organoid.combined.sct.neuron, reduction = "pca", group.by = "cell.line", dims = c(13,15), cols=brewer.pal(3, "Dark2")) 
+
+DimPlot(organoid.combined.sct.neuron, split.by = "stim")
+
+DimPlot(organoid.combined.sct.neuron, split.by = "cell.line")
+
+
+
+```
+This might be better shown as bar charts.
+```{r}
+ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=cell.line)) + geom_bar() + scale_fill_brewer(palette = "Set2", "Cell line") + xlab("Seurat cluster") + ylab("Cell count")
+
+ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=stim)) + geom_bar() + scale_fill_brewer(palette = "Set2", "Treatment") + xlab("Seurat cluster") + ylab("Cell count")
+
+```
+
+
+Next, we can do PCA and correlate with the different factors.
+```{r neuron-pca, message=FALSE}
+
+pca = organoid.combined.sct.neuron@reductions$pca
+eigValues = (pca@stdev)^2
+varExplained = eigValues / sum(eigValues)
+sum(varExplained[1:12])
+plot(1:length(varExplained), cumsum(varExplained))
+
+p_comps <- 1:15
+info <- organoid.combined.sct.neuron@meta.data %>% 
+     dplyr::select(c(seurat_clusters, stim, replicate, cell.line)) #subset sample info for technical/biological variables
+
+scores_cleaned <- pca@cell.embeddings
+pca_genes_cleaned <- pca@feature.loadings
+#Calculate correlations
+pc_cov_cor <- matrix(nrow = ncol(info), ncol = length(p_comps), 
+                      dimnames = list(colnames(info), colnames(pca_genes_cleaned)[p_comps])) 
+
+PC_pvalues <- matrix(data = NA, nrow = 10, ncol = 4, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"), c("cluster", "treatment", "replicate", "individual")))
+
+for (pc in p_comps) { 
+  for (covariate in 1:ncol(info)) { 
+        lm_result <- lm(scores_cleaned[, pc] ~ info[, covariate]) 
+    r2 <- summary(lm_result)$r.squared 
+    fstat <- as.data.frame(summary(lm_result)$fstatistic)
+    p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    # PC_pvalues[pc, covariate] <- p_fstat
+    pc_cov_cor[covariate, pc] <- r2 
+  } 
+} 
+pc_cov_cor %>% kable() 
+```
+
+
+
+Now look at the pseudobulked data.
+```{r}
+
+cleaned.cpm <- cpm(d.neuron, log=TRUE, normalized.lib.sizes = T)
+
+#PCA
+pca_genes_cleaned <- prcomp(t(cleaned.cpm), scale = T)
+scores_cleaned <- pca_genes_cleaned$x
+
+variances_cleaned <- pca_genes_cleaned$sdev^2
+explained_cleaned <- variances_cleaned / sum(variances_cleaned)
+plot(pca_genes_cleaned, main = "Variance per PC")
+plot(explained_cleaned, main = "Fraction of variation explained per PC")
+
+p_comps <- 1:8
+info <- d.neuron$samples %>% 
+     dplyr::select(c(seurat_clusters, stim, replicate, cell.line)) #subset sample info for technical/biological variables
+
+#Calculate correlations
+pc_cov_cor <- matrix(nrow = ncol(info), ncol = length(p_comps), 
+                      dimnames = list(colnames(info), colnames(pca_genes_cleaned$x)[p_comps])) 
+
+PC_pvalues <- matrix(data = NA, nrow = 8, ncol = 4, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8"), c("cluster", "treatment", "replicate", "individual")))
+
+for (pc in p_comps) { 
+  for (covariate in 1:ncol(info)) { 
+        lm_result <- lm(pca_genes_cleaned$x[, pc] ~ info[, covariate]) 
+    r2 <- summary(lm_result)$r.squared 
+    fstat <- as.data.frame(summary(lm_result)$fstatistic)
+    p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    PC_pvalues[pc, covariate] <- p_fstat
+    pc_cov_cor[covariate, pc] <- r2 
+  } 
+} 
+pc_cov_cor %>% kable() 
+```
+
+These are more or less in agreement that cell cluster accounts for the vast majority of differences, spanning many high-value PCs.  For the pseudobulk data the first PC does not particularly correlate with cell cluster, which is consistent with the high residuals seen in the variance decomposition.
