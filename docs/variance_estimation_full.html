@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Ben Umans" />
+
+<meta name="date" content="2021-08-06" />
+
+<title>variance_estimation_full</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Organoid_Stress_Pilot</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/bumans/Organoid_Stress_Pilot">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">variance_estimation_full</h1>
+<h4 class="author">Ben Umans</h4>
+<h4 class="date">2021-08-06</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-08-20
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>Organoid_Stress_Pilot/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210705code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210705)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210705code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210705)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree8f37f12bf36803d8ad84933bace4d65311eebc29targetblank8f37f12a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/8f37f12bf36803d8ad84933bace4d65311eebc29" target="_blank">8f37f12</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree8f37f12bf36803d8ad84933bace4d65311eebc29targetblank8f37f12a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/8f37f12bf36803d8ad84933bace4d65311eebc29" target="_blank">8f37f12</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    data/.DS_Store
+    Ignored:    data/fastq/
+    Ignored:    output/.DS_Store
+    Ignored:    output/YG-BU-01_human/
+    Ignored:    output/YG-BU-02_human/
+    Ignored:    output/YG-BU-03_human/
+    Ignored:    output/YG-BU-04_human/
+    Ignored:    output/YG-BU-05_human/
+    Ignored:    output/YG-BU-06_human/
+    Ignored:    output/YG-BU-07_human/
+    Ignored:    output/YG-BU-08_human/
+    Ignored:    output/YG-BU-09_human/
+    Ignored:    output/YG-BU-10_human/
+    Ignored:    output/YG-BU-11_human/
+    Ignored:    output/fitmm0.neuron.RDS
+    Ignored:    output/fitmm1.neuron.RDS
+    Ignored:    output/fitmm2.neuron.RDS
+    Ignored:    output/fitmm3.neuron.RDS
+    Ignored:    output/fitmm4.neuron.RDS
+    Ignored:    output/fitmm5.neuron.RDS
+    Ignored:    output/fitmm6.neuron.RDS
+    Ignored:    output/fitmm7.neuron.RDS
+    Ignored:    output/fitmm8.neuron.RDS
+    Ignored:    output/merged_full_dataset.RDS
+    Ignored:    output/neuron0_oxidation_table.csv
+    Ignored:    output/neuron1_oxidation_table.csv
+    Ignored:    output/neuron2_oxidation_table.csv
+    Ignored:    output/neuron3_oxidation_table.csv
+    Ignored:    output/neuron4_oxidation_table.csv
+    Ignored:    output/neuron5_oxidation_table.csv
+    Ignored:    output/neuron6_oxidation_table.csv
+    Ignored:    output/neuron7_oxidation_table.csv
+    Ignored:    output/neuron8_oxidation_table.csv
+    Ignored:    output/organoid.combined.full.sct.neuron.RDS
+    Ignored:    output/organoid.combined.sct.neuron.markers.RDS
+    Ignored:    output/organoid.combined.sct03.RDS
+    Ignored:    output/organoid.combined.sct05.RDS
+    Ignored:    output/organoid.combined.sct1.RDS
+
+Untracked files:
+    Untracked:  analysis/cell_cycle_full.Rmd
+    Untracked:  data/Snakefile_cellranger
+    Untracked:  data/all.vcf.bed
+    Untracked:  data/australia.rds
+    Untracked:  data/cellranger.38.dict
+    Untracked:  data/cluster.json
+    Untracked:  data/config.yaml
+    Untracked:  data/environment.yaml
+    Untracked:  data/exclude_fulldata.rds
+    Untracked:  data/human.unsorted.vcf
+    Untracked:  data/human.vcf
+    Untracked:  data/human.vcf.bed
+    Untracked:  data/library9.rds
+    Untracked:  data/log/
+    Untracked:  data/mysterycell.rds
+    Untracked:  data/organoid.combined.sct03.neuron.RDS
+    Untracked:  data/organoid_combined_sct03.RDS
+    Untracked:  data/reheaded.vcf
+    Untracked:  data/snakelog.out
+    Untracked:  data/snakemake_cellranger.batch
+    Untracked:  data/sorted.vcf
+    Untracked:  data/submit.sh
+    Untracked:  data/unsorted.vcf
+    Untracked:  data/unsorted_header
+    Untracked:  data_S2/
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   analysis/combine_experiments.Rmd
+    Modified:   analysis/de_full.Rmd
+    Modified:   analysis/merge_full_data.Rmd
+    Modified:   analysis/precheck.Rmd
+    Modified:   analysis/remove-mesenchyme.Rmd
+    Modified:   analysis/variance-estimation.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/variance_estimation_full.Rmd</code>) and HTML (<code>docs/variance_estimation_full.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/8f37f12bf36803d8ad84933bace4d65311eebc29/analysis/variance_estimation_full.Rmd" target="_blank">8f37f12</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-08-20
+</td>
+<td>
+Compiled after lab meeting 8/18/21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Instead of looking individually at each cluster, in order to assess the contributors to variation in the whole experiment I’ll consider the whole dataset(s), pseudobulked into their respective clusters.</p>
+<pre class="r"><code>pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)</code></pre>
+<pre><code>── Attaching packages ────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>✓ tibble  3.1.2     ✓ dplyr   1.0.7
+✓ tidyr   1.1.3     ✓ stringr 1.4.0
+✓ readr   1.4.0     ✓ forcats 0.5.1
+✓ purrr   0.3.4     </code></pre>
+<pre><code>── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+x purrr::accumulate()      masks foreach::accumulate()
+x readr::col_factor()      masks scales::col_factor()
+x dplyr::combine()         masks Biobase::combine(), BiocGenerics::combine()
+x purrr::discard()         masks scales::discard()
+x dplyr::filter()          masks stats::filter()
+x dplyr::lag()             masks stats::lag()
+x BiocGenerics::Position() masks ggplot2::Position(), base::Position()
+x purrr::when()            masks foreach::when()</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(RColorBrewer)
+library(cowplot)</code></pre>
+<pre><code>
+********************************************************</code></pre>
+<pre><code>Note: As of version 1.0.0, cowplot does not change the</code></pre>
+<pre><code>  default ggplot2 theme anymore. To recover the previous</code></pre>
+<pre><code>  behavior, execute:
+  theme_set(theme_cowplot())</code></pre>
+<pre><code>********************************************************</code></pre>
+<pre class="r"><code>library(knitr)
+Sys.setenv(TZ=&#39;America/Chicago&#39;)
+
+generate.pseudobulk &lt;- function(object, labels, assay=&quot;RNA&quot;,slot=&quot;counts&quot;) {
+  factorlist &lt;- list()
+  for (i in labels) factorlist[[i]] &lt;- unique(object@meta.data[,i])
+  meta &lt;- expand.grid(factorlist, stringsAsFactors = FALSE)
+  rownames(meta) &lt;- apply(meta, 1, function(x) paste0(x, collapse = &#39;.&#39;))
+  # build the output matrix
+  n &lt;- nrow(meta)
+  out &lt;- matrix(nrow=dim(object[[assay]])[1], ncol=n, data=0)
+  rownames(out) &lt;- rownames(object[[assay]])
+  colnames(out) &lt;- rownames(meta)
+  ncells &lt;- c()
+  ncounts &lt;- c()
+  total.cells &lt;- dim(object[[assay]])[2]
+  for (i in 1:n)
+  {
+    #prog(i,n)
+    cells &lt;- 1:total.cells
+    for (j in names(meta)) {
+      keep  &lt;- which(object@meta.data[[j]] == meta[i,j])
+      cells &lt;- cells[cells %in% keep]
+    }
+    ncells[i] &lt;- length(cells)
+    ncounts[i] &lt;- sum(slot(object[[assay]], slot)[,cells])
+    #some other thing to measure
+    if (length(cells)==1) {
+      out[,i] &lt;- slot(object[[assay]], slot)[,cells]
+    } else {
+      out[,i] &lt;- Matrix::rowSums(slot(object[[assay]], slot)[,cells])
+    }
+  }
+  meta$ncells &lt;- ncells
+  meta$ncounts &lt;- ncounts/max(ncounts)
+  #add that something else as metadata
+  return(list(counts=out, meta=meta))
+}
+
+# keep only levels with more than &#39;threshold&#39; cells
+filter.pseudobulk &lt;- function(pseudobulk, threshold = 0) {
+  w &lt;- which(pseudobulk$meta$ncells &gt; threshold)
+  pseudobulk$counts &lt;- pseudobulk$counts[,w]
+  pseudobulk$meta &lt;- pseudobulk$meta[w,]
+  pseudobulk
+}
+
+newqqplot=function(pvals, quant, title){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+  plot(res$x,res$y, main=title, xlab=&quot;Theoretical&quot;, ylab=&quot;Actual&quot;, col=ifelse(res$y&gt;as.numeric(quantile(res$y, quant[1])), ifelse(res$y&gt;as.numeric(quantile(res$y, quant[2])), &quot;red&quot;, &quot;blue&quot;), &quot;black&quot;))
+  abline(0, 1)
+}
+
+organoid.combined.sct &lt;- readRDS(file = &quot;output/merged_full_dataset.RDS&quot;)
+organoid.combined.sct.neuron &lt;- readRDS(file = &quot;output/organoid.combined.full.sct.neuron.RDS&quot;)
+param = SnowParam(20, &quot;SOCK&quot;, progressbar=TRUE)
+register(param)</code></pre>
+<p>I’ll start by looking at the whole neuronal dataset in aggregate.</p>
+<pre class="r"><code>pseudo.neuron &lt;- generate.pseudobulk(organoid.combined.sct.neuron, labels = c(&quot;seurat_clusters&quot;, &quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+pseudo.neuron &lt;- filter.pseudobulk(pseudo.neuron)
+d.neuron &lt;- DGEList(pseudo.neuron$counts)
+meta_d.neuron &lt;- d.neuron$samples[,c(&quot;lib.size&quot;,&quot;norm.factors&quot;)]
+meta_d.neuron &lt;- cbind(meta_d.neuron, pseudo.neuron$meta)
+d.neuron$samples &lt;- meta_d.neuron
+keep.neuron &lt;- filterByExpr(d.neuron) #, group=d10.full$samples$stim
+d.neuron &lt;- d.neuron[keep.neuron,]
+d.neuron &lt;- calcNormFactors(d.neuron, method = &quot;TMM&quot;)
+
+fbase &lt;- ~  (1|seurat_clusters) + (1|cell.line) + (1|stim) + (1|replicate)
+voomed.varpart.neuron &lt;- voomWithDreamWeights(d.neuron, fbase, d.neuron$samples, plot=TRUE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 187 Mb 
+Dividing work into 100 chunks...
+
+Total: 101 s</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/varpart-neuron-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>varpart.neuron &lt;- fitExtractVarPartModel(voomed.varpart.neuron, fbase, d.neuron$samples)</code></pre>
+<pre><code>Dividing work into 100 chunks...
+
+Total: 123 s</code></pre>
+<pre class="r"><code>head(varpart.neuron[order(varpart.neuron$stim, decreasing=TRUE),])</code></pre>
+<pre><code>            cell.line  replicate seurat_clusters      stim Residuals
+PDK1     0.0009095869 0.05230315       0.1603782 0.4610488 0.3253603
+ANKRD37  0.0114691676 0.09017977       0.1640024 0.4435252 0.2908235
+DDIT4    0.0048576663 0.01498010       0.3423209 0.3793108 0.2585305
+MTFP1    0.0210815751 0.06377289       0.2593170 0.3490097 0.3068188
+FUT11    0.0113449677 0.15871350       0.1707366 0.3393506 0.3198543
+MIR210HG 0.0120744208 0.13644330       0.2324590 0.3286134 0.2904098</code></pre>
+<pre class="r"><code>vp.neuron &lt;- sortCols(varpart.neuron)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp.neuron) + ggtitle(&quot;Variance partition neurons (resolution=0.1)&quot;)</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/varpart-neuron-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggsave(&quot;docs/figure/neuronal_varpart.png&quot;)</code></pre>
+<p>How many cells are in each group here?</p>
+<pre class="r"><code>table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$stim) %&gt;% kable(caption=&quot;Cells by cluster and treatment, neuronal datset&quot;)</code></pre>
+<table>
+<caption>Cells by cluster and treatment, neuronal datset</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">control</th>
+<th align="right">oxidation</th>
+<th align="right">pff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td align="right">2659</td>
+<td align="right">4239</td>
+<td align="right">752</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td align="right">2287</td>
+<td align="right">3492</td>
+<td align="right">765</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td align="right">1684</td>
+<td align="right">2048</td>
+<td align="right">389</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td align="right">1717</td>
+<td align="right">1878</td>
+<td align="right">395</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td align="right">1446</td>
+<td align="right">1755</td>
+<td align="right">500</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td align="right">1736</td>
+<td align="right">746</td>
+<td align="right">115</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td align="right">1162</td>
+<td align="right">927</td>
+<td align="right">370</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td align="right">749</td>
+<td align="right">1162</td>
+<td align="right">169</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td align="right">652</td>
+<td align="right">1013</td>
+<td align="right">302</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$replicate) %&gt;% kable(caption=&quot;Cells by cluster and replicate, neuronal datset&quot;)</code></pre>
+<table>
+<caption>Cells by cluster and replicate, neuronal datset</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">2</th>
+<th align="right">3</th>
+<th align="right">4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td align="right">2303</td>
+<td align="right">1471</td>
+<td align="right">3876</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td align="right">2353</td>
+<td align="right">947</td>
+<td align="right">3244</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td align="right">1269</td>
+<td align="right">967</td>
+<td align="right">1885</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td align="right">1336</td>
+<td align="right">1102</td>
+<td align="right">1552</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td align="right">1465</td>
+<td align="right">866</td>
+<td align="right">1370</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td align="right">415</td>
+<td align="right">1568</td>
+<td align="right">614</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td align="right">971</td>
+<td align="right">581</td>
+<td align="right">907</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td align="right">594</td>
+<td align="right">417</td>
+<td align="right">1069</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td align="right">1146</td>
+<td align="right">320</td>
+<td align="right">501</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$cell.line) %&gt;% kable(caption=&quot;Cells by cluster and cell line, neuronal datset&quot;)</code></pre>
+<table>
+<caption>Cells by cluster and cell line, neuronal datset</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">20157</th>
+<th align="right">23555</th>
+<th align="right">28126</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td align="right">1055</td>
+<td align="right">2152</td>
+<td align="right">4443</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td align="right">908</td>
+<td align="right">3295</td>
+<td align="right">2341</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td align="right">702</td>
+<td align="right">1509</td>
+<td align="right">1910</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td align="right">710</td>
+<td align="right">1435</td>
+<td align="right">1845</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td align="right">446</td>
+<td align="right">1458</td>
+<td align="right">1797</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td align="right">474</td>
+<td align="right">422</td>
+<td align="right">1701</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td align="right">1202</td>
+<td align="right">667</td>
+<td align="right">590</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td align="right">274</td>
+<td align="right">866</td>
+<td align="right">940</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td align="right">442</td>
+<td align="right">973</td>
+<td align="right">552</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table(organoid.combined.sct.neuron$stim, organoid.combined.sct.neuron$cell.line) %&gt;% kable(caption=&quot;Cells by treatment and individual, full datset&quot;)</code></pre>
+<table>
+<caption>Cells by treatment and individual, full datset</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">20157</th>
+<th align="right">23555</th>
+<th align="right">28126</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>control</td>
+<td align="right">1941</td>
+<td align="right">4286</td>
+<td align="right">7865</td>
+</tr>
+<tr class="even">
+<td>oxidation</td>
+<td align="right">3964</td>
+<td align="right">6761</td>
+<td align="right">6535</td>
+</tr>
+<tr class="odd">
+<td>pff</td>
+<td align="right">308</td>
+<td align="right">1730</td>
+<td align="right">1719</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>groups &lt;- table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$cell.line, organoid.combined.sct.neuron$replicate, organoid.combined.sct.neuron$stim)
+
+ggplot(data.frame(x=as.vector(groups)), aes(x=x)) + geom_histogram() + xlab(&quot;Cells per pseudobulk cluster&quot;) + ggtitle(&quot;Nummber of cells by grouping (Treatment, Cluster, Replicate, Cell line)&quot;)</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/tables-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggsave(&quot;docs/figure/pseudobulk_histo.png&quot;)</code></pre>
+<pre><code>Saving 7 x 5 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre class="r"><code>#because we filtered empty categories from the pseudobulk data used for testing, instead we&#39;re really using something a little different
+ggplot(data.frame(x=d.neuron$samples$ncells), aes(x=x)) + geom_histogram() + xlab(&quot;Cells per pseudobulk cluster&quot;) + ggtitle(&quot;Pseudobulk cluster sizes (Treatment, Cluster, Replicate, Cell line)&quot;)</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/tables-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>sum(d.neuron$samples$ncells &lt; 50)</code></pre>
+<pre><code>[1] 45</code></pre>
+<pre class="r"><code>sum(as.vector(groups) ==0)</code></pre>
+<pre><code>[1] 60</code></pre>
+</div>
+<div id="pca" class="section level2">
+<h2>PCA</h2>
+<p>How does the variation we see in the pseudobulk data compare to the PCA of the single-cell data? First, are our experimental inputs evenly distributed across the UMAP space?</p>
+<pre class="r"><code># DimPlot(organoid.combined.sct.neuron, reduction = &quot;pca&quot;, group.by = &quot;cell.line&quot;, dims = c(13,15), cols=brewer.pal(3, &quot;Dark2&quot;)) 
+
+DimPlot(organoid.combined.sct.neuron, split.by = &quot;stim&quot;)</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(organoid.combined.sct.neuron, split.by = &quot;cell.line&quot;)</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/unnamed-chunk-1-2.png" width="672" style="display: block; margin: auto;" /> This might be better shown as bar charts.</p>
+<pre class="r"><code>ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=cell.line)) + geom_bar() + scale_fill_brewer(palette = &quot;Set2&quot;, &quot;Cell line&quot;) + xlab(&quot;Seurat cluster&quot;) + ylab(&quot;Cell count&quot;)</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=stim)) + geom_bar() + scale_fill_brewer(palette = &quot;Set2&quot;, &quot;Treatment&quot;) + xlab(&quot;Seurat cluster&quot;) + ylab(&quot;Cell count&quot;)</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Next, we can do PCA and correlate with the different factors.</p>
+<pre class="r"><code>pca = organoid.combined.sct.neuron@reductions$pca
+eigValues = (pca@stdev)^2
+varExplained = eigValues / sum(eigValues)
+sum(varExplained[1:12])</code></pre>
+<pre><code>[1] 0.8081677</code></pre>
+<pre class="r"><code>plot(1:length(varExplained), cumsum(varExplained))</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/neuron-pca-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p_comps &lt;- 1:15
+info &lt;- organoid.combined.sct.neuron@meta.data %&gt;% 
+     dplyr::select(c(seurat_clusters, stim, replicate, cell.line)) #subset sample info for technical/biological variables
+
+scores_cleaned &lt;- pca@cell.embeddings
+pca_genes_cleaned &lt;- pca@feature.loadings
+#Calculate correlations
+pc_cov_cor &lt;- matrix(nrow = ncol(info), ncol = length(p_comps), 
+                      dimnames = list(colnames(info), colnames(pca_genes_cleaned)[p_comps])) 
+
+PC_pvalues &lt;- matrix(data = NA, nrow = 10, ncol = 4, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;, &quot;PC8&quot;, &quot;PC9&quot;, &quot;PC10&quot;), c(&quot;cluster&quot;, &quot;treatment&quot;, &quot;replicate&quot;, &quot;individual&quot;)))
+
+for (pc in p_comps) { 
+  for (covariate in 1:ncol(info)) { 
+        lm_result &lt;- lm(scores_cleaned[, pc] ~ info[, covariate]) 
+    r2 &lt;- summary(lm_result)$r.squared 
+    fstat &lt;- as.data.frame(summary(lm_result)$fstatistic)
+    p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    # PC_pvalues[pc, covariate] &lt;- p_fstat
+    pc_cov_cor[covariate, pc] &lt;- r2 
+  } 
+} 
+pc_cov_cor %&gt;% kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">PC_1</th>
+<th align="right">PC_2</th>
+<th align="right">PC_3</th>
+<th align="right">PC_4</th>
+<th align="right">PC_5</th>
+<th align="right">PC_6</th>
+<th align="right">PC_7</th>
+<th align="right">PC_8</th>
+<th align="right">PC_9</th>
+<th align="right">PC_10</th>
+<th align="right">PC_11</th>
+<th align="right">PC_12</th>
+<th align="right">PC_13</th>
+<th align="right">PC_14</th>
+<th align="right">PC_15</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>seurat_clusters</td>
+<td align="right">0.8958403</td>
+<td align="right">0.7895935</td>
+<td align="right">0.6707008</td>
+<td align="right">0.7290044</td>
+<td align="right">0.6701770</td>
+<td align="right">0.5782462</td>
+<td align="right">0.7102727</td>
+<td align="right">0.3513164</td>
+<td align="right">0.4469069</td>
+<td align="right">0.1222642</td>
+<td align="right">0.3089429</td>
+<td align="right">0.1223491</td>
+<td align="right">0.0910588</td>
+<td align="right">0.0700613</td>
+<td align="right">0.0702346</td>
+</tr>
+<tr class="even">
+<td>stim</td>
+<td align="right">0.0036428</td>
+<td align="right">0.0021280</td>
+<td align="right">0.0016955</td>
+<td align="right">0.0004588</td>
+<td align="right">0.0028168</td>
+<td align="right">0.0032903</td>
+<td align="right">0.0091703</td>
+<td align="right">0.0011491</td>
+<td align="right">0.0035367</td>
+<td align="right">0.0035304</td>
+<td align="right">0.0035998</td>
+<td align="right">0.0003040</td>
+<td align="right">0.0012347</td>
+<td align="right">0.0006850</td>
+<td align="right">0.0003050</td>
+</tr>
+<tr class="odd">
+<td>replicate</td>
+<td align="right">0.0056036</td>
+<td align="right">0.0021071</td>
+<td align="right">0.0070883</td>
+<td align="right">0.0066260</td>
+<td align="right">0.0235621</td>
+<td align="right">0.0135693</td>
+<td align="right">0.0176683</td>
+<td align="right">0.0051979</td>
+<td align="right">0.0046823</td>
+<td align="right">0.0060312</td>
+<td align="right">0.0084960</td>
+<td align="right">0.0015327</td>
+<td align="right">0.0046115</td>
+<td align="right">0.0065685</td>
+<td align="right">0.0004392</td>
+</tr>
+<tr class="even">
+<td>cell.line</td>
+<td align="right">0.0091985</td>
+<td align="right">0.0138512</td>
+<td align="right">0.0133252</td>
+<td align="right">0.0031600</td>
+<td align="right">0.0116446</td>
+<td align="right">0.0349659</td>
+<td align="right">0.0215569</td>
+<td align="right">0.0764785</td>
+<td align="right">0.0195194</td>
+<td align="right">0.0004518</td>
+<td align="right">0.0007923</td>
+<td align="right">0.0128102</td>
+<td align="right">0.0890779</td>
+<td align="right">0.0323441</td>
+<td align="right">0.0212478</td>
+</tr>
+</tbody>
+</table>
+<p>Now look at the pseudobulked data.</p>
+<pre class="r"><code>cleaned.cpm &lt;- cpm(d.neuron, log=TRUE, normalized.lib.sizes = T)
+
+#PCA
+pca_genes_cleaned &lt;- prcomp(t(cleaned.cpm), scale = T)
+scores_cleaned &lt;- pca_genes_cleaned$x
+
+variances_cleaned &lt;- pca_genes_cleaned$sdev^2
+explained_cleaned &lt;- variances_cleaned / sum(variances_cleaned)
+plot(pca_genes_cleaned, main = &quot;Variance per PC&quot;)</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot(explained_cleaned, main = &quot;Fraction of variation explained per PC&quot;)</code></pre>
+<p><img src="figure/variance_estimation_full.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p_comps &lt;- 1:8
+info &lt;- d.neuron$samples %&gt;% 
+     dplyr::select(c(seurat_clusters, stim, replicate, cell.line)) #subset sample info for technical/biological variables
+
+#Calculate correlations
+pc_cov_cor &lt;- matrix(nrow = ncol(info), ncol = length(p_comps), 
+                      dimnames = list(colnames(info), colnames(pca_genes_cleaned$x)[p_comps])) 
+
+PC_pvalues &lt;- matrix(data = NA, nrow = 8, ncol = 4, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;, &quot;PC8&quot;), c(&quot;cluster&quot;, &quot;treatment&quot;, &quot;replicate&quot;, &quot;individual&quot;)))
+
+for (pc in p_comps) { 
+  for (covariate in 1:ncol(info)) { 
+        lm_result &lt;- lm(pca_genes_cleaned$x[, pc] ~ info[, covariate]) 
+    r2 &lt;- summary(lm_result)$r.squared 
+    fstat &lt;- as.data.frame(summary(lm_result)$fstatistic)
+    p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    PC_pvalues[pc, covariate] &lt;- p_fstat
+    pc_cov_cor[covariate, pc] &lt;- r2 
+  } 
+} 
+pc_cov_cor %&gt;% kable() </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">PC1</th>
+<th align="right">PC2</th>
+<th align="right">PC3</th>
+<th align="right">PC4</th>
+<th align="right">PC5</th>
+<th align="right">PC6</th>
+<th align="right">PC7</th>
+<th align="right">PC8</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>seurat_clusters</td>
+<td align="right">0.0667616</td>
+<td align="right">0.9303017</td>
+<td align="right">0.6162137</td>
+<td align="right">0.4693923</td>
+<td align="right">0.3191905</td>
+<td align="right">0.2485544</td>
+<td align="right">0.2530975</td>
+<td align="right">0.1071118</td>
+</tr>
+<tr class="even">
+<td>stim</td>
+<td align="right">0.0151410</td>
+<td align="right">0.0036333</td>
+<td align="right">0.0241423</td>
+<td align="right">0.0068561</td>
+<td align="right">0.1015355</td>
+<td align="right">0.0390607</td>
+<td align="right">0.0173576</td>
+<td align="right">0.0011135</td>
+</tr>
+<tr class="odd">
+<td>replicate</td>
+<td align="right">0.0367503</td>
+<td align="right">0.0071796</td>
+<td align="right">0.0076231</td>
+<td align="right">0.0062657</td>
+<td align="right">0.0055593</td>
+<td align="right">0.0129276</td>
+<td align="right">0.0118573</td>
+<td align="right">0.0022477</td>
+</tr>
+<tr class="even">
+<td>cell.line</td>
+<td align="right">0.0289105</td>
+<td align="right">0.0086637</td>
+<td align="right">0.0045266</td>
+<td align="right">0.0077564</td>
+<td align="right">0.0523037</td>
+<td align="right">0.0032288</td>
+<td align="right">0.0070238</td>
+<td align="right">0.0094167</td>
+</tr>
+</tbody>
+</table>
+<p>These are more or less in agreement that cell cluster accounts for the vast majority of differences, spanning many high-value PCs. For the pseudobulk data the first PC does not particularly correlate with cell cluster, which is consistent with the high residuals seen in the variance decomposition.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.6.1 (2019-07-05)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Scientific Linux 7.4 (Nitrogen)
+
+Matrix products: default
+BLAS/LAPACK: /software/openblas-0.2.19-el7-x86_64/lib/libopenblas_haswellp-r0.2.19.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] parallel  stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] knitr_1.23               cowplot_1.0.0           
+ [3] RColorBrewer_1.1-2       forcats_0.5.1           
+ [5] stringr_1.4.0            dplyr_1.0.7             
+ [7] purrr_0.3.4              readr_1.4.0             
+ [9] tidyr_1.1.3              tibble_3.1.2            
+[11] tidyverse_1.3.1          Seurat_3.1.3            
+[13] BiocParallel_1.18.0      variancePartition_1.14.1
+[15] Biobase_2.44.0           BiocGenerics_0.30.0     
+[17] scales_1.1.1             foreach_1.5.1           
+[19] ggplot2_3.3.5            edgeR_3.26.5            
+[21] limma_3.40.6             workflowr_1.6.2         
+
+loaded via a namespace (and not attached):
+  [1] snow_0.4-3          readxl_1.3.1        backports_1.2.1    
+  [4] plyr_1.8.6          igraph_1.2.4.1      lazyeval_0.2.2     
+  [7] splines_3.6.1       listenv_0.7.0       digest_0.6.27      
+ [10] htmltools_0.5.1.1   gdata_2.18.0        fansi_0.5.0        
+ [13] magrittr_2.0.1      cluster_2.1.0       doParallel_1.0.14  
+ [16] ROCR_1.0-7          globals_0.12.4      modelr_0.1.8       
+ [19] RcppParallel_5.1.4  prettyunits_1.1.1   colorspace_2.0-2   
+ [22] rvest_1.0.0         rappdirs_0.3.1      ggrepel_0.8.1      
+ [25] haven_2.3.1         xfun_0.24           crayon_1.4.1       
+ [28] jsonlite_1.7.2      lme4_1.1-21         survival_3.2-11    
+ [31] zoo_1.8-6           iterators_1.0.13    ape_5.4-1          
+ [34] glue_1.4.2          gtable_0.3.0        leiden_0.3.1       
+ [37] future.apply_1.3.0  DBI_1.1.0           bibtex_0.4.2       
+ [40] Rcpp_1.0.6          metap_1.1           viridisLite_0.3.0  
+ [43] progress_1.2.2      reticulate_1.16     rsvd_1.0.1         
+ [46] tsne_0.1-3          htmlwidgets_1.5.3   httr_1.4.2         
+ [49] gplots_3.0.1.1      ellipsis_0.3.2      ica_1.0-2          
+ [52] farver_2.1.0        pkgconfig_2.0.3     uwot_0.1.5         
+ [55] dbplyr_2.1.1        locfit_1.5-9.1      utf8_1.1.4         
+ [58] labeling_0.4.2      tidyselect_1.1.0    rlang_0.4.11       
+ [61] reshape2_1.4.4      later_1.2.0         cellranger_1.1.0   
+ [64] munsell_0.5.0       tools_3.6.1         cli_2.5.0          
+ [67] generics_0.1.0      pacman_0.5.1        broom_0.7.8        
+ [70] ggridges_0.5.1      evaluate_0.14       yaml_2.2.1         
+ [73] npsurv_0.4-0        fs_1.3.1            fitdistrplus_1.0-14
+ [76] caTools_1.17.1.2    RANN_2.6.1          pbapply_1.4-0      
+ [79] future_1.14.0       nlme_3.1-140        whisker_0.3-2      
+ [82] xml2_1.3.2          rstudioapi_0.13     compiler_3.6.1     
+ [85] pbkrtest_0.4-7      plotly_4.9.4.1      png_0.1-7          
+ [88] lsei_1.2-0          reprex_2.0.0        stringi_1.6.2      
+ [91] highr_0.8           lattice_0.20-38     Matrix_1.2-18      
+ [94] nloptr_1.2.2.1      vctrs_0.3.8         pillar_1.6.1       
+ [97] lifecycle_1.0.0     Rdpack_0.11-0       lmtest_0.9-37      
+[100] RcppAnnoy_0.0.12    data.table_1.14.0   bitops_1.0-6       
+[103] irlba_2.3.3         gbRd_0.4-11         httpuv_1.6.1       
+[106] colorRamps_2.3      R6_2.5.0            promises_1.2.0.1   
+[109] KernSmooth_2.23-15  gridExtra_2.3       codetools_0.2-16   
+[112] boot_1.3-23         MASS_7.3-51.4       gtools_3.8.1       
+[115] assertthat_0.2.1    rprojroot_2.0.2     withr_2.4.2        
+[118] sctransform_0.2.0   hms_1.1.0           grid_3.6.1         
+[121] minqa_1.2.4         rmarkdown_1.13      Rtsne_0.15         
+[124] git2r_0.26.1        lubridate_1.7.10   </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
