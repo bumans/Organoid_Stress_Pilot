@@ -1,0 +1,2899 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Ben Umans" />
+
+<meta name="date" content="2021-09-03" />
+
+<title>de_parameter_effects</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Organoid_Stress_Pilot</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/bumans/Organoid_Stress_Pilot">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">de_parameter_effects</h1>
+<h4 class="author">Ben Umans</h4>
+<h4 class="date">2021-09-03</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-11-04
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>Organoid_Stress_Pilot/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210705code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210705)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210705code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210705)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottreea2e11f4f8d56641720947fb9c1397e3ec82c9e30targetblanka2e11f4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/a2e11f4f8d56641720947fb9c1397e3ec82c9e30" target="_blank">a2e11f4</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottreea2e11f4f8d56641720947fb9c1397e3ec82c9e30targetblanka2e11f4a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/a2e11f4f8d56641720947fb9c1397e3ec82c9e30" target="_blank">a2e11f4</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    analysis/figure/
+    Ignored:    data/.DS_Store
+    Ignored:    output/.DS_Store
+    Ignored:    output/4vs_avg-expression.png
+    Ignored:    output/4vs_logfc.png
+    Ignored:    output/4vs_pvals.png
+    Ignored:    output/de_clusters_interaction.Rmd
+    Ignored:    output/de_clusters_interaction2.Rmd
+    Ignored:    output/fitmm0.neuron.RDS
+    Ignored:    output/fitmm1.neuron.RDS
+    Ignored:    output/fitmm2.neuron.RDS
+    Ignored:    output/fitmm3.neuron.RDS
+    Ignored:    output/fitmm4.neuron.RDS
+    Ignored:    output/fitmm5.neuron.RDS
+    Ignored:    output/fitmm6.neuron.RDS
+    Ignored:    output/fitmm7.neuron.RDS
+    Ignored:    output/fitmm8.neuron.RDS
+    Ignored:    output/genes_MT.png
+    Ignored:    output/genes_cells.png
+    Ignored:    output/genes_umi-cluster.png
+    Ignored:    output/genes_umi.png
+    Ignored:    output/interaction_varpart.csv
+    Ignored:    output/merged_full_dataset.RDS
+    Ignored:    output/neuron0_oxidation_table.csv
+    Ignored:    output/neuron1_oxidation_table.csv
+    Ignored:    output/neuron2_oxidation_table.csv
+    Ignored:    output/neuron3_oxidation_table.csv
+    Ignored:    output/neuron4_oxidation_table.csv
+    Ignored:    output/neuron5_oxidation_table.csv
+    Ignored:    output/neuron6_oxidation_table.csv
+    Ignored:    output/neuron7_oxidation_table.csv
+    Ignored:    output/neuron8_oxidation_table.csv
+    Ignored:    output/organoid.combined.full.sct.neuron.RDS
+    Ignored:    output/organoid.combined.sct.neuron.markers.RDS
+    Ignored:    output/organoid.combined.sct.neuron.unstim.markers.RDS
+    Ignored:    output/organoid.combined.sct03.RDS
+    Ignored:    output/organoid.combined.sct05.RDS
+    Ignored:    output/organoid.combined.sct1.RDS
+    Ignored:    output/organoid_combined_sct_neuron_resolution_0.02.png
+    Ignored:    output/organoid_combined_sct_neuron_resolution_0.05.png
+    Ignored:    output/organoid_combined_sct_neuron_resolution_0.1.png
+    Ignored:    output/organoid_combined_sct_neuron_resolution_0.3.png
+    Ignored:    output/organoid_combined_sct_neuron_resolution_0.5.png
+    Ignored:    output/resolution_test.csv
+    Ignored:    output/resolution_test_pff.csv
+
+Untracked files:
+    Untracked:  analysis/cell_cycle_full.Rmd
+    Untracked:  analysis/topics.Rmd
+    Untracked:  data/Snakefile_cellranger
+    Untracked:  data/all.vcf.bed
+    Untracked:  data/australia.rds
+    Untracked:  data/cellranger.38.dict
+    Untracked:  data/cluster.json
+    Untracked:  data/config.yaml
+    Untracked:  data/environment.yaml
+    Untracked:  data/exclude_fulldata.rds
+    Untracked:  data/human.unsorted.vcf
+    Untracked:  data/human.vcf
+    Untracked:  data/human.vcf.bed
+    Untracked:  data/library9.rds
+    Untracked:  data/log/
+    Untracked:  data/mysterycell.rds
+    Untracked:  data/organoid.combined.sct03.neuron.RDS
+    Untracked:  data/organoid_combined_sct03.RDS
+    Untracked:  data/reheaded.vcf
+    Untracked:  data/snakelog.out
+    Untracked:  data/snakemake_cellranger.batch
+    Untracked:  data/sorted.vcf
+    Untracked:  data/submit.sh
+    Untracked:  data/unsorted.vcf
+    Untracked:  data/unsorted_header
+    Untracked:  data_S2/
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   analysis/combine_experiments.Rmd
+    Modified:   analysis/de_full.Rmd
+    Modified:   analysis/merge_full_data.Rmd
+    Modified:   analysis/precheck.Rmd
+    Modified:   analysis/remove-mesenchyme.Rmd
+    Modified:   analysis/variance-estimation.Rmd
+    Modified:   analysis/yoav_meetings.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/de_parameter_effects.Rmd</code>) and HTML (<code>docs/de_parameter_effects.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/a2e11f4f8d56641720947fb9c1397e3ec82c9e30/analysis/de_parameter_effects.Rmd" target="_blank">a2e11f4</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-11-04
+</td>
+<td>
+wflow_publish(c(“analysis/de_parameter_effects.Rmd”, “analysis/variance_estimation_full.Rmd”))
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>In the oxidative stress experiment, I found this curious result, that the number of DE genes was very very different among different cell type clusters. Why might this be? There might be biological differences between these cell types that render them differently sensitive to oxidative stress. For instance, NPCs are much more metabolically plastic than neurons and are <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204647/">not strictly dependent</a> on oxidative phosphorylation. Alternatively, there might be more mundane technical explanations for this observation, such as the clustering resolution of the data (e.g., biologically significant clusters my split or merge from each other at different resolutions), RNA content, cell health, etc.</p>
+<p>If this observation is technically sound, then it would be interesting to search for biological correlates (rationales??) for it, i.e. explanations for the phenotype of having many/few DE genes in response to oxygen shift. For those clusters that don’t follow the trend of their technically-defined neighbors, there might be an expression “signature” (or topic) that helps define their responsiveness.</p>
+</div>
+<div id="test-de" class="section level2">
+<h2>Test DE</h2>
+<p>To start, I need to test for DE across different resolutions and gather the results so I can see the influence of modulating this parameter. If there are resolutions that induce a noticeable shift in the distribution of DE genes, I can zoom in on those and try to see which clusters are involved.</p>
+<pre class="r"><code>Sys.setenv(TZ=&#39;America/Chicago&#39;)
+pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(cowplot)
+library(knitr)
+library(scHCL)</code></pre>
+<pre><code>Warning: replacing previous import &#39;shiny::dataTableOutput&#39; by
+&#39;DT::dataTableOutput&#39; when loading &#39;scHCL&#39;</code></pre>
+<pre><code>Warning: replacing previous import &#39;shiny::renderDataTable&#39; by
+&#39;DT::renderDataTable&#39; when loading &#39;scHCL&#39;</code></pre>
+<pre class="r"><code>generate.pseudobulk &lt;- function(object, labels, assay=&quot;RNA&quot;,slot=&quot;counts&quot;) {
+  factorlist &lt;- list()
+  for (i in labels) factorlist[[i]] &lt;- unique(object@meta.data[,i])
+  meta &lt;- expand.grid(factorlist, stringsAsFactors = FALSE)
+  rownames(meta) &lt;- apply(meta, 1, function(x) paste0(x, collapse = &#39;.&#39;))
+  # build the output matrix
+  n &lt;- nrow(meta)
+  out &lt;- matrix(nrow=dim(object[[assay]])[1], ncol=n, data=0)
+  rownames(out) &lt;- rownames(object[[assay]])
+  colnames(out) &lt;- rownames(meta)
+  ncells &lt;- c()
+  ncounts &lt;- c()
+  total.cells &lt;- dim(object[[assay]])[2]
+  for (i in 1:n)
+  {
+    #prog(i,n)
+    cells &lt;- 1:total.cells
+    for (j in names(meta)) {
+      keep  &lt;- which(object@meta.data[[j]] == meta[i,j])
+      cells &lt;- cells[cells %in% keep]
+    }
+    ncells[i] &lt;- length(cells)
+    ncounts[i] &lt;- sum(slot(object[[assay]], slot)[,cells])
+    #some other thing to measure
+    if (length(cells)==1) {
+      out[,i] &lt;- slot(object[[assay]], slot)[,cells]
+    } else {
+      out[,i] &lt;- Matrix::rowSums(slot(object[[assay]], slot)[,cells])
+    }
+  }
+  meta$ncells &lt;- ncells
+  meta$ncounts &lt;- ncounts/max(ncounts)
+  #add that something else as metadata
+  return(list(counts=out, meta=meta))
+}
+
+# keep only levels with more than &#39;threshold&#39; cells
+filter.pseudobulk &lt;- function(pseudobulk, threshold = 0) {
+  w &lt;- which(pseudobulk$meta$ncells &gt; threshold)
+  pseudobulk$counts &lt;- pseudobulk$counts[,w]
+  pseudobulk$meta &lt;- pseudobulk$meta[w,]
+  pseudobulk
+}
+
+organoid.combined.sct.neuron &lt;- readRDS(file = &quot;output/organoid.combined.full.sct.neuron.RDS&quot;)</code></pre>
+<p>Now I’ll write a function that: <em>clusters the data for resolution r </em>generates k pseudobulk clusters from the data *tests for DE, storing the number of DE genes in a list (indexed by resolution) with a table recording, for each cluster, the number of DE genes, number of cells, median UMI count/cell, average mitochondrial content, proportion of cells from each cell line</p>
+<pre class="r"><code>seurat_input &lt;- organoid.combined.sct.neuron
+param = SnowParam(20, &quot;SOCK&quot;, progressbar=TRUE)
+register(param) 
+formde &lt;- ~  stim + (1|cell.line) + (1|replicate)
+
+test_de &lt;- function(seurat_input, r, model_formula, coef_test, pseudo_factors){
+  #start by clustering the data according to resolution r
+  seurat_input &lt;- FindClusters(seurat_input, resolution=r)
+  print(paste0(length(unique(seurat_input$seurat_clusters)), &quot; clusters found at resolution &quot;, r, &quot;. Generating pseudobulk data.&quot;))
+  q &lt;- max(as.numeric(levels(unique(seurat_input$seurat_clusters))))
+  #generate pseudobulk
+  pseudo &lt;- vector(mode = &quot;list&quot;, length = q+1)
+  names(pseudo) &lt;- as.character(0:q) 
+  for (k in 0:q) {
+    pseudo[[as.character(k)]] &lt;- filter.pseudobulk(generate.pseudobulk(subset(seurat_input, idents=c(k)), labels = pseudo_factors))
+  }
+  print(&quot;Generated pseudobulk data. Initializing results table.&quot;)
+  #set up output data structure
+  
+  results &lt;- data.frame(Cluster = 0:q,
+                        Genes = rep(0, q+1),
+                        Cells = rep(NA, q+1),
+                        UMI = rep(NA, q+1),
+                        MT = rep(NA, q+1))
+  
+  for (i in 0:q){
+    print(i)
+    results$Cells[i+1] &lt;- table(seurat_input$seurat_clusters)[[i+1]]
+    results$UMI[i+1] &lt;- median(subset(seurat_input, idents=c(i))$nCount_RNA)
+    results$MT[i+1] &lt;- median(subset(seurat_input, idents=c(i))$percent.mt)
+  }
+  print(&quot;Results table initialized. Beginning DE testing by cluster.&quot;)
+  print(results)
+#set up DE testing
+  for (j in 0:q){
+    print(j)
+    d &lt;- DGEList(pseudo[[as.character(j)]]$counts)
+    d$samples &lt;- cbind(d$samples[,c(&quot;lib.size&quot;,&quot;norm.factors&quot;)], pseudo[[as.character(j)]]$meta)
+    keepgenes &lt;- filterByExpr(d$counts, group = d$samples$stim)
+    d &lt;- d[keepgenes,]
+    d &lt;- calcNormFactors(d, method = &quot;TMM&quot;)
+    v &lt;- voomWithDreamWeights(d, model_formula, d$samples, plot=FALSE)
+    modelfit &lt;- dream(v, model_formula, d$samples)
+    
+    print(paste0(&quot;Tested cluster &quot;, j, &quot; for DE genes&quot;))
+    results$Genes[j+1] &lt;- try(sum(topTable(modelfit, coef=coef_test, number = Inf)$adj.P.Val &lt; 0.05), silent = TRUE)
+    # results$Genes[j+1] &lt;- ifelse(try(nrow(topTable(modelfit, coef=coef_test, p.value = 0.05, number = Inf)), silent = TRUE)&gt;0,
+    #        nrow(topTable(modelfit, coef=coef_test, number = Inf)),
+    #        0)
+    rm(d, keepgenes, v, modelfit)
+    print(paste0(&quot;Finished DE testing of cluster &quot;, j))
+    print(results)
+  }
+  return(results)
+}</code></pre>
+<p>It seems to work pretty well. So, now I’ll simply loop over different resolutions and return a list of result tables.</p>
+<pre class="r"><code>output &lt;- vector(mode = &quot;list&quot;, length = 5)
+names(output) &lt;- as.character(c(0.02, 0.05, 0.1, 0.3, 0.5))
+for (res in names(output)) {
+    output[[res]] &lt;- test_de(organoid.combined.sct.neuron, r = as.numeric(res), model_formula = formde, coef_test = &quot;stimoxidation&quot;, pseudo_factors = c(&quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+}</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9869
+Number of communities: 3
+Elapsed time: 11 seconds
+[1] &quot;3 clusters found at resolution 0.02. Generating pseudobulk data.&quot;
+[1] &quot;Generated pseudobulk data. Initializing results table.&quot;
+[1] 0
+[1] 1
+[1] 2
+[1] &quot;Results table initialized. Beginning DE testing by cluster.&quot;
+  Cluster Genes Cells   UMI       MT
+1       0     0 19962 16136 2.662075
+2       1     0 12553 22234 3.373250
+3       2     0  2594 12803 2.602050
+[1] 0
+Memory usage to store result: &gt; 49 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 81 s</code></pre>
+<pre><code>Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+unique &#39;x&#39; values</code></pre>
+<pre><code>Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 128 s
+[1] &quot;Tested cluster 0 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 0&quot;
+  Cluster Genes Cells   UMI       MT
+1       0   329 19962 16136 2.662075
+2       1     0 12553 22234 3.373250
+3       2     0  2594 12803 2.602050
+[1] 1
+Memory usage to store result: &gt; 46.9 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 79 s</code></pre>
+<pre><code>Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+unique &#39;x&#39; values</code></pre>
+<pre><code>Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 125 s
+[1] &quot;Tested cluster 1 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 1&quot;
+  Cluster Genes Cells   UMI       MT
+1       0   329 19962 16136 2.662075
+2       1  1580 12553 22234 3.373250
+3       2     0  2594 12803 2.602050
+[1] 2
+Memory usage to store result: &gt; 29.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 72 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 101 s
+[1] &quot;Tested cluster 2 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 2&quot;
+  Cluster Genes Cells   UMI       MT
+1       0   329 19962 16136 2.662075
+2       1  1580 12553 22234 3.373250
+3       2     2  2594 12803 2.602050
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9738
+Number of communities: 4
+Elapsed time: 8 seconds
+[1] &quot;4 clusters found at resolution 0.05. Generating pseudobulk data.&quot;
+[1] &quot;Generated pseudobulk data. Initializing results table.&quot;
+[1] 0
+[1] 1
+[1] 2
+[1] 3
+[1] &quot;Results table initialized. Beginning DE testing by cluster.&quot;
+  Cluster Genes Cells   UMI       MT
+1       0     0 19861 16146 2.667709
+2       1     0  6579 23428 3.825169
+3       2     0  6073 20419 3.024871
+4       3     0  2596 12803 2.599139
+[1] 0
+Memory usage to store result: &gt; 48.9 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 80 s</code></pre>
+<pre><code>Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+unique &#39;x&#39; values</code></pre>
+<pre><code>Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 126 s
+[1] &quot;Tested cluster 0 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 0&quot;
+  Cluster Genes Cells   UMI       MT
+1       0   289 19861 16146 2.667709
+2       1     0  6579 23428 3.825169
+3       2     0  6073 20419 3.024871
+4       3     0  2596 12803 2.599139
+[1] 1
+Memory usage to store result: &gt; 43.3 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 78 s</code></pre>
+<pre><code>Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+unique &#39;x&#39; values</code></pre>
+<pre><code>Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 122 s
+[1] &quot;Tested cluster 1 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 1&quot;
+  Cluster Genes Cells   UMI       MT
+1       0   289 19861 16146 2.667709
+2       1  1704  6579 23428 3.825169
+3       2     0  6073 20419 3.024871
+4       3     0  2596 12803 2.599139
+[1] 2
+Memory usage to store result: &gt; 38.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 80 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 112 s
+[1] &quot;Tested cluster 2 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 2&quot;
+  Cluster Genes Cells   UMI       MT
+1       0   289 19861 16146 2.667709
+2       1  1704  6579 23428 3.825169
+3       2   263  6073 20419 3.024871
+4       3     0  2596 12803 2.599139
+[1] 3
+Memory usage to store result: &gt; 29.6 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 73 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 101 s
+[1] &quot;Tested cluster 3 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 3&quot;
+  Cluster Genes Cells   UMI       MT
+1       0   289 19861 16146 2.667709
+2       1  1704  6579 23428 3.825169
+3       2   263  6073 20419 3.024871
+4       3     2  2596 12803 2.599139
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9615
+Number of communities: 9
+Elapsed time: 9 seconds
+[1] &quot;9 clusters found at resolution 0.1. Generating pseudobulk data.&quot;
+[1] &quot;Generated pseudobulk data. Initializing results table.&quot;
+[1] 0
+[1] 1
+[1] 2
+[1] 3
+[1] 4
+[1] 5
+[1] 6
+[1] 7
+[1] 8
+[1] &quot;Results table initialized. Beginning DE testing by cluster.&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     0  7650 13442.0 3.125646
+2       1     0  6544 21226.0 2.609822
+3       2     0  4121 20452.0 3.401315
+4       3     0  3990 25626.0 2.867644
+5       4     0  3701 12006.0 1.337530
+6       5     0  2597 12802.0 2.601468
+7       6     0  2459 31003.0 4.536254
+8       7     0  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 0
+Memory usage to store result: &gt; 35.3 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 77 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 112 s
+[1] &quot;Tested cluster 0 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 0&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     0  6544 21226.0 2.609822
+3       2     0  4121 20452.0 3.401315
+4       3     0  3990 25626.0 2.867644
+5       4     0  3701 12006.0 1.337530
+6       5     0  2597 12802.0 2.601468
+7       6     0  2459 31003.0 4.536254
+8       7     0  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 1
+Memory usage to store result: &gt; 38.6 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 79 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 119 s
+[1] &quot;Tested cluster 1 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 1&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     1  6544 21226.0 2.609822
+3       2     0  4121 20452.0 3.401315
+4       3     0  3990 25626.0 2.867644
+5       4     0  3701 12006.0 1.337530
+6       5     0  2597 12802.0 2.601468
+7       6     0  2459 31003.0 4.536254
+8       7     0  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 2
+Memory usage to store result: &gt; 35.4 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 77 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 112 s
+[1] &quot;Tested cluster 2 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 2&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     1  6544 21226.0 2.609822
+3       2   468  4121 20452.0 3.401315
+4       3     0  3990 25626.0 2.867644
+5       4     0  3701 12006.0 1.337530
+6       5     0  2597 12802.0 2.601468
+7       6     0  2459 31003.0 4.536254
+8       7     0  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 3
+Memory usage to store result: &gt; 36.9 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 77 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 113 s
+[1] &quot;Tested cluster 3 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 3&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     1  6544 21226.0 2.609822
+3       2   468  4121 20452.0 3.401315
+4       3   111  3990 25626.0 2.867644
+5       4     0  3701 12006.0 1.337530
+6       5     0  2597 12802.0 2.601468
+7       6     0  2459 31003.0 4.536254
+8       7     0  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 4
+Memory usage to store result: &gt; 33 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 75 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 107 s
+[1] &quot;Tested cluster 4 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 4&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     1  6544 21226.0 2.609822
+3       2   468  4121 20452.0 3.401315
+4       3   111  3990 25626.0 2.867644
+5       4  1405  3701 12006.0 1.337530
+6       5     0  2597 12802.0 2.601468
+7       6     0  2459 31003.0 4.536254
+8       7     0  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 5
+Memory usage to store result: &gt; 29.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 74 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 103 s
+[1] &quot;Tested cluster 5 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 5&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     1  6544 21226.0 2.609822
+3       2   468  4121 20452.0 3.401315
+4       3   111  3990 25626.0 2.867644
+5       4  1405  3701 12006.0 1.337530
+6       5     2  2597 12802.0 2.601468
+7       6     0  2459 31003.0 4.536254
+8       7     0  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 6
+Memory usage to store result: &gt; 37.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 75 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 112 s
+[1] &quot;Tested cluster 6 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 6&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     1  6544 21226.0 2.609822
+3       2   468  4121 20452.0 3.401315
+4       3   111  3990 25626.0 2.867644
+5       4  1405  3701 12006.0 1.337530
+6       5     2  2597 12802.0 2.601468
+7       6   862  2459 31003.0 4.536254
+8       7     0  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 7
+Memory usage to store result: &gt; 28.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 73 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 101 s
+[1] &quot;Tested cluster 7 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 7&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     1  6544 21226.0 2.609822
+3       2   468  4121 20452.0 3.401315
+4       3   111  3990 25626.0 2.867644
+5       4  1405  3701 12006.0 1.337530
+6       5     2  2597 12802.0 2.601468
+7       6   862  2459 31003.0 4.536254
+8       7     8  2080 13218.5 3.341796
+9       8     0  1967 23409.0 2.919140
+[1] 8
+Memory usage to store result: &gt; 31.5 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 74 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 107 s
+[1] &quot;Tested cluster 8 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 8&quot;
+  Cluster Genes Cells     UMI       MT
+1       0     1  7650 13442.0 3.125646
+2       1     1  6544 21226.0 2.609822
+3       2   468  4121 20452.0 3.401315
+4       3   111  3990 25626.0 2.867644
+5       4  1405  3701 12006.0 1.337530
+6       5     2  2597 12802.0 2.601468
+7       6   862  2459 31003.0 4.536254
+8       7     8  2080 13218.5 3.341796
+9       8   190  1967 23409.0 2.919140
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9344
+Number of communities: 11
+Elapsed time: 10 seconds
+[1] &quot;11 clusters found at resolution 0.3. Generating pseudobulk data.&quot;
+[1] &quot;Generated pseudobulk data. Initializing results table.&quot;
+[1] 0
+[1] 1
+[1] 2
+[1] 3
+[1] 4
+[1] 5
+[1] 6
+[1] 7
+[1] 8
+[1] 9
+[1] 10
+[1] &quot;Results table initialized. Beginning DE testing by cluster.&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2     0  4124 20438.5 3.401202
+4        3     0  3821 11953.0 1.359824
+5        4     0  2484 24410.5 3.010377
+6        5     0  2464 31016.5 4.537811
+7        6     0  2427 23631.0 2.869823
+8        7     0  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 0
+Memory usage to store result: &gt; 35.6 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 84 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 120 s
+[1] &quot;Tested cluster 0 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 0&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2     0  4124 20438.5 3.401202
+4        3     0  3821 11953.0 1.359824
+5        4     0  2484 24410.5 3.010377
+6        5     0  2464 31016.5 4.537811
+7        6     0  2427 23631.0 2.869823
+8        7     0  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 1
+Memory usage to store result: &gt; 38.4 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 84 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 123 s
+[1] &quot;Tested cluster 1 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 1&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2     0  4124 20438.5 3.401202
+4        3     0  3821 11953.0 1.359824
+5        4     0  2484 24410.5 3.010377
+6        5     0  2464 31016.5 4.537811
+7        6     0  2427 23631.0 2.869823
+8        7     0  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 2
+Memory usage to store result: &gt; 35.4 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 82 s</code></pre>
+<pre><code>Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+unique &#39;x&#39; values</code></pre>
+<pre><code>Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 118 s
+[1] &quot;Tested cluster 2 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 2&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3     0  3821 11953.0 1.359824
+5        4     0  2484 24410.5 3.010377
+6        5     0  2464 31016.5 4.537811
+7        6     0  2427 23631.0 2.869823
+8        7     0  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 3
+Memory usage to store result: &gt; 32.8 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 81 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 113 s
+[1] &quot;Tested cluster 3 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 3&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3  1306  3821 11953.0 1.359824
+5        4     0  2484 24410.5 3.010377
+6        5     0  2464 31016.5 4.537811
+7        6     0  2427 23631.0 2.869823
+8        7     0  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 4
+Memory usage to store result: &gt; 33.6 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 82 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 114 s
+[1] &quot;Tested cluster 4 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 4&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3  1306  3821 11953.0 1.359824
+5        4    34  2484 24410.5 3.010377
+6        5     0  2464 31016.5 4.537811
+7        6     0  2427 23631.0 2.869823
+8        7     0  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 5
+Memory usage to store result: &gt; 37.8 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 83 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 121 s
+[1] &quot;Tested cluster 5 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 5&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3  1306  3821 11953.0 1.359824
+5        4    34  2484 24410.5 3.010377
+6        5   889  2464 31016.5 4.537811
+7        6     0  2427 23631.0 2.869823
+8        7     0  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 6
+Memory usage to store result: &gt; 33.5 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 83 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 115 s
+[1] &quot;Tested cluster 6 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 6&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3  1306  3821 11953.0 1.359824
+5        4    34  2484 24410.5 3.010377
+6        5   889  2464 31016.5 4.537811
+7        6   265  2427 23631.0 2.869823
+8        7     0  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 7
+Memory usage to store result: &gt; 28.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 78 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 107 s
+[1] &quot;Tested cluster 7 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 7&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3  1306  3821 11953.0 1.359824
+5        4    34  2484 24410.5 3.010377
+6        5   889  2464 31016.5 4.537811
+7        6   265  2427 23631.0 2.869823
+8        7    10  2081 13221.0 3.342875
+9        8     0  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 8
+Memory usage to store result: &gt; 31.8 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 81 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 113 s
+[1] &quot;Tested cluster 8 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 8&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3  1306  3821 11953.0 1.359824
+5        4    34  2484 24410.5 3.010377
+6        5   889  2464 31016.5 4.537811
+7        6   265  2427 23631.0 2.869823
+8        7    10  2081 13221.0 3.342875
+9        8    10  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 9
+Memory usage to store result: &gt; 6.8 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 36 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 60 s
+[1] &quot;Tested cluster 9 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 9&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3  1306  3821 11953.0 1.359824
+5        4    34  2484 24410.5 3.010377
+6        5   889  2464 31016.5 4.537811
+7        6   265  2427 23631.0 2.869823
+8        7    10  2081 13221.0 3.342875
+9        8    10  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10     0  1303 21135.0 3.300971
+[1] 10
+Memory usage to store result: &gt; 27.3 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 81 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 108 s
+[1] &quot;Tested cluster 10 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 10&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  7177 13284.0 3.171827
+2        1     0  6329 20787.0 2.585245
+3        2   494  4124 20438.5 3.401202
+4        3  1306  3821 11953.0 1.359824
+5        4    34  2484 24410.5 3.010377
+6        5   889  2464 31016.5 4.537811
+7        6   265  2427 23631.0 2.869823
+8        7    10  2081 13221.0 3.342875
+9        8    10  1499 28234.0 2.659594
+10       9     0  1400  9998.5 2.240633
+11      10    39  1303 21135.0 3.300971
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9169
+Number of communities: 16
+Elapsed time: 9 seconds
+[1] &quot;16 clusters found at resolution 0.5. Generating pseudobulk data.&quot;
+[1] &quot;Generated pseudobulk data. Initializing results table.&quot;
+[1] 0
+[1] 1
+[1] 2
+[1] 3
+[1] 4
+[1] 5
+[1] 6
+[1] 7
+[1] 8
+[1] 9
+[1] 10
+[1] 11
+[1] 12
+[1] 13
+[1] 14
+[1] 15
+[1] &quot;Results table initialized. Beginning DE testing by cluster.&quot;
+   Cluster Genes Cells     UMI       MT
+1        0     0  3953 18857.0 2.506358
+2        1     0  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     0  2838 20579.5 4.070771
+6        5     0  2456 30971.0 4.537811
+7        6     0  2399 23745.0 2.872872
+8        7     0  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 0
+Memory usage to store result: &gt; 33.1 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 86 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 120 s
+[1] &quot;Tested cluster 0 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 0&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1     0  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     0  2838 20579.5 4.070771
+6        5     0  2456 30971.0 4.537811
+7        6     0  2399 23745.0 2.872872
+8        7     0  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 1
+Memory usage to store result: &gt; 32.6 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 82 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 115 s
+[1] &quot;Tested cluster 1 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 1&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     0  2838 20579.5 4.070771
+6        5     0  2456 30971.0 4.537811
+7        6     0  2399 23745.0 2.872872
+8        7     0  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 2
+Memory usage to store result: &gt; 30 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 84 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 113 s
+[1] &quot;Tested cluster 2 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 2&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     0  2838 20579.5 4.070771
+6        5     0  2456 30971.0 4.537811
+7        6     0  2399 23745.0 2.872872
+8        7     0  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 3
+Memory usage to store result: &gt; 26.3 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 82 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 112 s
+[1] &quot;Tested cluster 3 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 3&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     0  2838 20579.5 4.070771
+6        5     0  2456 30971.0 4.537811
+7        6     0  2399 23745.0 2.872872
+8        7     0  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 4
+Memory usage to store result: &gt; 32.5 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 84 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 117 s
+[1] &quot;Tested cluster 4 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 4&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5     0  2456 30971.0 4.537811
+7        6     0  2399 23745.0 2.872872
+8        7     0  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 5
+Memory usage to store result: &gt; 37.6 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 88 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 123 s
+[1] &quot;Tested cluster 5 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 5&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6     0  2399 23745.0 2.872872
+8        7     0  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 6
+Memory usage to store result: &gt; 33.4 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 86 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 119 s
+[1] &quot;Tested cluster 6 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 6&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7     0  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 7
+Memory usage to store result: &gt; 32 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 82 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 114 s
+[1] &quot;Tested cluster 7 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 7&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     0  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 8
+Memory usage to store result: &gt; 28.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 81 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 109 s
+[1] &quot;Tested cluster 8 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 8&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     6  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 9
+Memory usage to store result: &gt; 30.4 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 84 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 117 s
+[1] &quot;Tested cluster 9 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 9&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     6  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     0  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 10
+Memory usage to store result: &gt; 28.4 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 83 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 112 s
+[1] &quot;Tested cluster 10 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 10&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     6  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     1  1663 17844.0 3.083188
+12      11     0  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 11
+Memory usage to store result: &gt; 31.8 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 86 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 117 s
+[1] &quot;Tested cluster 11 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 11&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     6  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     1  1663 17844.0 3.083188
+12      11    10  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 12
+Memory usage to store result: &gt; 6.8 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 37 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 62 s
+[1] &quot;Tested cluster 12 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 12&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     6  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     1  1663 17844.0 3.083188
+12      11    10  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13     0  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 13
+Memory usage to store result: &gt; 28.6 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 83 s</code></pre>
+<pre><code>Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+unique &#39;x&#39; values</code></pre>
+<pre><code>Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 114 s
+[1] &quot;Tested cluster 13 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 13&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     6  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     1  1663 17844.0 3.083188
+12      11    10  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13  1943  1275 20131.0 1.721304
+15      14     0  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 14
+Memory usage to store result: &gt; 24.9 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 80 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 107 s
+[1] &quot;Tested cluster 14 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 14&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     6  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     1  1663 17844.0 3.083188
+12      11    10  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13  1943  1275 20131.0 1.721304
+15      14    18  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699
+[1] 15
+Memory usage to store result: &gt; 20.8 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 67 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 100 s
+[1] &quot;Tested cluster 15 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 15&quot;
+   Cluster Genes Cells     UMI       MT
+1        0   122  3953 18857.0 2.506358
+2        1  1287  3714 11802.0 1.350476
+3        2     0  3346 12052.5 3.194232
+4        3     0  2907 14004.0 3.030303
+5        4     1  2838 20579.5 4.070771
+6        5   860  2456 30971.0 4.537811
+7        6   266  2399 23745.0 2.872872
+8        7    18  2293 23752.0 2.939831
+9        8     6  2091 13234.0 3.338362
+10       9     0  1880 26872.0 2.779928
+11      10     1  1663 17844.0 3.083188
+12      11    10  1499 28234.0 2.659594
+13      12     0  1400  9998.5 2.240633
+14      13  1943  1275 20131.0 1.721304
+15      14    18  1197 20141.0 3.223270
+16      15     0   198 41543.0 3.939699</code></pre>
+<pre class="r"><code># write_csv(x = bind_rows(output, .id = &quot;resolution&quot;), file = &#39;output/resolution_test.csv&#39;, col_names = T)</code></pre>
+<p>What do these look like?</p>
+<pre class="r"><code>for (r in c(0.02, 0.05, 0.1, 0.3, 0.5)){
+  organoid.combined.sct.neuron &lt;- FindClusters(organoid.combined.sct.neuron, resolution=r)
+  DimPlot(organoid.combined.sct.neuron, label = TRUE) + labs(title = paste0(&quot;Resolution &quot;, r))
+  # ggsave(paste0(&quot;output/organoid_combined_sct_neuron_resolution_&quot;, r, &quot;.png&quot;))
+}</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9869
+Number of communities: 3
+Elapsed time: 9 seconds</code></pre>
+<pre><code>Warning: Using `as.character()` on a quosure is deprecated as of rlang 0.3.0.
+Please use `as_label()` or `as_name()` instead.
+This warning is displayed once per session.</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9738
+Number of communities: 4
+Elapsed time: 9 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9615
+Number of communities: 9
+Elapsed time: 9 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9344
+Number of communities: 11
+Elapsed time: 11 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9169
+Number of communities: 16
+Elapsed time: 10 seconds</code></pre>
+<p>Can any of this be explained by features of the clusters? Let’s treat each cluster independently (that is, look across resolutions) and simply correlate with cell number, MT content, etc.</p>
+<pre class="r"><code>plot_output &lt;- bind_rows(output, .id = &quot;resolution&quot;)
+plot_output$highlight &lt;- &quot;no&quot;
+plot_output$highlight[c(12,20,29)] &lt;- &quot;yes&quot;
+
+ggplot(data = plot_output, aes(x=Cells, y=Genes)) + geom_point() + gghighlight::gghighlight(highlight==&quot;yes&quot;, unhighlighted_params = list(color=&quot;cornflowerblue&quot;)) + ggtitle(&quot;DE Genes/cluster by cells/cluster&quot;) + ylab(&quot;DE Genes (5% FDR)&quot;) + xlab(&quot;Cells/cluster&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(&quot;output/ges_cells.png&quot;)
+
+ggplot(data = plot_output, aes(x=UMI, y=Genes)) + geom_point() + gghighlight::gghighlight(highlight==&quot;yes&quot;, unhighlighted_params = list(color=&quot;cornflowerblue&quot;)) + ggtitle(&quot;DE Genes/cluster by median UMI/cell&quot;) + ylab(&quot;DE Genes (5% FDR)&quot;) + xlab(&quot;UMI/cluster&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(&quot;output/genes_umi.png&quot;)
+
+ggplot(data = plot_output, aes(x=MT, y=Genes)) + geom_point() + gghighlight::gghighlight(highlight==&quot;yes&quot;, unhighlighted_params = list(color=&quot;cornflowerblue&quot;)) + ggtitle(&quot;DE Genes/cluster by median MT read %&quot;) + ylab(&quot;DE Genes (5% FDR)&quot;) </code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(&quot;output/genes_MT.png&quot;)
+
+ggplot(data = plot_output, aes(x=Cells*UMI, y=Genes)) + geom_point() + gghighlight::gghighlight(highlight==&quot;yes&quot;, unhighlighted_params = list(color=&quot;cornflowerblue&quot;)) + ggtitle(&quot;DE Genes/cluster by UMI/cluster&quot;) + ylab(&quot;DE Genes (5% FDR)&quot;) + xlab(&quot;Total UMI/cluster&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(&quot;output/genes_umi-cluster.png&quot;)</code></pre>
+</div>
+<div id="comparing-de-genes-among-clusters" class="section level2">
+<h2>Comparing DE genes among clusters</h2>
+<p>Now I’d like to figure out whether there’s something about the genes in that cluster that can explain why they’re DE at such a high rate. The alternative would be that there’s something special (biologically) about those <em>cells</em> that explains why they’re particularly susceptible to changes in oxygen. One starting point would be that they seem to have unusually low mitochondrial content, although the direction of this effect is not really intuitive.</p>
+<p>To start, let’s get the DE genes at resolution 0.1 again, this time as a list of the dream outputs.</p>
+<pre class="r"><code>de_genes &lt;- function(seurat_input, r, model_formula,  pseudo_factors){
+  #start by clustering the data according to resolution r
+  seurat_input &lt;- FindClusters(seurat_input, resolution=r)
+  print(paste0(length(unique(seurat_input$seurat_clusters)), &quot; clusters found at resolution &quot;, r, &quot;. Generating pseudobulk data.&quot;))
+  q &lt;- max(as.numeric(levels(unique(seurat_input$seurat_clusters))))
+  #generate pseudobulk
+  pseudo &lt;- vector(mode = &quot;list&quot;, length = q+1)
+  names(pseudo) &lt;- as.character(0:q)
+  for (k in 0:q) {
+    pseudo[[as.character(k)]] &lt;- filter.pseudobulk(generate.pseudobulk(subset(seurat_input, idents=c(k)), labels = pseudo_factors))
+  }
+  print(&quot;Generated pseudobulk data. Initializing results table.&quot;)
+  #set up output data structure
+  
+  results &lt;- vector(mode = &quot;list&quot;, length = q+1)
+  names(results) &lt;- as.character(0:q)
+  
+  print(&quot;Results list initialized. Beginning DE testing by cluster.&quot;)
+  print(results)
+#set up DE testing
+  for (j in 0:q){
+    print(j)
+    d &lt;- DGEList(pseudo[[as.character(j)]]$counts)
+    d$samples &lt;- cbind(d$samples[,c(&quot;lib.size&quot;,&quot;norm.factors&quot;)], pseudo[[as.character(j)]]$meta)
+    keepgenes &lt;- filterByExpr(d$counts, group = d$samples$stim)
+    d &lt;- d[keepgenes,]
+    d &lt;- calcNormFactors(d, method = &quot;TMM&quot;)
+    v &lt;- voomWithDreamWeights(d, model_formula, d$samples, plot=FALSE)
+    modelfit &lt;- dream(v, model_formula, d$samples)
+    
+    print(paste0(&quot;Tested cluster &quot;, j, &quot; for DE genes&quot;))
+    results[[as.character(j)]] &lt;- modelfit
+
+    rm(d, keepgenes, v, modelfit)
+    print(paste0(&quot;Finished DE testing of cluster &quot;, j))
+  }
+  return(results)
+}
+
+de_clusters &lt;- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.1, model_formula = formde, pseudo_factors =  c(&quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 35109
+Number of edges: 1902749
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9615
+Number of communities: 9
+Elapsed time: 9 seconds
+[1] &quot;9 clusters found at resolution 0.1. Generating pseudobulk data.&quot;
+[1] &quot;Generated pseudobulk data. Initializing results table.&quot;
+[1] &quot;Results list initialized. Beginning DE testing by cluster.&quot;
+$`0`
+NULL
+
+$`1`
+NULL
+
+$`2`
+NULL
+
+$`3`
+NULL
+
+$`4`
+NULL
+
+$`5`
+NULL
+
+$`6`
+NULL
+
+$`7`
+NULL
+
+$`8`
+NULL
+
+[1] 0
+Memory usage to store result: &gt; 35.3 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 85 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 122 s
+[1] &quot;Tested cluster 0 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 0&quot;
+[1] 1
+Memory usage to store result: &gt; 38.6 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 89 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 129 s
+[1] &quot;Tested cluster 1 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 1&quot;
+[1] 2
+Memory usage to store result: &gt; 35.4 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 86 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 123 s
+[1] &quot;Tested cluster 2 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 2&quot;
+[1] 3
+Memory usage to store result: &gt; 36.9 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 87 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 123 s
+[1] &quot;Tested cluster 3 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 3&quot;
+[1] 4
+Memory usage to store result: &gt; 33 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 84 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 119 s
+[1] &quot;Tested cluster 4 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 4&quot;
+[1] 5
+Memory usage to store result: &gt; 29.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 81 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 113 s
+[1] &quot;Tested cluster 5 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 5&quot;
+[1] 6
+Memory usage to store result: &gt; 37.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 87 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 123 s
+[1] &quot;Tested cluster 6 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 6&quot;
+[1] 7
+Memory usage to store result: &gt; 28.7 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 82 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 110 s
+[1] &quot;Tested cluster 7 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 7&quot;
+[1] 8
+Memory usage to store result: &gt; 31.5 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 84 s
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 116 s
+[1] &quot;Tested cluster 8 for DE genes&quot;
+[1] &quot;Finished DE testing of cluster 8&quot;</code></pre>
+<p>Now I’d like to know whether the genes that are DE in cluster 4 are expressed in other clusters. For each gene, I can plot the difference in average expression relative to cluster 4 (clusterk[geneX] - cluster4[geneX]), separating DE and non-DE genes (for some p-value threshold).</p>
+<p>First, let’s see whether the distribution of expression levels is similar for DE and non-DE genes in cluster 4.</p>
+<pre class="r"><code>ggplot(as_tibble(topTable(de_clusters$`4`,coef = &quot;stimoxidation&quot;, number=Inf)), aes(AveExpr)) +
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(adj.P.Val &lt; 0.1) + 
+  ggtitle(&quot;Average expression, all genes vs DE genes cluster 4&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /> Doesn’t really look like the DE genes within cluster 4 are those that are highly or lowly expressed.</p>
+<pre class="r"><code>cluster4 &lt;- data.frame(topTable(de_clusters$`4`,coef = &quot;stimoxidation&quot;, number=Inf)) %&gt;% rownames_to_column(var=&quot;gene&quot;)
+head(cluster4)</code></pre>
+<pre><code>        gene      logFC  AveExpr         t      P.Value    adj.P.Val
+1     DNAAF2  0.7234249 4.782282  8.715953 7.080660e-08 0.0005044179
+2 AP000662.1  1.3807101 2.260911  9.549166 8.786019e-08 0.0005044179
+3   C19orf18  2.2130395 3.404914  9.803202 1.069286e-07 0.0005044179
+4     ERV3-1  0.5852534 4.753625  8.539469 2.458266e-07 0.0008697344
+5      BNIP3 -1.4028868 8.753703 -7.289770 8.972466e-07 0.0025393649
+6 AC005899.8  1.5030210 3.789450  7.922650 1.304077e-06 0.0025393649
+      z.std
+1  5.389112
+2  5.350194
+3  5.314537
+4  5.160853
+5 -4.912931
+6  4.839132</code></pre>
+<pre class="r"><code>gene_names &lt;- subset(cluster4, adj.P.Val &lt;= 0.05)$gene
+  
+cluster_expression &lt;- as.character(0:8) %&gt;% map(.f = ~data.frame(topTable(de_clusters[[.x]],coef = &quot;stimoxidation&quot;, number=Inf)) %&gt;% rownames_to_column(var=&quot;gene&quot;))
+cluster_summary &lt;- bind_rows(cluster_expression, .id = &quot;cluster&quot;)
+cluster_summary$cluster &lt;- as.integer(cluster_summary$cluster) - 1
+
+# ggplot(data.frame(topTable(de_clusters$`2`,coef = &quot;stimoxidation&quot;, number=Inf)) %&gt;% rownames_to_column(var=&quot;gene&quot;),
+#        aes(adj.P.Val)) +
+#   geom_histogram(bins = 50) + 
+#   gghighlight::gghighlight(gene %in% gene_names) + 
+#   geom_vline(xintercept = 0.05) +
+#   ggtitle(&quot;Average expression, all genes vs DE genes cluster 4&quot;)
+
+ggplot(cluster_summary,
+       aes(adj.P.Val)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names) + 
+  geom_vline(xintercept = 0.05) +
+  ggtitle(&quot;Adjusted p-values, all genes vs DE genes cluster 4&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(filename = &quot;output/4vs_pvals.png&quot;)
+
+ggplot(cluster_summary,
+       aes(AveExpr)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names) + 
+  ggtitle(&quot;Average expression, all genes vs DE genes cluster 4&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(filename = &quot;output/4vs_avg-expression.png&quot;)
+
+ggplot(cluster_summary,
+       aes(logFC)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names) + 
+  ggtitle(&quot;logFC, all genes vs DE genes cluster 4&quot;) + 
+  xlim(-2,2)</code></pre>
+<pre><code>Warning: Removed 206 rows containing non-finite values (stat_bin).</code></pre>
+<pre><code>Warning: Removed 89 rows containing non-finite values (stat_bin).</code></pre>
+<pre><code>Warning: Removed 18 rows containing missing values (geom_bar).
+
+Warning: Removed 18 rows containing missing values (geom_bar).</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(filename = &quot;output/4vs_logfc.png&quot;)</code></pre>
+<p>Confirm that this is not simply a feature of the genes that are DE in this cluster being expressed (at appreciable levels) only in this cluster. One way to look at this would be to break down all the DE genes into three categories: expressed in multiple clusters, expressed only in the unique cluster, not expressed in the unique cluster. Where do the DE genes fall? Some Venn diagrams might be helpful, and worth prioritizing by p-value.</p>
+<pre class="r"><code>cluster2 &lt;- data.frame(topTable(de_clusters$`2`,coef = &quot;stimoxidation&quot;, number=Inf)) %&gt;% rownames_to_column(var=&quot;gene&quot;)
+head(cluster2)</code></pre>
+<pre><code>       gene      logFC  AveExpr         t      P.Value   adj.P.Val
+1  CDK5RAP2 -0.3456429 6.170654 -8.051861 6.891163e-07 0.004032898
+2    HMGXB4 -0.3936877 6.113275 -8.431508 1.132801e-06 0.004032898
+3 LINC02516  2.3196393 1.648311  8.430200 1.215808e-06 0.004032898
+4       TST  0.7924636 3.991707  7.746218 1.245059e-06 0.004032898
+5    TECPR2  0.4025281 5.421799  8.311999 1.285099e-06 0.004032898
+6   NUP210L  1.5032073 3.017655  8.079683 2.124500e-06 0.005555922
+      z.std
+1 -4.964406
+2 -4.867044
+3  4.853044
+4  4.848329
+5  4.842045
+6  4.741206</code></pre>
+<pre class="r"><code>gene_names2 &lt;- subset(cluster2, adj.P.Val &lt;= 0.05)$gene
+  
+
+# ggplot(data.frame(topTable(de_clusters$`2`,coef = &quot;stimoxidation&quot;, number=Inf)) %&gt;% rownames_to_column(var=&quot;gene&quot;),
+#        aes(adj.P.Val)) +
+#   geom_histogram(bins = 50) + 
+#   gghighlight::gghighlight(gene %in% gene_names) + 
+#   geom_vline(xintercept = 0.05) +
+#   ggtitle(&quot;Average expression, all genes vs DE genes cluster 4&quot;)
+
+ggplot(cluster_summary,
+       aes(adj.P.Val)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names2) + 
+  geom_vline(xintercept = 0.05) +
+  ggtitle(&quot;Adjusted p-values, all genes vs DE genes cluster 4&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(filename = &quot;output/4vs_pvals.png&quot;)
+
+ggplot(cluster_summary,
+       aes(AveExpr)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names2) + 
+  ggtitle(&quot;Average expression, all genes vs DE genes cluster 4&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(filename = &quot;output/4vs_avg-expression.png&quot;)
+
+ggplot(cluster_summary,
+       aes(logFC)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names2) + 
+  ggtitle(&quot;logFC, all genes vs DE genes cluster 4&quot;) + 
+  xlim(-2,2)</code></pre>
+<pre><code>Warning: Removed 206 rows containing non-finite values (stat_bin).</code></pre>
+<pre><code>Warning: Removed 63 rows containing non-finite values (stat_bin).</code></pre>
+<pre><code>Warning: Removed 18 rows containing missing values (geom_bar).
+
+Warning: Removed 18 rows containing missing values (geom_bar).</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(filename = &quot;output/4vs_logfc.png&quot;)</code></pre>
+<p>What if some genes in <code>gene_names</code> simply aren’t expressed in some clusters? That would make the preceding comparisons less informative. How many genes from <code>gene_names</code> were not even tested for DE in the other clusters?</p>
+<pre class="r"><code>not_expressed &lt;- as.character(0:8) %&gt;% map_dfr(function(x) data.frame(not.expressed = length(gene_names) - sum(gene_names %in% rownames(data.frame(topTable(de_clusters[[x]],coef = &quot;stimoxidation&quot;, number=Inf))))) ) %&gt;% rownames_to_column(var=&quot;cluster&quot;)
+not_expressed$cluster &lt;- as.integer(not_expressed$cluster) - 1
+not_expressed %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">cluster</th>
+<th align="right">not.expressed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">37</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">60</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">81</td>
+</tr>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="right">187</td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">78</td>
+</tr>
+<tr class="even">
+<td align="right">7</td>
+<td align="right">211</td>
+</tr>
+<tr class="odd">
+<td align="right">8</td>
+<td align="right">82</td>
+</tr>
+</tbody>
+</table>
+<p>What about the same with cluster 2?</p>
+<pre class="r"><code>not_expressed2 &lt;- as.character(0:8) %&gt;% 
+  map_dfr(function(x) data.frame(not.expressed = length(gene_names2) - sum(gene_names2 %in% rownames(data.frame(topTable(de_clusters[[x]],coef = &quot;stimoxidation&quot;, number=Inf))))) ) %&gt;%
+  rownames_to_column(var=&quot;cluster&quot;)
+not_expressed2$cluster &lt;- as.integer(not_expressed2$cluster) - 1
+not_expressed2 %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">cluster</th>
+<th align="right">not.expressed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">30</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">14</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">18</td>
+</tr>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">29</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="right">81</td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="right">7</td>
+<td align="right">70</td>
+</tr>
+<tr class="odd">
+<td align="right">8</td>
+<td align="right">55</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>cluster6 &lt;- data.frame(topTable(de_clusters$`6`,coef = &quot;stimoxidation&quot;, number=Inf)) %&gt;% rownames_to_column(var=&quot;gene&quot;)
+head(cluster6)</code></pre>
+<pre><code>        gene      logFC  AveExpr         t      P.Value    adj.P.Val
+1      OXLD1  0.6766107 5.031382  9.983970 2.682401e-08 0.0004336102
+2 AC010210.1  1.3550356 3.296476 10.108140 8.027361e-08 0.0005314739
+3  LINC01937  2.0453529 3.574860  9.862315 9.863419e-08 0.0005314739
+4      KAT6B -0.5444315 6.843784 -8.203977 3.920956e-07 0.0015845562
+5      BRWD1 -0.2818475 6.565220 -8.021287 5.226150e-07 0.0016896143
+6  DDX59-AS1  1.5303274 0.756101  7.696202 7.096365e-07 0.0017822243
+      z.std
+1  5.560995
+2  5.366513
+3  5.329222
+4 -5.072756
+5 -5.017819
+6  4.958708</code></pre>
+<pre class="r"><code>gene_names6 &lt;- subset(cluster6, adj.P.Val &lt;= 0.05)$gene
+
+not_expressed6 &lt;- as.character(0:8) %&gt;% 
+  map_dfr(function(x) data.frame(not.expressed = length(gene_names6) - sum(gene_names6 %in% rownames(data.frame(topTable(de_clusters[[x]],coef = &quot;stimoxidation&quot;, number=Inf))))) ) %&gt;%
+  rownames_to_column(var=&quot;cluster&quot;)
+not_expressed6$cluster &lt;- as.integer(not_expressed6$cluster) - 1
+not_expressed6 %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">cluster</th>
+<th align="right">not.expressed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">66</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">26</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">41</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">63</td>
+</tr>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">60</td>
+</tr>
+<tr class="even">
+<td align="right">5</td>
+<td align="right">136</td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">7</td>
+<td align="right">142</td>
+</tr>
+<tr class="odd">
+<td align="right">8</td>
+<td align="right">101</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="looking-into-cluster-4-further" class="section level2">
+<h2>Looking into cluster 4 further</h2>
+<p>What is cluster 4?? One way to start answering this is to compare to a few human references. Ideally the Shendure reference would be great, but for now I’ll start with scHCL, since it’s so easy to access.</p>
+<pre class="r"><code>cluster4 &lt;- subset(organoid.combined.sct.neuron, idents=c(4))[[&quot;RNA&quot;]]@counts
+
+hcl4 &lt;- scHCL(scdata=cluster4, numbers_plot=3)
+table(hcl4$scHCL) %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Astrocyte_.SLC1A2.high.Adult.Brain_Lake.</td>
+<td align="right">111</td>
+</tr>
+<tr class="even">
+<td align="left">Astrocyte.Fetal.Brain_Zhong.</td>
+<td align="right">1928</td>
+</tr>
+<tr class="odd">
+<td align="left">hRgl2.Fetal.Mid.Brain_LaManno.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Inhibitory.neuron_CXCL14.high.Adult.Brain_Lake.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Neuron.Fetal.Brain_Zhong.</td>
+<td align="right">36</td>
+</tr>
+<tr class="even">
+<td align="left">Oligodendrocyte.progenitor.cell.Adult.Brain_Lake.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Radial.glia_HES1_high.Fetal.Brain3.</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Radial.glia_HES1.high.Fetal.Brain6.</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Stem.cell.Fetal.Brain_Zhong.</td>
+<td align="right">756</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="revisiting-pff-response" class="section level1">
+<h1>Revisiting PFF response</h1>
+<p>Given the strong effect of cluster size (/resolution) on detection of DE genes, I want to revisit whether there might be anything I missed in the SNCA PFF treatment experiments. Seems unlikely, but still worth checking.</p>
+<pre class="r"><code>pff_output &lt;- vector(mode = &quot;list&quot;, length = 5)
+names(pff_output) &lt;- as.character(c(0.05, 0.1, 0.3, 0.5, 0.7))
+for (res in names(pff_output)) {
+    pff_output[[res]] &lt;- test_de(organoid.combined.sct.neuron, r = as.numeric(res), model_formula = formde, coef_test = &quot;stimpff&quot;, pseudo_factors = c(&quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+}
+
+write_csv(x = bind_rows(pff_output, .id = &quot;resolution&quot;), file = &#39;output/resolution_test_pff.csv&#39;, col_names = T)</code></pre>
+<pre class="r"><code>de_clusters_pff_5 &lt;- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.5, model_formula = formde, pseudo_factors =  c(&quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+
+de_clusters_pff_3 &lt;- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.3, model_formula = formde, pseudo_factors =  c(&quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+
+cluster_expression_pff_3 &lt;- as.character(c(1,8,9)) %&gt;% map(.f = ~data.frame(topTable(de_clusters_pff_3[[.x]], coef = &quot;stimpff&quot;, p.value = 0.05)) %&gt;% rownames_to_column(var=&quot;gene&quot;)) %&gt;% bind_rows(.id = &quot;cluster&quot;)
+
+cluster_summary_pff &lt;- bind_rows(cluster_expression_pff, .id = &quot;cluster&quot;)
+cluster_summary_pff$cluster &lt;- as.integer(cluster_summary_pff$cluster) +10
+cluster_summary_pff %&gt;% group_by(cluster) %&gt;% top_n(n=-10, wt=adj.P.Val) %&gt;% kable()</code></pre>
+</div>
+<div id="interaction-effects" class="section level1">
+<h1>Interaction effects?</h1>
+<p>I’ve got plenty of DE genes for the stimulus contrast, but is there any evidence of interaction between stimulus and line? That is, is there a basis (in just these 3 lines) for looking for eQTLs? All I should need is a different model.</p>
+<p>I’ll start by looking at the results of <code>variancePartition</code> in an interaction model:</p>
+<pre class="r"><code>form_interact &lt;- ~  (1|cell.line) + (1|replicate) + (1|stim) + (1|cell.line:stim)
+
+pseudo.neuron &lt;- generate.pseudobulk(subset(organoid.combined.sct.neuron, idents=c(4)), labels =  c(&quot;seurat_clusters&quot;, &quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+pseudo.neuron &lt;- filter.pseudobulk(pseudo.neuron)
+d.neuron &lt;- DGEList(pseudo.neuron$counts)
+meta_d.neuron &lt;- d.neuron$samples[,c(&quot;lib.size&quot;,&quot;norm.factors&quot;)]
+meta_d.neuron &lt;- cbind(meta_d.neuron, pseudo.neuron$meta)
+d.neuron$samples &lt;- meta_d.neuron
+keep.neuron &lt;- filterByExpr(d.neuron) #, group=d10.full$samples$stim
+d.neuron &lt;- d.neuron[keep.neuron,]
+d.neuron &lt;- calcNormFactors(d.neuron, method = &quot;TMM&quot;)
+
+voomed.varpart.neuron &lt;- voomWithDreamWeights(d.neuron, form_interact, d.neuron$samples, plot=TRUE)</code></pre>
+<pre><code>Memory usage to store result: &gt; 26.8 Mb 
+Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 91 s</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>varpart.neuron &lt;- fitExtractVarPartModel(voomed.varpart.neuron, form_interact, d.neuron$samples)</code></pre>
+<pre><code>Dividing work into 100 chunks...</code></pre>
+<pre><code>iteration: 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100</code></pre>
+<pre><code>
+Total: 102 s</code></pre>
+<pre class="r"><code>head(varpart.neuron[order(varpart.neuron$`cell.line:stim`, decreasing=TRUE),], 30)</code></pre>
+<pre><code>            cell.line cell.line:stim    replicate         stim   Residuals
+C12orf45 0.000000e+00      0.9869158 5.356487e-03 5.137187e-06 0.007722586
+ADSL     0.000000e+00      0.9836172 0.000000e+00 0.000000e+00 0.016382764
+ZNF322   2.563276e-06      0.9818239 0.000000e+00 4.676025e-07 0.018173033
+BRD3     1.444025e-07      0.9797464 0.000000e+00 0.000000e+00 0.020253418
+KPNA2    2.474439e-03      0.9783191 1.982145e-03 0.000000e+00 0.017224314
+CPSF7    0.000000e+00      0.9712873 0.000000e+00 0.000000e+00 0.028712714
+CTNNBIP1 0.000000e+00      0.9687131 0.000000e+00 0.000000e+00 0.031286916
+EXTL2    0.000000e+00      0.9656479 5.613878e-03 1.459205e-06 0.028736785
+NEK4     2.977793e-06      0.9617817 9.830965e-04 4.365386e-08 0.037232162
+ISCU     0.000000e+00      0.9610423 0.000000e+00 0.000000e+00 0.038957719
+RNF139   3.068545e-07      0.9605937 1.186380e-09 1.550865e-06 0.039404491
+KLHDC3   3.697270e-08      0.9603248 1.238068e-02 2.448805e-03 0.024845671
+WDR59    8.916164e-06      0.9537358 3.453961e-09 8.704683e-07 0.046254438
+THAP2    0.000000e+00      0.9507327 0.000000e+00 3.193216e-08 0.049267314
+SLC23A2  0.000000e+00      0.9487653 3.200486e-02 2.366722e-08 0.019229832
+MAP1S    1.659643e-07      0.9437768 1.174513e-03 8.417745e-07 0.055047721
+DTX3     8.640373e-08      0.9434819 3.662265e-02 0.000000e+00 0.019895389
+MIA2     0.000000e+00      0.9416003 0.000000e+00 9.716205e-10 0.058399687
+MZT1     4.281570e-04      0.9395807 0.000000e+00 9.804235e-08 0.059991077
+YIPF2    0.000000e+00      0.9339760 0.000000e+00 1.318734e-06 0.066022721
+TMEM43   0.000000e+00      0.9336095 0.000000e+00 1.520307e-07 0.066390377
+MAPKAPK5 0.000000e+00      0.9280440 4.131651e-02 3.277706e-07 0.030639193
+SLC25A1  6.651965e-09      0.9275850 0.000000e+00 2.372374e-03 0.070042655
+GALNT2   0.000000e+00      0.9267075 5.702903e-02 7.186653e-05 0.016191566
+ZNF844   0.000000e+00      0.9230811 0.000000e+00 5.127091e-02 0.025647959
+RNF8     0.000000e+00      0.9216143 0.000000e+00 0.000000e+00 0.078385729
+DHX8     4.936422e-02      0.9155908 7.371373e-03 7.788382e-07 0.027672877
+ECHDC1   6.210300e-02      0.9154920 7.697996e-03 0.000000e+00 0.014706999
+UBP1     2.372554e-08      0.9139809 0.000000e+00 5.189709e-05 0.085967208
+SLC16A9  3.743524e-02      0.9128992 2.998157e-02 0.000000e+00 0.019684008</code></pre>
+<pre class="r"><code>vp.neuron &lt;- sortCols(varpart.neuron)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp.neuron) + ggtitle(&quot;Variance partition neurons (resolution=0.1)&quot;)</code></pre>
+<p><img src="figure/de_parameter_effects.Rmd/unnamed-chunk-14-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(filename = &quot;docs/figure/varpar_interact.png&quot;)
+# write.csv(x = varpart.neuron[order(varpart.neuron$`cell.line:stim`, decreasing=TRUE),], file = &quot;output/interaction_varpart.csv&quot;)
+
+sum(varpart.neuron[order(varpart.neuron$`cell.line:stim`, decreasing=TRUE),2]&gt;0)</code></pre>
+<pre><code>[1] 3993</code></pre>
+<pre class="r"><code>form_interact2 &lt;- ~ stim + stim:cell.line + (1|cell.line) + (1|replicate)
+form_interact3 &lt;- ~ stim + stim*cell.line + (1|cell.line) + (1|replicate)
+
+de_clusters_interaction &lt;- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.1, model_formula = form_interact2, pseudo_factors =  c(&quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+
+as.character(c(1,8,9)) %&gt;% map(.f = ~data.frame(topTable(de_clusters_interaction[[.x]], coef = &quot;stim:cell.line&quot;, p.value = 0.05)) %&gt;% rownames_to_column(var=&quot;gene&quot;)) %&gt;% bind_rows(.id = &quot;cluster&quot;)
+
+
+de_clusters_interaction2 &lt;- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.1, model_formula = form_interact3, pseudo_factors =  c(&quot;stim&quot;, &quot;replicate&quot;, &quot;cell.line&quot;))
+
+saveRDS(de_clusters_interaction, file = &quot;output/de_clusters_interaction.Rmd&quot;)
+saveRDS(de_clusters_interaction2, file = &quot;output/de_clusters_interaction2.Rmd&quot;)</code></pre>
+<pre class="r"><code>de_clusters_interaction &lt;- readRDS(&quot;output/de_clusters_interaction.Rmd&quot;)
+de_clusters_interaction2 &lt;- readRDS(&quot;output/de_clusters_interaction2.Rmd&quot;)
+
+as.character(c(1,4)) %&gt;% map(.f = ~data.frame(topTable(de_clusters_interaction[[.x]], coef = &quot;stimoxidation:cell.line23555&quot;, p.value = 0.05)) %&gt;% rownames_to_column(var=&quot;gene&quot;)) %&gt;% bind_rows(.id = &quot;cluster&quot;)
+
+topTable(de_clusters_interaction[[&quot;4&quot;]], coef = &quot;stimoxidation:cell.line23555&quot;, p.value = 0.05)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.6.1 (2019-07-05)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Scientific Linux 7.4 (Nitrogen)
+
+Matrix products: default
+BLAS/LAPACK: /software/openblas-0.2.19-el7-x86_64/lib/libopenblas_haswellp-r0.2.19.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] parallel  stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] scHCL_0.1.1              knitr_1.23              
+ [3] cowplot_1.1.1            RColorBrewer_1.1-2      
+ [5] forcats_0.5.1            stringr_1.4.0           
+ [7] dplyr_1.0.7              purrr_0.3.4             
+ [9] readr_2.0.2              tidyr_1.1.4             
+[11] tibble_3.1.5             tidyverse_1.3.1         
+[13] Seurat_3.1.3             BiocParallel_1.18.0     
+[15] variancePartition_1.14.1 Biobase_2.44.0          
+[17] BiocGenerics_0.30.0      scales_1.1.1            
+[19] foreach_1.5.1            ggplot2_3.3.5           
+[21] edgeR_3.26.5             limma_3.40.6            
+[23] workflowr_1.6.2         
+
+loaded via a namespace (and not attached):
+  [1] snow_0.4-3          readxl_1.3.1        backports_1.2.1    
+  [4] plyr_1.8.6          igraph_1.2.4.1      lazyeval_0.2.2     
+  [7] splines_3.6.1       listenv_0.8.0       digest_0.6.28      
+ [10] htmltools_0.5.2     lmerTest_3.1-0      gdata_2.18.0       
+ [13] fansi_0.5.0         magrittr_2.0.1      cluster_2.1.0      
+ [16] doParallel_1.0.14   ROCR_1.0-7          tzdb_0.1.2         
+ [19] globals_0.14.0      modelr_0.1.8        prettyunits_1.1.1  
+ [22] colorspace_2.0-2    rvest_1.0.2         rappdirs_0.3.1     
+ [25] ggrepel_0.9.1       haven_2.3.1         xfun_0.27          
+ [28] crayon_1.4.1        jsonlite_1.7.2      lme4_1.1-21        
+ [31] survival_3.2-13     zoo_1.8-6           iterators_1.0.13   
+ [34] ape_5.4-1           glue_1.4.2          gghighlight_0.3.2  
+ [37] gtable_0.3.0        leiden_0.3.1        future.apply_1.3.0 
+ [40] pheatmap_1.0.12     DBI_1.1.0           bibtex_0.4.2       
+ [43] Rcpp_1.0.7          metap_1.1           xtable_1.8-4       
+ [46] viridisLite_0.4.0   progress_1.2.2      reticulate_1.16    
+ [49] rsvd_1.0.1          DT_0.19             tsne_0.1-3         
+ [52] htmlwidgets_1.5.4   httr_1.4.2          gplots_3.0.1.1     
+ [55] ellipsis_0.3.2      ica_1.0-2           farver_2.1.0       
+ [58] pkgconfig_2.0.3     uwot_0.1.10         dbplyr_2.1.1       
+ [61] locfit_1.5-9.1      utf8_1.2.2          labeling_0.4.2     
+ [64] tidyselect_1.1.1    rlang_0.4.12        reshape2_1.4.4     
+ [67] later_1.3.0         cellranger_1.1.0    munsell_0.5.0      
+ [70] tools_3.6.1         cli_3.0.1           generics_0.1.0     
+ [73] pacman_0.5.1        broom_0.7.9         ggridges_0.5.1     
+ [76] evaluate_0.14       fastmap_1.1.0       yaml_2.2.1         
+ [79] npsurv_0.4-0        fs_1.3.1            fitdistrplus_1.0-14
+ [82] caTools_1.17.1.2    RANN_2.6.1          pbapply_1.4-0      
+ [85] future_1.22.1       nlme_3.1-140        mime_0.12          
+ [88] whisker_0.3-2       xml2_1.3.2          shinythemes_1.2.0  
+ [91] rstudioapi_0.13     compiler_3.6.1      pbkrtest_0.4-7     
+ [94] plotly_4.10.0       png_0.1-7           lsei_1.2-0         
+ [97] reprex_2.0.1        stringi_1.7.5       highr_0.8          
+[100] lattice_0.20-38     Matrix_1.2-18       nloptr_1.2.2.1     
+[103] vctrs_0.3.8         pillar_1.6.4        lifecycle_1.0.1    
+[106] Rdpack_0.11-0       lmtest_0.9-37       RcppAnnoy_0.0.19   
+[109] data.table_1.14.2   bitops_1.0-6        irlba_2.3.3        
+[112] gbRd_0.4-11         httpuv_1.6.3        colorRamps_2.3     
+[115] R6_2.5.1            promises_1.2.0.1    KernSmooth_2.23-15 
+[118] gridExtra_2.3       parallelly_1.28.1   codetools_0.2-16   
+[121] boot_1.3-23         MASS_7.3-51.4       gtools_3.8.1       
+[124] assertthat_0.2.1    rprojroot_2.0.2     withr_2.4.2        
+[127] sctransform_0.2.0   hms_1.1.1           grid_3.6.1         
+[130] minqa_1.2.4         rmarkdown_1.13      Rtsne_0.15         
+[133] git2r_0.26.1        numDeriv_2016.8-1.1 shiny_1.7.1        
+[136] lubridate_1.8.0    </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
