@@ -19,6 +19,7 @@ library(ggplot2)
 library(RColorBrewer)
 library(cowplot)
 library(knitr)
+library(viridis)
 Sys.setenv(TZ='America/Chicago')
 
 generate.pseudobulk <- function(object, labels, assay="RNA",slot="counts") {
@@ -114,9 +115,10 @@ table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$cell.li
 
 table(organoid.combined.sct.neuron$stim, organoid.combined.sct.neuron$cell.line) %>% kable(caption="Cells by treatment and individual, full datset")
 
+
 groups <- table(Idents(organoid.combined.sct.neuron), organoid.combined.sct.neuron$cell.line, organoid.combined.sct.neuron$replicate, organoid.combined.sct.neuron$stim)
 
-ggplot(data.frame(x=as.vector(groups)), aes(x=x)) + geom_histogram() + xlab("Cells per pseudobulk cluster") + ggtitle("Nummber of cells by grouping (Treatment, Cluster, Replicate, Cell line)")
+ggplot(data.frame(x=as.vector(groups)), aes(x=x)) + geom_histogram() + xlab("Cells per pseudobulk cluster") + ggtitle("Number of cells by grouping (Treatment, Cluster, Replicate, Cell line)")
 ggsave("docs/figure/pseudobulk_histo.png")
 
 #because we filtered empty categories from the pseudobulk data used for testing, instead we're really using something a little different
@@ -136,14 +138,15 @@ DimPlot(organoid.combined.sct.neuron, split.by = "stim")
 
 DimPlot(organoid.combined.sct.neuron, split.by = "cell.line")
 
-
-
 ```
 This might be better shown as bar charts.
 ```{r}
-ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=cell.line)) + geom_bar() + scale_fill_brewer(palette = "Set2", "Cell line") + xlab("Seurat cluster") + ylab("Cell count")
+ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=stim)) + scale_fill_viridis(discrete=TRUE, "Treatment") +geom_bar()
+ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=cell.line)) + scale_fill_viridis(discrete=TRUE, "Individual") +geom_bar()
+ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=replicate)) + scale_fill_viridis(discrete=TRUE, "Replicate") +geom_bar()
+ggplot(organoid.combined.sct.neuron@meta.data, aes(x=stim, fill=cell.line)) + scale_fill_viridis(discrete=TRUE, "Individual") +geom_bar()
+ggplot(organoid.combined.sct.neuron@meta.data, aes(x=replicate, fill=cell.line)) + scale_fill_viridis(discrete=TRUE, "Individual") +geom_bar()
 
-ggplot(organoid.combined.sct.neuron@meta.data, aes(x=seurat_clusters, fill=stim)) + geom_bar() + scale_fill_brewer(palette = "Set2", "Treatment") + xlab("Seurat cluster") + ylab("Cell count")
 
 ```
 

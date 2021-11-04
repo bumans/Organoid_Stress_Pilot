@@ -1,0 +1,448 @@
+---
+title: "de_parameter_effects"
+author: "Ben Umans"
+date: "2021-09-03"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+In the oxidative stress experiment, I found this curious result, that the number of DE genes was very very different among different cell type clusters.  Why might this be?  There might be biological differences between these cell types that render them differently sensitive to oxidative stress.  For instance, NPCs are much more metabolically plastic than neurons and are [not strictly dependent](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204647/) on oxidative phosphorylation.  Alternatively, there might be more mundane technical explanations for this observation, such as the clustering resolution of the data (e.g., biologically significant clusters my split or merge from each other at different resolutions), RNA content, cell health, etc.  
+
+If this observation is technically sound, then it would be interesting to search for biological correlates (rationales??) for it, i.e. explanations for the phenotype of having many/few DE genes in response to oxygen shift.  For those clusters that don't follow the trend of their technically-defined neighbors, there might be an expression "signature" (or topic) that helps define their responsiveness.
+
+##Test DE
+To start, I need to test for DE across different resolutions and gather the results so I can see the influence of modulating this parameter.  If there are resolutions that induce a noticeable shift in the distribution of DE genes, I can zoom in on those and try to see which clusters are involved.
+```{r setup, message=FALSE}
+Sys.setenv(TZ='America/Chicago')
+pacman::p_load(edgeR, variancePartition, BiocParallel, limma)
+library(Seurat)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(cowplot)
+library(knitr)
+library(scHCL)
+
+generate.pseudobulk <- function(object, labels, assay="RNA",slot="counts") {
+  factorlist <- list()
+  for (i in labels) factorlist[[i]] <- unique(object@meta.data[,i])
+  meta <- expand.grid(factorlist, stringsAsFactors = FALSE)
+  rownames(meta) <- apply(meta, 1, function(x) paste0(x, collapse = '.'))
+  # build the output matrix
+  n <- nrow(meta)
+  out <- matrix(nrow=dim(object[[assay]])[1], ncol=n, data=0)
+  rownames(out) <- rownames(object[[assay]])
+  colnames(out) <- rownames(meta)
+  ncells <- c()
+  ncounts <- c()
+  total.cells <- dim(object[[assay]])[2]
+  for (i in 1:n)
+  {
+    #prog(i,n)
+    cells <- 1:total.cells
+    for (j in names(meta)) {
+      keep  <- which(object@meta.data[[j]] == meta[i,j])
+      cells <- cells[cells %in% keep]
+    }
+    ncells[i] <- length(cells)
+    ncounts[i] <- sum(slot(object[[assay]], slot)[,cells])
+    #some other thing to measure
+    if (length(cells)==1) {
+      out[,i] <- slot(object[[assay]], slot)[,cells]
+    } else {
+      out[,i] <- Matrix::rowSums(slot(object[[assay]], slot)[,cells])
+    }
+  }
+  meta$ncells <- ncells
+  meta$ncounts <- ncounts/max(ncounts)
+  #add that something else as metadata
+  return(list(counts=out, meta=meta))
+}
+
+# keep only levels with more than 'threshold' cells
+filter.pseudobulk <- function(pseudobulk, threshold = 0) {
+  w <- which(pseudobulk$meta$ncells > threshold)
+  pseudobulk$counts <- pseudobulk$counts[,w]
+  pseudobulk$meta <- pseudobulk$meta[w,]
+  pseudobulk
+}
+
+organoid.combined.sct.neuron <- readRDS(file = "output/organoid.combined.full.sct.neuron.RDS")
+
+```
+
+Now I'll write a function that:
+*clusters the data for resolution r
+*generates k pseudobulk clusters from the data
+*tests for DE, storing the number of DE genes in a list (indexed by resolution) with a table recording, for each cluster, the number of DE genes, number of cells, median UMI count/cell, average mitochondrial content, proportion of cells from each cell line
+
+```{r}
+seurat_input <- organoid.combined.sct.neuron
+param = SnowParam(20, "SOCK", progressbar=TRUE)
+register(param) 
+formde <- ~  stim + (1|cell.line) + (1|replicate)
+
+test_de <- function(seurat_input, r, model_formula, coef_test, pseudo_factors){
+  #start by clustering the data according to resolution r
+  seurat_input <- FindClusters(seurat_input, resolution=r)
+  print(paste0(length(unique(seurat_input$seurat_clusters)), " clusters found at resolution ", r, ". Generating pseudobulk data."))
+  q <- max(as.numeric(levels(unique(seurat_input$seurat_clusters))))
+  #generate pseudobulk
+  pseudo <- vector(mode = "list", length = q+1)
+  names(pseudo) <- as.character(0:q) 
+  for (k in 0:q) {
+    pseudo[[as.character(k)]] <- filter.pseudobulk(generate.pseudobulk(subset(seurat_input, idents=c(k)), labels = pseudo_factors))
+  }
+  print("Generated pseudobulk data. Initializing results table.")
+  #set up output data structure
+  
+  results <- data.frame(Cluster = 0:q,
+                        Genes = rep(0, q+1),
+                        Cells = rep(NA, q+1),
+                        UMI = rep(NA, q+1),
+                        MT = rep(NA, q+1))
+  
+  for (i in 0:q){
+    print(i)
+    results$Cells[i+1] <- table(seurat_input$seurat_clusters)[[i+1]]
+    results$UMI[i+1] <- median(subset(seurat_input, idents=c(i))$nCount_RNA)
+    results$MT[i+1] <- median(subset(seurat_input, idents=c(i))$percent.mt)
+  }
+  print("Results table initialized. Beginning DE testing by cluster.")
+  print(results)
+#set up DE testing
+  for (j in 0:q){
+    print(j)
+    d <- DGEList(pseudo[[as.character(j)]]$counts)
+    d$samples <- cbind(d$samples[,c("lib.size","norm.factors")], pseudo[[as.character(j)]]$meta)
+    keepgenes <- filterByExpr(d$counts, group = d$samples$stim)
+    d <- d[keepgenes,]
+    d <- calcNormFactors(d, method = "TMM")
+    v <- voomWithDreamWeights(d, model_formula, d$samples, plot=FALSE)
+    modelfit <- dream(v, model_formula, d$samples)
+    
+    print(paste0("Tested cluster ", j, " for DE genes"))
+    results$Genes[j+1] <- try(sum(topTable(modelfit, coef=coef_test, number = Inf)$adj.P.Val < 0.05), silent = TRUE)
+    # results$Genes[j+1] <- ifelse(try(nrow(topTable(modelfit, coef=coef_test, p.value = 0.05, number = Inf)), silent = TRUE)>0,
+    #        nrow(topTable(modelfit, coef=coef_test, number = Inf)),
+    #        0)
+    rm(d, keepgenes, v, modelfit)
+    print(paste0("Finished DE testing of cluster ", j))
+    print(results)
+  }
+  return(results)
+}
+
+```
+
+It seems to work pretty well.  So, now I'll simply loop over different resolutions and return a list of result tables.
+
+```{r}
+output <- vector(mode = "list", length = 5)
+names(output) <- as.character(c(0.02, 0.05, 0.1, 0.3, 0.5))
+for (res in names(output)) {
+    output[[res]] <- test_de(organoid.combined.sct.neuron, r = as.numeric(res), model_formula = formde, coef_test = "stimoxidation", pseudo_factors = c("stim", "replicate", "cell.line"))
+}
+
+# write_csv(x = bind_rows(output, .id = "resolution"), file = 'output/resolution_test.csv', col_names = T)
+```
+What do these look like?
+```{r}
+for (r in c(0.02, 0.05, 0.1, 0.3, 0.5)){
+  organoid.combined.sct.neuron <- FindClusters(organoid.combined.sct.neuron, resolution=r)
+  DimPlot(organoid.combined.sct.neuron, label = TRUE) + labs(title = paste0("Resolution ", r))
+  # ggsave(paste0("output/organoid_combined_sct_neuron_resolution_", r, ".png"))
+}
+
+```
+
+Can any of this be explained by features of the clusters?  Let's treat each cluster independently (that is, look across resolutions) and simply correlate with cell number, MT content, etc.
+
+```{r}
+plot_output <- bind_rows(output, .id = "resolution")
+plot_output$highlight <- "no"
+plot_output$highlight[c(12,20,29)] <- "yes"
+
+ggplot(data = plot_output, aes(x=Cells, y=Genes)) + geom_point() + gghighlight::gghighlight(highlight=="yes", unhighlighted_params = list(color="cornflowerblue")) + ggtitle("DE Genes/cluster by cells/cluster") + ylab("DE Genes (5% FDR)") + xlab("Cells/cluster")
+# ggsave("output/ges_cells.png")
+
+ggplot(data = plot_output, aes(x=UMI, y=Genes)) + geom_point() + gghighlight::gghighlight(highlight=="yes", unhighlighted_params = list(color="cornflowerblue")) + ggtitle("DE Genes/cluster by median UMI/cell") + ylab("DE Genes (5% FDR)") + xlab("UMI/cluster")
+# ggsave("output/genes_umi.png")
+
+ggplot(data = plot_output, aes(x=MT, y=Genes)) + geom_point() + gghighlight::gghighlight(highlight=="yes", unhighlighted_params = list(color="cornflowerblue")) + ggtitle("DE Genes/cluster by median MT read %") + ylab("DE Genes (5% FDR)") 
+# ggsave("output/genes_MT.png")
+
+ggplot(data = plot_output, aes(x=Cells*UMI, y=Genes)) + geom_point() + gghighlight::gghighlight(highlight=="yes", unhighlighted_params = list(color="cornflowerblue")) + ggtitle("DE Genes/cluster by UMI/cluster") + ylab("DE Genes (5% FDR)") + xlab("Total UMI/cluster")
+# ggsave("output/genes_umi-cluster.png")
+
+```
+
+##Comparing DE genes among clusters
+
+Now I'd like to figure out whether there's something about the genes in that cluster that can explain why they're DE at such a high rate.  The alternative would be that there's something special (biologically) about those _cells_ that explains why they're particularly susceptible to changes in oxygen.  One starting point would be that they seem to have unusually low mitochondrial content, although the direction of this effect is not really intuitive.
+
+To start, let's get the DE genes at resolution 0.1 again, this time as a list of the dream outputs.
+
+```{r}
+de_genes <- function(seurat_input, r, model_formula,  pseudo_factors){
+  #start by clustering the data according to resolution r
+  seurat_input <- FindClusters(seurat_input, resolution=r)
+  print(paste0(length(unique(seurat_input$seurat_clusters)), " clusters found at resolution ", r, ". Generating pseudobulk data."))
+  q <- max(as.numeric(levels(unique(seurat_input$seurat_clusters))))
+  #generate pseudobulk
+  pseudo <- vector(mode = "list", length = q+1)
+  names(pseudo) <- as.character(0:q)
+  for (k in 0:q) {
+    pseudo[[as.character(k)]] <- filter.pseudobulk(generate.pseudobulk(subset(seurat_input, idents=c(k)), labels = pseudo_factors))
+  }
+  print("Generated pseudobulk data. Initializing results table.")
+  #set up output data structure
+  
+  results <- vector(mode = "list", length = q+1)
+  names(results) <- as.character(0:q)
+  
+  print("Results list initialized. Beginning DE testing by cluster.")
+  print(results)
+#set up DE testing
+  for (j in 0:q){
+    print(j)
+    d <- DGEList(pseudo[[as.character(j)]]$counts)
+    d$samples <- cbind(d$samples[,c("lib.size","norm.factors")], pseudo[[as.character(j)]]$meta)
+    keepgenes <- filterByExpr(d$counts, group = d$samples$stim)
+    d <- d[keepgenes,]
+    d <- calcNormFactors(d, method = "TMM")
+    v <- voomWithDreamWeights(d, model_formula, d$samples, plot=FALSE)
+    modelfit <- dream(v, model_formula, d$samples)
+    
+    print(paste0("Tested cluster ", j, " for DE genes"))
+    results[[as.character(j)]] <- modelfit
+
+    rm(d, keepgenes, v, modelfit)
+    print(paste0("Finished DE testing of cluster ", j))
+  }
+  return(results)
+}
+
+de_clusters <- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.1, model_formula = formde, pseudo_factors =  c("stim", "replicate", "cell.line"))
+
+```
+
+Now I'd like to know whether the genes that are DE in cluster 4 are expressed in other clusters.  For each gene, I can plot the difference in average expression relative to cluster 4 (clusterk[geneX] - cluster4[geneX]), separating DE and non-DE genes (for some p-value threshold).
+
+First, let's see whether the distribution of expression levels is similar for DE and non-DE genes in cluster 4.
+```{r}
+ggplot(as_tibble(topTable(de_clusters$`4`,coef = "stimoxidation", number=Inf)), aes(AveExpr)) +
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(adj.P.Val < 0.1) + 
+  ggtitle("Average expression, all genes vs DE genes cluster 4")
+```
+Doesn't really look like the DE genes within cluster 4 are those that are highly or lowly expressed.
+
+```{r}
+cluster4 <- data.frame(topTable(de_clusters$`4`,coef = "stimoxidation", number=Inf)) %>% rownames_to_column(var="gene")
+head(cluster4)
+gene_names <- subset(cluster4, adj.P.Val <= 0.05)$gene
+  
+cluster_expression <- as.character(0:8) %>% map(.f = ~data.frame(topTable(de_clusters[[.x]],coef = "stimoxidation", number=Inf)) %>% rownames_to_column(var="gene"))
+cluster_summary <- bind_rows(cluster_expression, .id = "cluster")
+cluster_summary$cluster <- as.integer(cluster_summary$cluster) - 1
+
+# ggplot(data.frame(topTable(de_clusters$`2`,coef = "stimoxidation", number=Inf)) %>% rownames_to_column(var="gene"),
+#        aes(adj.P.Val)) +
+#   geom_histogram(bins = 50) + 
+#   gghighlight::gghighlight(gene %in% gene_names) + 
+#   geom_vline(xintercept = 0.05) +
+#   ggtitle("Average expression, all genes vs DE genes cluster 4")
+
+ggplot(cluster_summary,
+       aes(adj.P.Val)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names) + 
+  geom_vline(xintercept = 0.05) +
+  ggtitle("Adjusted p-values, all genes vs DE genes cluster 4")
+# ggsave(filename = "output/4vs_pvals.png")
+
+ggplot(cluster_summary,
+       aes(AveExpr)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names) + 
+  ggtitle("Average expression, all genes vs DE genes cluster 4")
+# ggsave(filename = "output/4vs_avg-expression.png")
+
+ggplot(cluster_summary,
+       aes(logFC)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names) + 
+  ggtitle("logFC, all genes vs DE genes cluster 4") + 
+  xlim(-2,2)
+# ggsave(filename = "output/4vs_logfc.png")
+```
+
+Confirm that this is not simply a feature of the genes that are DE in this cluster being expressed (at appreciable levels) only in this cluster.  One way to look at this would be to break down all the DE genes into three categories:  expressed in multiple clusters, expressed only in the unique cluster, not expressed in the unique cluster.  Where do the DE genes fall?  Some Venn diagrams might be helpful, and worth prioritizing by p-value.
+
+
+```{r}
+cluster2 <- data.frame(topTable(de_clusters$`2`,coef = "stimoxidation", number=Inf)) %>% rownames_to_column(var="gene")
+head(cluster2)
+gene_names2 <- subset(cluster2, adj.P.Val <= 0.05)$gene
+  
+
+# ggplot(data.frame(topTable(de_clusters$`2`,coef = "stimoxidation", number=Inf)) %>% rownames_to_column(var="gene"),
+#        aes(adj.P.Val)) +
+#   geom_histogram(bins = 50) + 
+#   gghighlight::gghighlight(gene %in% gene_names) + 
+#   geom_vline(xintercept = 0.05) +
+#   ggtitle("Average expression, all genes vs DE genes cluster 4")
+
+ggplot(cluster_summary,
+       aes(adj.P.Val)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names2) + 
+  geom_vline(xintercept = 0.05) +
+  ggtitle("Adjusted p-values, all genes vs DE genes cluster 4")
+# ggsave(filename = "output/4vs_pvals.png")
+
+ggplot(cluster_summary,
+       aes(AveExpr)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names2) + 
+  ggtitle("Average expression, all genes vs DE genes cluster 4")
+# ggsave(filename = "output/4vs_avg-expression.png")
+
+ggplot(cluster_summary,
+       aes(logFC)) +
+  facet_wrap(vars(cluster)) + 
+  geom_histogram(bins = 50) + 
+  gghighlight::gghighlight(gene %in% gene_names2) + 
+  ggtitle("logFC, all genes vs DE genes cluster 4") + 
+  xlim(-2,2)
+# ggsave(filename = "output/4vs_logfc.png")
+```
+
+What if some genes in `gene_names` simply aren't expressed in some clusters?  That would make the preceding comparisons less informative.  How many genes from `gene_names` were not even tested for DE in the other clusters?
+```{r}
+
+not_expressed <- as.character(0:8) %>% map_dfr(function(x) data.frame(not.expressed = length(gene_names) - sum(gene_names %in% rownames(data.frame(topTable(de_clusters[[x]],coef = "stimoxidation", number=Inf))))) ) %>% rownames_to_column(var="cluster")
+not_expressed$cluster <- as.integer(not_expressed$cluster) - 1
+not_expressed %>% kable()
+```
+
+What about the same with cluster 2?
+```{r}
+not_expressed2 <- as.character(0:8) %>% 
+  map_dfr(function(x) data.frame(not.expressed = length(gene_names2) - sum(gene_names2 %in% rownames(data.frame(topTable(de_clusters[[x]],coef = "stimoxidation", number=Inf))))) ) %>%
+  rownames_to_column(var="cluster")
+not_expressed2$cluster <- as.integer(not_expressed2$cluster) - 1
+not_expressed2 %>% kable()
+
+cluster6 <- data.frame(topTable(de_clusters$`6`,coef = "stimoxidation", number=Inf)) %>% rownames_to_column(var="gene")
+head(cluster6)
+gene_names6 <- subset(cluster6, adj.P.Val <= 0.05)$gene
+
+not_expressed6 <- as.character(0:8) %>% 
+  map_dfr(function(x) data.frame(not.expressed = length(gene_names6) - sum(gene_names6 %in% rownames(data.frame(topTable(de_clusters[[x]],coef = "stimoxidation", number=Inf))))) ) %>%
+  rownames_to_column(var="cluster")
+not_expressed6$cluster <- as.integer(not_expressed6$cluster) - 1
+not_expressed6 %>% kable()
+```
+
+
+##Looking into cluster 4 further
+What is cluster 4??  One way to start answering this is to compare to a few human references.  Ideally the Shendure reference would be great, but for now I'll start with scHCL, since it's so easy to access.
+
+```{r}
+cluster4 <- subset(organoid.combined.sct.neuron, idents=c(4))[["RNA"]]@counts
+
+hcl4 <- scHCL(scdata=cluster4, numbers_plot=3)
+table(hcl4$scHCL) %>% kable()
+```
+
+#Revisiting PFF response
+Given the strong effect of cluster size (/resolution) on detection of DE genes, I want to revisit whether there might be anything I missed in the SNCA PFF treatment experiments.  Seems unlikely, but still worth checking.
+
+```{r, eval=FALSE}
+pff_output <- vector(mode = "list", length = 5)
+names(pff_output) <- as.character(c(0.05, 0.1, 0.3, 0.5, 0.7))
+for (res in names(pff_output)) {
+    pff_output[[res]] <- test_de(organoid.combined.sct.neuron, r = as.numeric(res), model_formula = formde, coef_test = "stimpff", pseudo_factors = c("stim", "replicate", "cell.line"))
+}
+
+write_csv(x = bind_rows(pff_output, .id = "resolution"), file = 'output/resolution_test_pff.csv', col_names = T)
+```
+
+```{r, eval=FALSE}
+
+de_clusters_pff_5 <- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.5, model_formula = formde, pseudo_factors =  c("stim", "replicate", "cell.line"))
+
+de_clusters_pff_3 <- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.3, model_formula = formde, pseudo_factors =  c("stim", "replicate", "cell.line"))
+
+cluster_expression_pff_3 <- as.character(c(1,8,9)) %>% map(.f = ~data.frame(topTable(de_clusters_pff_3[[.x]], coef = "stimpff", p.value = 0.05)) %>% rownames_to_column(var="gene")) %>% bind_rows(.id = "cluster")
+
+cluster_summary_pff <- bind_rows(cluster_expression_pff, .id = "cluster")
+cluster_summary_pff$cluster <- as.integer(cluster_summary_pff$cluster) +10
+cluster_summary_pff %>% group_by(cluster) %>% top_n(n=-10, wt=adj.P.Val) %>% kable()
+```
+
+#Interaction effects?
+I've got plenty of DE genes for the stimulus contrast, but is there any evidence of interaction between stimulus and line?  That is, is there a basis (in just these 3 lines) for looking for eQTLs?  All I should need is a different model.
+
+I'll start by looking at the results of `variancePartition` in an interaction model:
+```{r}
+form_interact <- ~  (1|cell.line) + (1|replicate) + (1|stim) + (1|cell.line:stim)
+
+pseudo.neuron <- generate.pseudobulk(subset(organoid.combined.sct.neuron, idents=c(4)), labels =  c("seurat_clusters", "stim", "replicate", "cell.line"))
+pseudo.neuron <- filter.pseudobulk(pseudo.neuron)
+d.neuron <- DGEList(pseudo.neuron$counts)
+meta_d.neuron <- d.neuron$samples[,c("lib.size","norm.factors")]
+meta_d.neuron <- cbind(meta_d.neuron, pseudo.neuron$meta)
+d.neuron$samples <- meta_d.neuron
+keep.neuron <- filterByExpr(d.neuron) #, group=d10.full$samples$stim
+d.neuron <- d.neuron[keep.neuron,]
+d.neuron <- calcNormFactors(d.neuron, method = "TMM")
+
+voomed.varpart.neuron <- voomWithDreamWeights(d.neuron, form_interact, d.neuron$samples, plot=TRUE)
+
+varpart.neuron <- fitExtractVarPartModel(voomed.varpart.neuron, form_interact, d.neuron$samples)
+head(varpart.neuron[order(varpart.neuron$`cell.line:stim`, decreasing=TRUE),], 30)
+vp.neuron <- sortCols(varpart.neuron)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp.neuron) + ggtitle("Variance partition neurons (resolution=0.1)")
+# ggsave(filename = "docs/figure/varpar_interact.png")
+# write.csv(x = varpart.neuron[order(varpart.neuron$`cell.line:stim`, decreasing=TRUE),], file = "output/interaction_varpart.csv")
+
+sum(varpart.neuron[order(varpart.neuron$`cell.line:stim`, decreasing=TRUE),2]>0)
+```
+
+
+```{r, eval=FALSE}
+form_interact2 <- ~ stim + stim:cell.line + (1|cell.line) + (1|replicate)
+form_interact3 <- ~ stim + stim*cell.line + (1|cell.line) + (1|replicate)
+
+de_clusters_interaction <- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.1, model_formula = form_interact2, pseudo_factors =  c("stim", "replicate", "cell.line"))
+
+as.character(c(1,8,9)) %>% map(.f = ~data.frame(topTable(de_clusters_interaction[[.x]], coef = "stim:cell.line", p.value = 0.05)) %>% rownames_to_column(var="gene")) %>% bind_rows(.id = "cluster")
+
+
+de_clusters_interaction2 <- de_genes(seurat_input = organoid.combined.sct.neuron, r = 0.1, model_formula = form_interact3, pseudo_factors =  c("stim", "replicate", "cell.line"))
+
+saveRDS(de_clusters_interaction, file = "output/de_clusters_interaction.Rmd")
+saveRDS(de_clusters_interaction2, file = "output/de_clusters_interaction2.Rmd")
+```
+
+```{r, eval=FALSE}
+de_clusters_interaction <- readRDS("output/de_clusters_interaction.Rmd")
+de_clusters_interaction2 <- readRDS("output/de_clusters_interaction2.Rmd")
+
+as.character(c(1,4)) %>% map(.f = ~data.frame(topTable(de_clusters_interaction[[.x]], coef = "stimoxidation:cell.line23555", p.value = 0.05)) %>% rownames_to_column(var="gene")) %>% bind_rows(.id = "cluster")
+
+topTable(de_clusters_interaction[["4"]], coef = "stimoxidation:cell.line23555", p.value = 0.05)
+
+```
+
