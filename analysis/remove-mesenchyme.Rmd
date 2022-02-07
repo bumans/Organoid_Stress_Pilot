@@ -22,6 +22,49 @@ library(knitr)
 
 organoid.combined.sct03 <- readRDS(file = "output/organoid.combined.sct03.RDS")
 
+generate.pseudobulk <- function(object, labels, assay="RNA",slot="counts") {
+  factorlist <- list()
+  for (i in labels) factorlist[[i]] <- unique(object@meta.data[,i])
+  meta <- expand.grid(factorlist, stringsAsFactors = FALSE)
+  rownames(meta) <- apply(meta, 1, function(x) paste0(x, collapse = '.'))
+  # build the output matrix
+  n <- nrow(meta)
+  out <- matrix(nrow=dim(object[[assay]])[1], ncol=n, data=0)
+  rownames(out) <- rownames(object[[assay]])
+  colnames(out) <- rownames(meta)
+  ncells <- c()
+  ncounts <- c()
+  total.cells <- dim(object[[assay]])[2]
+  for (i in 1:n)
+  {
+    #prog(i,n)
+    cells <- 1:total.cells
+    for (j in names(meta)) {
+      keep  <- which(object@meta.data[[j]] == meta[i,j])
+      cells <- cells[cells %in% keep]
+    }
+    ncells[i] <- length(cells)
+    ncounts[i] <- sum(slot(object[[assay]], slot)[,cells])
+    #some other thing to measure
+    if (length(cells)==1) {
+      out[,i] <- slot(object[[assay]], slot)[,cells]
+    } else {
+      out[,i] <- Matrix::rowSums(slot(object[[assay]], slot)[,cells])
+    }
+  }
+  meta$ncells <- ncells
+  meta$ncounts <- ncounts/max(ncounts)
+  #add that something else as metadata
+  return(list(counts=out, meta=meta))
+}
+
+# keep only levels with more than 'threshold' cells
+filter.pseudobulk <- function(pseudobulk, threshold = 0) {
+  w <- which(pseudobulk$meta$ncells > threshold)
+  pseudobulk$counts <- pseudobulk$counts[,w]
+  pseudobulk$meta   <- pseudobulk$meta[w,]
+  pseudobulk
+}
 ```
 
 Any chance that these cells are microglia?
@@ -46,18 +89,313 @@ organoid.combined.sct03.neuron <- subset(organoid.combined.sct03, cells = select
 Now recluster with this reduced dataset
 ```{r recluster, message=FALSE}
 organoid.combined.sct03.neuron <- RunPCA(organoid.combined.sct03.neuron, npcs = 65)
-organoid.combined.sct03.neuron <- RunUMAP(organoid.combined.sct03.neuron, reduction = "pca", dims = 1:60)
+organoid.combined.sct03.neuron <- RunUMAP(organoid.combined.sct03.neuron, reduction = "pca", dims = 1:57)
 
 DimPlot(organoid.combined.sct03.neuron, reduction = "umap", group.by = "stim")
 DimPlot(organoid.combined.sct03.neuron, reduction = "umap", group.by = "replicate")
 
 organoid.combined.sct03.neuron <- FindNeighbors(organoid.combined.sct03.neuron, dims=1:65)
 organoid.combined.sct03.neuron <- FindClusters(organoid.combined.sct03.neuron, resolution=0.3)
+
 DimPlot(organoid.combined.sct03.neuron, reduction = "umap") + ggtitle("resolution=0.3")
 
 organoid.combined.sct03.neuron.markers <- FindAllMarkers(organoid.combined.sct03.neuron, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 organoid.combined.sct03.neuron.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
 
 saveRDS(organoid.combined.sct03.neuron, file = "data/organoid.combined.sct03.neuron.RDS")
+# organoid.combined.sct03.neuron <- readRDS(file = "data/organoid.combined.sct03.neuron.RDS")
+```
+
+
+### Targeted gene classification
+
+I've borrowed from the Abcam manual of neural markers to provide a more systematic assessment of canonical (and immunostainable) CNS targets.
+
+First, neuroepithelium:
+```{r neuroepithelium}
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_NES", "rna_SOX2", "rna_NOTCH1", "rna_HES1"))
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_SOX10", "rna_OCLN"))
+```
+
+These indicate a cluster that contains progenitors.  Not all of these markers are unique to neuroepithelium.  Nestin, HES1, and SOX2, for instance, are also expressed by radial glia.  Additional radial glial markers include:
+```{r rg}
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_VIM", "rna_PAX6", "rna_HES5", "rna_SLC1A3"))
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_GFAP", "rna_FABP7", "rna_CDH2", "rna_TNC"))
+```
+
+Intermediate progenitors a are distinguished by the following markers:
+```{r IPC}
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_EOMES", "rna_ASCL1","rna_OTX1", "rna_OTX2", "rna_FOXG1"))
+
+```
+
+While immature neurons, which IPCs differentiate into, express the following:
+```{r immature}
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_DCX", "rna_TUBB3", "rna_NEUROD1", "rna_TBR1"))
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_STMN1", "rna_GAP43", "rna_NCAM1"))
+```
+In contrast to the cloud of progenitor cells, these markers seem to indicate the other large cluster as being more neuronal in character.
+
+
+Markers of "mature" neurons--a somewhat arbitrary term that simply means they're post-mitotic--include:
+```{r mature}
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_RBFOX3", "rna_MAP2", "rna_NEFM", "rna_NEFH"))
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_DLG4", "rna_SYP", "rna_UNC13A"))
+```
+Which largely confirms our impression from earlier of which cluster contains neurons.  Only a subset of these are positive for NeuN (RBFOX3), whereas more express PSD95 (DLG4) and Synaptophysin.
+
+I expect that the majority of these neurons will be glutamatergic:
+```{r glutamatergic}
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_SLC17A7", "rna_SLC17A6", "rna_GRIN1", "rna_GRIN2B"))
+```
+
+GABAergic neurons, on the other hand, express the following markers:
+```{r gabaergic}
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_SLC6A1", "rna_GABBR1", "rna_GABBR2"), max.cutoff = 10)
+FeaturePlot(organoid.combined.sct03.neuron, features = c("rna_GAD1", "rna_GAD2"), max.cutoff = 10)
+```
+GABA transporter (SLC6A1) and GABA synthesis enzymes GAD1/2 are expressed in a small portion of cells complementary to the glutamatergic neurons described above. 
+
+
+##Variance decomposition
+
+```{r varpart, message=FALSE}
+pseudo <- generate.pseudobulk(organoid.combined.sct03.neuron, labels = c("cell.line", "stim", "replicate", "seurat_clusters"))
+pseudo <- filter.pseudobulk(pseudo)
+
+d <- DGEList(pseudo$counts)
+d <- calcNormFactors(d)
+
+keep <- filterByExpr(d$counts)
+
+d <- d[keep,]
+
+param = SnowParam(20, "SOCK", progressbar=TRUE)
+register(param)
+
+fbase <- ~ (1|cell.line) + (1|stim) + (1|seurat_clusters) + (1|replicate)
+
+voomed <- voomWithDreamWeights(d, fbase, pseudo$meta, plot=TRUE)
+
+varpart <- fitExtractVarPartModel(cpm(d$counts, log=TRUE), fbase, pseudo$meta)
+
+vp <- sortCols(varpart)
+plotPercentBars(vp[1:10,])
+plotVarPart(vp) + ggtitle("Variance partition clustered resolution=1")
+```
+
+
+##Separating by cluster
+As before, I can separate out each cluster and repeat the variance partitioning analysis independently on each cluster.
+
+```{r cluster-separation}
+cluster0 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '0')
+cluster1 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '1')
+cluster2 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '2')
+cluster3 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '3')
+cluster4 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '4')
+cluster5 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '5')
+cluster6 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '6')
+cluster7 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '7')
+cluster8 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '8')
+cluster9 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '9')
+cluster10 <- subset(organoid.combined.sct03.neuron, subset = seurat_clusters == '10')
+
+```
+
+Now, I repeat like before, going cluster by cluster.
+```{r cluster0, message=FALSE}
+pseudo0 <- generate.pseudobulk(cluster0, labels = c("cell.line", "stim", "replicate"))
+pseudo0 <- filter.pseudobulk(pseudo0)
+d0 <- DGEList(pseudo0$counts)
+d0 <- calcNormFactors(d0)
+keep0 <- filterByExpr(d0$counts)
+d0 <- d0[keep0,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed0 <- voomWithDreamWeights(d0, fbase, pseudo0$meta, plot=FALSE)
+varpart0 <- fitExtractVarPartModel(voomed0, fbase, pseudo0$meta)
+
+vp0 <- sortCols(varpart0)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp0) + ggtitle("Variance partition cluster 0 (resolution=0.3)")
+```
+
+```{r cluster1, message=FALSE}
+pseudo1 <- generate.pseudobulk(cluster1, labels = c("cell.line", "stim", "replicate"))
+pseudo1 <- filter.pseudobulk(pseudo1)
+d1 <- DGEList(pseudo1$counts)
+d1 <- calcNormFactors(d1)
+keep1 <- filterByExpr(d1$counts)
+d1 <- d1[keep1,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed1 <- voomWithDreamWeights(d1, fbase, pseudo1$meta, plot=FALSE)
+varpart1 <- fitExtractVarPartModel(voomed1, fbase, pseudo1$meta)
+
+vp1 <- sortCols(varpart1)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp1) + ggtitle("Variance partition cluster 1 (resolution=0.3)")
+
+```
+
+```{r cluster2, message=FALSE}
+pseudo2 <- generate.pseudobulk(cluster2, labels = c("cell.line", "stim", "replicate"))
+pseudo2 <- filter.pseudobulk(pseudo2)
+d2 <- DGEList(pseudo2$counts)
+d2 <- calcNormFactors(d2)
+keep2 <- filterByExpr(d2$counts)
+d2 <- d2[keep2,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed2 <- voomWithDreamWeights(d2, fbase, pseudo2$meta, plot=FALSE)
+varpart2 <- fitExtractVarPartModel(voomed2, fbase, pseudo2$meta)
+
+vp2 <- sortCols(varpart2)
+# plotPercentBars(vp2[1:10,])
+plotVarPart(vp2) + ggtitle("Variance partition cluster 2 (resolution=0.3)")
+
+```
+
+```{r cluster3, message=FALSE}
+pseudo3 <- generate.pseudobulk(cluster3, labels = c("cell.line", "stim", "replicate"))
+pseudo3 <- filter.pseudobulk(pseudo3)
+d3 <- DGEList(pseudo3$counts)
+d3 <- calcNormFactors(d3)
+keep3 <- filterByExpr(d3$counts)
+d3 <- d3[keep3,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed3 <- voomWithDreamWeights(d3, fbase, pseudo3$meta, plot=FALSE)
+varpart3 <- fitExtractVarPartModel(voomed3, fbase, pseudo3$meta)
+
+vp3 <- sortCols(varpart3)
+# plotPercentBars(vp3[1:10,])
+plotVarPart(vp3) + ggtitle("Variance partition cluster 3 (resolution=0.3)")
+
+```
+
+```{r cluster4, message=FALSE}
+pseudo4 <- generate.pseudobulk(cluster4, labels = c("cell.line", "stim", "replicate"))
+pseudo4 <- filter.pseudobulk(pseudo4)
+d4 <- DGEList(pseudo4$counts)
+d4 <- calcNormFactors(d4)
+keep4 <- filterByExpr(d4$counts)
+d4 <- d4[keep4,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed4 <- voomWithDreamWeights(d4, fbase, pseudo4$meta, plot=FALSE)
+varpart4 <- fitExtractVarPartModel(voomed4, fbase, pseudo4$meta)
+
+vp4 <- sortCols(varpart4)
+# plotPercentBars(vp4[1:10,])
+plotVarPart(vp4) + ggtitle("Variance partition cluster 1 (resolution=0.3)")
+
+```
+
+```{r cluster5, message=FALSE}
+pseudo5 <- generate.pseudobulk(cluster5, labels = c("cell.line", "stim", "replicate"))
+pseudo5 <- filter.pseudobulk(pseudo5)
+d5 <- DGEList(pseudo5$counts)
+d5 <- calcNormFactors(d5)
+keep5 <- filterByExpr(d5$counts)
+d5 <- d5[keep5,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed5 <- voomWithDreamWeights(d5, fbase, pseudo5$meta, plot=FALSE)
+varpart5 <- fitExtractVarPartModel(voomed5, fbase, pseudo5$meta)
+
+vp5 <- sortCols(varpart5)
+# plotPercentBars(vp5[1:10,])
+plotVarPart(vp5) + ggtitle("Variance partition cluster 5 (resolution=0.3)")
+
+```
+
+```{r cluster6, message=FALSE}
+pseudo6 <- generate.pseudobulk(cluster6, labels = c("cell.line", "stim", "replicate"))
+pseudo6 <- filter.pseudobulk(pseudo6)
+d6 <- DGEList(pseudo6$counts)
+d6 <- calcNormFactors(d6)
+keep6 <- filterByExpr(d6$counts)
+d6 <- d6[keep6,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed6 <- voomWithDreamWeights(d6, fbase, pseudo6$meta, plot=FALSE)
+varpart6 <- fitExtractVarPartModel(voomed6, fbase, pseudo6$meta)
+
+vp6 <- sortCols(varpart6)
+# plotPercentBars(vp6[1:10,])
+plotVarPart(vp6) + ggtitle("Variance partition cluster 6 (resolution=0.3)")
+
+```
+
+
+```{r cluster7, message=FALSE}
+pseudo7 <- generate.pseudobulk(cluster7, labels = c("cell.line", "stim", "replicate"))
+pseudo7 <- filter.pseudobulk(pseudo7)
+d7 <- DGEList(pseudo7$counts)
+d7 <- calcNormFactors(d7)
+keep7 <- filterByExpr(d7$counts)
+d7 <- d7[keep7,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed7 <- voomWithDreamWeights(d7, fbase, pseudo7$meta, plot=FALSE)
+varpart7 <- fitExtractVarPartModel(voomed7, fbase, pseudo7$meta)
+
+vp7 <- sortCols(varpart7)
+# plotPercentBars(vp7[1:10,])
+plotVarPart(vp7) + ggtitle("Variance partition cluster 7 (resolution=0.3)")
+
+```
+
+```{r cluster8, message=FALSE}
+pseudo8 <- generate.pseudobulk(cluster8, labels = c("cell.line", "stim", "replicate"))
+pseudo8 <- filter.pseudobulk(pseudo8)
+d8 <- DGEList(pseudo8$counts)
+d8 <- calcNormFactors(d8)
+keep8 <- filterByExpr(d8$counts)
+d8 <- d8[keep8,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed8 <- voomWithDreamWeights(d8, fbase, pseudo8$meta, plot=FALSE)
+varpart8 <- fitExtractVarPartModel(voomed8, fbase, pseudo8$meta)
+
+vp8 <- sortCols(varpart8)
+# plotPercentBars(vp8[1:10,])
+plotVarPart(vp8) + ggtitle("Variance partition cluster 8 (resolution=0.3)")
+```
+
+```{r cluster9, message=FALSE}
+pseudo9 <- generate.pseudobulk(cluster9, labels = c("cell.line", "stim", "replicate"))
+pseudo9 <- filter.pseudobulk(pseudo9)
+d9 <- DGEList(pseudo9$counts)
+d9 <- calcNormFactors(d9)
+keep9 <- filterByExpr(d9$counts)
+d9 <- d9[keep9,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed9 <- voomWithDreamWeights(d9, fbase, pseudo9$meta, plot=FALSE)
+varpart9 <- fitExtractVarPartModel(voomed9, fbase, pseudo9$meta)
+
+vp9 <- sortCols(varpart9)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp9) + ggtitle("Variance partition cluster 9 (resolution=0.3)")
+```
+
+```{r cluster10, message=FALSE}
+pseudo10 <- generate.pseudobulk(cluster10, labels = c("cell.line", "stim", "replicate"))
+pseudo10 <- filter.pseudobulk(pseudo10)
+d10 <- DGEList(pseudo10$counts)
+d10 <- calcNormFactors(d10)
+keep10 <- filterByExpr(d10$counts)
+d10 <- d10[keep10,]
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed10 <- voomWithDreamWeights(d10, fbase, pseudo10$meta, plot=FALSE)
+varpart10 <- fitExtractVarPartModel(voomed10, fbase, pseudo10$meta)
+
+vp10 <- sortCols(varpart10)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp10) + ggtitle("Variance partition cluster 10 (resolution=0.3)")
 ```
 

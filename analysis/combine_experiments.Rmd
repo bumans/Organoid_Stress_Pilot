@@ -108,6 +108,9 @@ organoid.combined.sct <- IntegrateData(anchorset = organoid.anchors, normalizati
 rm(combined.data)
 ```
 
+
+
+
 With the combined data I now look run through the normal workflow to find clusters.
 ```{r integrated-umap, eval=FALSE}
 organoid.combined.sct <- RunPCA(organoid.combined.sct, npcs = 60)

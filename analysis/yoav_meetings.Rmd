@@ -20,3 +20,17 @@ One possibility is that the ANOVA model is incorrect in some way.  I investigate
 The next thing to check is whether there are actually genes differentially expressed across treatment conditions, by cluster.  This can be done with DE software, or as simply as with a t-test using the expression values from one treatment and another, by cluster.  If there are no differentially expressed genes, then that's at least consistent.  But if there are DE genes then there's a problem with the ANOVA model.
 
 Finally, he notes that we still have relatively low UMI/cell and so we'll really need the full data to make a full judgment here.
+
+###September 14, 2021
+When I last presented at lab meeting, I showed results of the oxygen exposure experiment in neural lineage cells broken down by Seurat cluster.  Weirdly, one of the clusters (cluster 4, at resolution 0.1) showed an inordinately large number of DE genes, well above what was seen in other clusters.  This was strange, because this cluster was not particularly larger or smaller than other clusters.  I wanted to investigate whether there might be a technical explanation for this.
+
+It does not seem there is, by a few measures.  Across a range of resolutions, these cells seem to stand out as outliers.  When clustered very coarsely, so this cluster does not stand on its own, the larger cluster does not display nearly as many DE genes as when the cells are segregated separately.  While the cluster shows up at the low end of UMI/cell distribution, the calculations are donw with pseudobulk data and the number of UMI/cluster is comparable to other clusters.  There's a relatively low mitochondrial read content per cell in this cluster.
+
+This seems interesting and Yoav agrees.  Really, this is what we talk about as our hope for doing single-cell experiments--that something should be visible at the single-cell level but not the bulk level.  That said, we have not encountered this so far in previous experiments.  There are a couple of things I sbould do next, both to firm up the result and also to investigate further.
+
+*Confirm that this is not simply a feature of the genes that are DE in this cluster being expressed (at appreciable levels) only in this cluster.  One way to look at this would be to break down all the DE genes into three categories:  expressed in multiple clusters, expressed only in the unique cluster, not expressed in the unique cluster.  Where do the DE genes fall?  Some Venn diagrams might be helpful, and worth prioritizing by p-value.
+
+*Talk to Abhishek.  He always has a helpfully skeptical take.
+
+*Figure out wtf these cells are.  Is there a natural, known _in-vivo_ correlate to this cell type?
+*What are these genes?  Or, especially, the genes that are uniquely differentially expressed in this cluster?  How do they compare to genes that are induced by oxidative stress in bulk functional genomics datasets?

@@ -200,7 +200,7 @@ pseudo4 <- generate.pseudobulk(cluster4, labels = c("cell.line", "stim", "replic
 pseudo4 <- filter.pseudobulk(pseudo4)
 d4 <- DGEList(pseudo4$counts)
 d4 <- calcNormFactors(d4)
-keep4 <- filterByExpr(d4$counts)
+keep4 <- (d4$counts)
 d4 <- d4[keep4,]
 
 fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)

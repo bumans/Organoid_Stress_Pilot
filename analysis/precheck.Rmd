@@ -38,7 +38,6 @@ The pre-processing script already subsetted to less than 15% mitochondrial reads
 plot1 <- FeatureScatter(dat, feature1 = "nCount_RNA", feature2 = "percent.mt") + theme(legend.position = "none") + ggtitle("")
 plot2 <- FeatureScatter(dat, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + theme(legend.position = "none") + ggtitle("")
 plot3 <- FeatureScatter(dat, feature1 = "nFeature_RNA", feature2 = "percent.mt") + theme(legend.position = "none") + ggtitle("")
-plot1 + plot2 + plot3
 
 dat@meta.data %>% 
   ggplot(aes(x=percent.mt)) +
@@ -52,7 +51,7 @@ dat@meta.data %>%
   geom_freqpoly() +
   ggtitle("Number of genes per cell")
 ```
-
+We could set a minimum threshold of 1000 genes/cell to be safe.
 ```{r subset}
 dat <- subset(dat, subset = percent.mt < 10 & nFeature_RNA > 1000 )
 ```

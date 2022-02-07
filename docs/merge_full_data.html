@@ -428,7 +428,7 @@ div.tocify {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -437,7 +437,7 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -446,10 +446,10 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-07-31
+<strong>Last updated:</strong> 2021-08-20
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>Organoid_Stress_Pilot/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -465,12 +465,12 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
@@ -537,16 +537,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree5d8afa5b0840cd65c8111901f4455b45b85abe82targetblank5d8afa5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/5d8afa5b0840cd65c8111901f4455b45b85abe82" target="_blank">5d8afa5</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottreecd56fef278b7da46fe594c4a8a9b46dd8f12a389targetblankcd56fefa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/cd56fef278b7da46fe594c4a8a9b46dd8f12a389" target="_blank">cd56fef</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottree5d8afa5b0840cd65c8111901f4455b45b85abe82targetblank5d8afa5a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombumansOrganoidStressPilottreecd56fef278b7da46fe594c4a8a9b46dd8f12a389targetblankcd56fefa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/5d8afa5b0840cd65c8111901f4455b45b85abe82" target="_blank">5d8afa5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/bumans/Organoid_Stress_Pilot/tree/cd56fef278b7da46fe594c4a8a9b46dd8f12a389" target="_blank">cd56fef</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -569,7 +569,25 @@ Ignored files:
     Ignored:    output/YG-BU-09_human/
     Ignored:    output/YG-BU-10_human/
     Ignored:    output/YG-BU-11_human/
+    Ignored:    output/fitmm0.neuron.RDS
+    Ignored:    output/fitmm1.neuron.RDS
+    Ignored:    output/fitmm2.neuron.RDS
+    Ignored:    output/fitmm3.neuron.RDS
+    Ignored:    output/fitmm4.neuron.RDS
+    Ignored:    output/fitmm5.neuron.RDS
+    Ignored:    output/fitmm6.neuron.RDS
+    Ignored:    output/fitmm7.neuron.RDS
+    Ignored:    output/fitmm8.neuron.RDS
     Ignored:    output/merged_full_dataset.RDS
+    Ignored:    output/neuron0_oxidation_table.csv
+    Ignored:    output/neuron1_oxidation_table.csv
+    Ignored:    output/neuron2_oxidation_table.csv
+    Ignored:    output/neuron3_oxidation_table.csv
+    Ignored:    output/neuron4_oxidation_table.csv
+    Ignored:    output/neuron5_oxidation_table.csv
+    Ignored:    output/neuron6_oxidation_table.csv
+    Ignored:    output/neuron7_oxidation_table.csv
+    Ignored:    output/neuron8_oxidation_table.csv
     Ignored:    output/organoid.combined.full.sct.neuron.RDS
     Ignored:    output/organoid.combined.sct.neuron.markers.RDS
     Ignored:    output/organoid.combined.sct03.RDS
@@ -577,6 +595,8 @@ Ignored files:
     Ignored:    output/organoid.combined.sct1.RDS
 
 Untracked files:
+    Untracked:  analysis/cell_cycle_full.Rmd
+    Untracked:  analysis/variance_estimation_full.Rmd
     Untracked:  data/Snakefile_cellranger
     Untracked:  data/all.vcf.bed
     Untracked:  data/australia.rds
@@ -604,9 +624,12 @@ Untracked files:
 
 Unstaged changes:
     Modified:   .gitignore
-    Modified:   analysis/index.Rmd
+    Modified:   analysis/combine_experiments.Rmd
+    Modified:   analysis/de_full.Rmd
+    Modified:   analysis/merge_full_data.Rmd
     Modified:   analysis/precheck.Rmd
     Modified:   analysis/remove-mesenchyme.Rmd
+    Modified:   analysis/variance-estimation.Rmd
 
 </code></pre>
 <p>
@@ -645,6 +668,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bumans/Organoid_Stress_Pilot/cd984048b9303fbab28b13f099c22abc6025231b/docs/merge_full_data.html" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -759,294 +799,218 @@ rm(control1, control2, control3, oxid1, oxid2, oxid3, pff1, pff3)</code></pre>
 combined.data &lt;- PrepSCTIntegration(object.list = combined.data, anchor.features = features)
 
 organoid.anchors &lt;- FindIntegrationAnchors(object.list = combined.data, normalization.method = &quot;SCT&quot;,
-    anchor.features = features)</code></pre>
-<pre><code>Warning in CheckDuplicateCellNames(object.list = object.list): Some cell
-names are duplicated across objects provided. Renaming to enforce unique
-cell names.</code></pre>
-<pre><code>Finding all pairwise anchors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 11409 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 10721 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13717 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 11711 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13454 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 10663 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13267 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 12681 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 11149 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 9970 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 16234 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 14731 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 11270 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 10846 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 11293 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 10894 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13226 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 12172 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 11707 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 11115 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13569 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 11729 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13473 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 11179 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 23613 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 21580 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 16034 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 14021 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13611 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 11640 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13080 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 12460 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 11084 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 9993 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 16385 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 15016 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 14667 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 13917 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 11324 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 10227 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 15696 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 14487 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 12588 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 11458 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 12440 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 11021 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 18379 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 17075 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13519 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 12186 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 11959 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 10630 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 18284 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 17215 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre><code>Running CCA</code></pre>
-<pre><code>Merging objects</code></pre>
-<pre><code>Finding neighborhoods</code></pre>
-<pre><code>Finding anchors</code></pre>
-<pre><code>    Found 13408 anchors</code></pre>
-<pre><code>Filtering anchors</code></pre>
-<pre><code>    Retained 12039 anchors</code></pre>
-<pre><code>Extracting within-dataset neighbors</code></pre>
-<pre class="r"><code>organoid.combined.sct &lt;- IntegrateData(anchorset = organoid.anchors, normalization.method = &quot;SCT&quot;)</code></pre>
-<pre><code>Merging dataset 5 into 3</code></pre>
-<pre><code>Extracting anchors for merged samples</code></pre>
-<pre><code>Finding integration vectors</code></pre>
-<pre><code>Finding integration vector weights</code></pre>
-<pre><code>Integrating data</code></pre>
-<pre><code>Merging dataset 8 into 6</code></pre>
-<pre><code>Extracting anchors for merged samples</code></pre>
-<pre><code>Finding integration vectors</code></pre>
-<pre><code>Finding integration vector weights</code></pre>
-<pre><code>Integrating data</code></pre>
-<pre><code>Merging dataset 4 into 3 5</code></pre>
-<pre><code>Extracting anchors for merged samples</code></pre>
-<pre><code>Finding integration vectors</code></pre>
-<pre><code>Finding integration vector weights</code></pre>
-<pre><code>Integrating data</code></pre>
-<pre><code>Merging dataset 1 into 7</code></pre>
-<pre><code>Extracting anchors for merged samples</code></pre>
-<pre><code>Finding integration vectors</code></pre>
-<pre><code>Finding integration vector weights</code></pre>
-<pre><code>Integrating data</code></pre>
-<pre><code>Merging dataset 7 1 into 3 5 4</code></pre>
-<pre><code>Extracting anchors for merged samples</code></pre>
-<pre><code>Finding integration vectors</code></pre>
-<pre><code>Finding integration vector weights</code></pre>
-<pre><code>Integrating data</code></pre>
-<pre><code>Merging dataset 6 8 into 3 5 4 7 1</code></pre>
-<pre><code>Extracting anchors for merged samples</code></pre>
-<pre><code>Finding integration vectors</code></pre>
-<pre><code>Finding integration vector weights</code></pre>
-<pre><code>Integrating data</code></pre>
-<pre><code>Merging dataset 2 into 3 5 4 7 1 6 8</code></pre>
-<pre><code>Extracting anchors for merged samples</code></pre>
-<pre><code>Finding integration vectors</code></pre>
-<pre><code>Finding integration vector weights</code></pre>
-<pre><code>Integrating data</code></pre>
-<pre><code>Warning: Adding a command log without an assay associated with it</code></pre>
-<pre class="r"><code>DefaultAssay(organoid.combined.sct) &lt;- &quot;integrated&quot;
+    anchor.features = features)
+organoid.combined.sct &lt;- IntegrateData(anchorset = organoid.anchors, normalization.method = &quot;SCT&quot;)
+DefaultAssay(organoid.combined.sct) &lt;- &quot;integrated&quot;
 rm(combined.data)</code></pre>
 <div id="evaluate-qc-for-further-filtering" class="section level3">
 <h3>Evaluate QC for further filtering</h3>
 <p>The pre-processing script already subsetted to less than 15% mitochondrial reads, but this is still pretty liberal.</p>
-<pre class="r"><code>FeatureScatter(organoid.combined.sct, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;percent.mt&quot;) + theme(legend.position = &quot;none&quot;) + ggtitle(&quot;&quot;)</code></pre>
+<pre class="r"><code>organoid.combined.sct &lt;- readRDS(file = &quot;output/merged_full_dataset.RDS&quot;)
+
+FeatureScatter(organoid.combined.sct, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;percent.mt&quot;) + theme(legend.position = &quot;none&quot;) + ggtitle(&quot;&quot;)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/pre-qc-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pre-qc-1">
+Past versions of pre-qc-1.png
+</button>
+</p>
+<div id="fig-pre-qc-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/pre-qc-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>FeatureScatter(organoid.combined.sct, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;nFeature_RNA&quot;) + theme(legend.position = &quot;none&quot;) + ggtitle(&quot;&quot;)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/pre-qc-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pre-qc-2">
+Past versions of pre-qc-2.png
+</button>
+</p>
+<div id="fig-pre-qc-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/pre-qc-2.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>FeatureScatter(organoid.combined.sct, feature1 = &quot;nFeature_RNA&quot;, feature2 = &quot;percent.mt&quot;) + theme(legend.position = &quot;none&quot;) + ggtitle(&quot;&quot;)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/pre-qc-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pre-qc-3">
+Past versions of pre-qc-3.png
+</button>
+</p>
+<div id="fig-pre-qc-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/pre-qc-3.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>organoid.combined.sct@meta.data %&gt;% 
   ggplot(aes(x=percent.mt)) +
   geom_freqpoly() +
   ggtitle(&quot;Mitochondrial read percent per cell&quot;)</code></pre>
-<p><img src="figure/merge_full_data.Rmd/pre-qc-4.png" width="672" style="display: block; margin: auto;" /> 15% is not a terrible cutoff, but we could easily do 8% and not lose anything worth missing. Let’s also check the number of genes detected, understanding that with low-pass sequencing there’s a lot less data here.</p>
+<p><img src="figure/merge_full_data.Rmd/pre-qc-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pre-qc-4">
+Past versions of pre-qc-4.png
+</button>
+</p>
+<div id="fig-pre-qc-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/pre-qc-4.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>15% is not a terrible cutoff, but we could easily do 8% and not lose anything worth missing. Let’s also check the number of genes detected, understanding that with low-pass sequencing there’s a lot less data here.</p>
 <pre class="r"><code>organoid.combined.sct@meta.data %&gt;% 
   ggplot(aes(x=nFeature_RNA)) +
   geom_freqpoly() +
   ggtitle(&quot;Number of genes per cell&quot;)</code></pre>
 <pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="figure/merge_full_data.Rmd/genes-cell-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-genes-cell-1">
+Past versions of genes-cell-1.png
+</button>
+</p>
+<div id="fig-genes-cell-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/genes-cell-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>We could set a minimum threshold of 2500 genes/cell to be safe. This would certainly hit some clusters, which might actually be synthetic owing to their low gene counts</p>
 <pre class="r"><code>organoid.combined.sct &lt;- subset(organoid.combined.sct, subset = percent.mt &lt; 8 &amp; nFeature_RNA &gt; 2500 )</code></pre>
 </div>
@@ -1093,26 +1057,137 @@ Negative:  SATB2, SLC44A5, FABP7, CUX2, NKAIN2, HS6ST3, TAFA1, DLGAP2, RBFOX1, B
 <pre><code>Warning: The default method for RunUMAP has changed from calling Python UMAP via reticulate to the R-native UWOT using the cosine metric
 To use Python UMAP via reticulate, set umap.method to &#39;umap-learn&#39; and metric to &#39;correlation&#39;
 This message will be shown once per session</code></pre>
-<pre><code>04:02:17 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
-<pre><code>04:02:17 Read 50978 rows and found 100 numeric columns</code></pre>
-<pre><code>04:02:17 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
-<pre><code>04:02:17 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
+<pre><code>10:17:41 UMAP embedding parameters a = 0.9922 b = 1.112</code></pre>
+<pre><code>10:17:41 Read 50978 rows and found 100 numeric columns</code></pre>
+<pre><code>10:17:41 Using Annoy for neighbor search, n_neighbors = 30</code></pre>
+<pre><code>10:17:41 Building Annoy index with metric = cosine, n_trees = 50</code></pre>
 <pre><code>0%   10   20   30   40   50   60   70   80   90   100%</code></pre>
 <pre><code>[----|----|----|----|----|----|----|----|----|----|</code></pre>
 <pre><code>**************************************************|
-04:02:31 Writing NN index file to temp file /tmp/RtmpbzcQQZ/file12eb6238795ff
-04:02:31 Searching Annoy index using 1 thread, search_k = 3000
-04:02:50 Annoy recall = 100%
-04:02:54 Commencing smooth kNN distance calibration using 1 thread
-04:02:56 Initializing from normalized Laplacian + noise
-04:03:03 Commencing optimization for 200 epochs, with 2357470 positive edges
-04:04:02 Optimization finished</code></pre>
+10:17:53 Writing NN index file to temp file /tmp/RtmpTofjHT/file1d55464bfff57
+10:17:53 Searching Annoy index using 1 thread, search_k = 3000
+10:18:08 Annoy recall = 100%
+10:18:09 Commencing smooth kNN distance calibration using 1 thread
+10:18:11 Initializing from normalized Laplacian + noise
+10:18:18 Commencing optimization for 200 epochs, with 2357470 positive edges
+10:19:18 Optimization finished</code></pre>
 <pre class="r"><code>FeaturePlot(organoid.combined.sct, features = c(&quot;rna_PAX6&quot;, &quot;rna_MAP2&quot;), max.cutoff = 50)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/integrated-umap-plots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-integrated-umap-plots-1">
+Past versions of integrated-umap-plots-1.png
+</button>
+</p>
+<div id="fig-integrated-umap-plots-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/integrated-umap-plots-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>DimPlot(organoid.combined.sct, reduction = &quot;umap&quot;, group.by = &quot;stim&quot;)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/integrated-umap-plots-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-integrated-umap-plots-2">
+Past versions of integrated-umap-plots-2.png
+</button>
+</p>
+<div id="fig-integrated-umap-plots-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/integrated-umap-plots-2.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>DimPlot(organoid.combined.sct, reduction = &quot;umap&quot;, group.by = &quot;replicate&quot;)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/integrated-umap-plots-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-integrated-umap-plots-3">
+Past versions of integrated-umap-plots-3.png
+</button>
+</p>
+<div id="fig-integrated-umap-plots-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/integrated-umap-plots-3.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>And now we can look for clusters:</p>
 <pre class="r"><code>organoid.combined.sct &lt;- FindNeighbors(organoid.combined.sct, dims=1:100)
 organoid.combined.sct &lt;- FindClusters(organoid.combined.sct, resolution=0.3)</code></pre>
@@ -1127,6 +1202,43 @@ Number of communities: 17
 Elapsed time: 15 seconds</code></pre>
 <pre class="r"><code>DimPlot(organoid.combined.sct, reduction = &quot;umap&quot;) + ggtitle(&quot;resolution=0.3&quot;)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/integrated-clusters-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-integrated-clusters-1">
+Past versions of integrated-clusters-1.png
+</button>
+</p>
+<div id="fig-integrated-clusters-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/integrated-clusters-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>This is a good time to save this output.</p>
 <pre class="r"><code>saveRDS(organoid.combined.sct, file = &quot;output/merged_full_dataset.RDS&quot;)</code></pre>
 </div>
@@ -1136,51 +1248,364 @@ Elapsed time: 15 seconds</code></pre>
 <p>Once again, I want to check that that large cluster isn’t something I want to hold onto. Markers that Genevieve uses for chondrogenic differentiation include:</p>
 <pre class="r"><code>FeaturePlot(organoid.combined.sct, features = c(&quot;COL2A1&quot;, &quot;SOX5&quot;, &quot;SOX6&quot;, &quot;ACAN&quot;))</code></pre>
 <p><img src="figure/merge_full_data.Rmd/chondro-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chondro-1">
+Past versions of chondro-1.png
+</button>
+</p>
+<div id="fig-chondro-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/chondro-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Yikes!! One pole of this cell cluster still looks pretty mesenchymal, with particularly high expression of collagen 2 and aggregan, which could mean any number of things.</p>
 <p>At the other end of this cluster I definitely saw expression of some glial genes, for instance:</p>
 <pre class="r"><code>FeaturePlot(organoid.combined.sct, features = c(&quot;APOE&quot;))</code></pre>
 <p><img src="figure/merge_full_data.Rmd/glia-cluster-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-glia-cluster-1">
+Past versions of glia-cluster-1.png
+</button>
+</p>
+<div id="fig-glia-cluster-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/glia-cluster-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>What could be going on here? Neural crest that started to differentiate? Consider looking at the CNCC marker trajectory that Sara Prescott worked out for her human-chimp paper, which was mostly designed for FACS but found some good markers (CD99, CD266(TNFRSF12A), CD10(MME), CD105(ENG), p75(NGFR)).</p>
 <pre class="r"><code>FeaturePlot(organoid.combined.sct, features = c(&quot;sct_CD99&quot;, &quot;sct_TNFRSF12A&quot;, &quot;sct_MME&quot;, &quot;sct_ENG&quot;, &quot;sct_NGFR&quot;))</code></pre>
 <p><img src="figure/merge_full_data.Rmd/CNCC-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-CNCC-1">
+Past versions of CNCC-1.png
+</button>
+</p>
+<div id="fig-CNCC-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/CNCC-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>FeaturePlot(organoid.combined.sct, features = c(&quot;sct_SOX10&quot;, &quot;sct_TUBB3&quot;))</code></pre>
-<p><img src="figure/merge_full_data.Rmd/CNCC-2.png" width="672" style="display: block; margin: auto;" /> There’s pretty good expression of all of these in the non-chondrogenic lobe of the cluster. BUT, SOX10 is strongly expressed in that smaller separate cluster, which would tend to indicate those are bona fide NCC. Hmm!</p>
+<p><img src="figure/merge_full_data.Rmd/CNCC-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-CNCC-2">
+Past versions of CNCC-2.png
+</button>
+</p>
+<div id="fig-CNCC-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/CNCC-2.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There’s pretty good expression of all of these in the non-chondrogenic lobe of the cluster. BUT, SOX10 is strongly expressed in that smaller separate cluster, which would tend to indicate those are bona fide NCC. Hmm!</p>
 <p>Any chance that these cells are microglia?</p>
 <pre class="r"><code>FeaturePlot(organoid.combined.sct, features = c(&quot;sct_MMP9&quot;, &quot;sct_SALL1&quot;, &quot;sct_P2RY12&quot;, &quot;sct_TMEM119&quot;, &quot;sct_CX3CR1&quot;))</code></pre>
 <p><img src="figure/merge_full_data.Rmd/microglia-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-microglia-1">
+Past versions of microglia-1.png
+</button>
+</p>
+<div id="fig-microglia-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/microglia-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>FeaturePlot(organoid.combined.sct, features = c(&quot;sct_ITGAM&quot;, &quot;sct_AIF1&quot;), max.cutoff = 0.5)</code></pre>
-<p><img src="figure/merge_full_data.Rmd/microglia-2.png" width="672" style="display: block; margin: auto;" /> There’s some expression of MMP9, TMEM119, and a tiny bit of IBA1 throughout the cluster, but not in the APOE-positive area and not in the COL2A1/ACAN area.</p>
-<p>This cluster is probably not homogenously any one cell type, but it’s not neuronal.</p>
+<p><img src="figure/merge_full_data.Rmd/microglia-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-microglia-2">
+Past versions of microglia-2.png
+</button>
+</p>
+<div id="fig-microglia-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/microglia-2.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There’s some expression of MMP9, TMEM119, and a tiny bit of IBA1 throughout the cluster, but not in the APOE-positive area and not in the COL2A1/ACAN area.</p>
+<p>This cluster is probably not homogenously any one cell type, but it’s not neuronal. In addition, cluster 16 is unique to 20157.</p>
 <pre class="r"><code># p1 &lt;- DimPlot(organoid.combined.sct)
 # select.cells &lt;- CellSelector(plot = p1)
 # saveRDS(select.cells, &quot;data/exclude_fulldata.rds&quot;)
 select.cells &lt;- readRDS(file = &quot;data/exclude_fulldata.rds&quot;)
 organoid.combined.sct.neuron &lt;- subset(organoid.combined.sct, cells = select.cells, invert=TRUE)
+organoid.combined.sct.neuron &lt;- subset(organoid.combined.sct.neuron, subset = seurat_clusters %in% c(&quot;1&quot;, &quot;3&quot;, &quot;11&quot;, &quot;12&quot;, &quot;13&quot;, &quot;14&quot;, &quot;15&quot;, &quot;16&quot;), invert=TRUE)
 DimPlot(organoid.combined.sct, cells.highlight = select.cells)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/subset-data-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>saveRDS(organoid.combined.sct.neuron, file = &quot;output/organoid.combined.full.sct.neuron.RDS&quot;)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-subset-data-1">
+Past versions of subset-data-1.png
+</button>
+</p>
+<div id="fig-subset-data-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/subset-data-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>DimPlot(organoid.combined.sct.neuron, label=TRUE, split.by=&quot;cell.line&quot;)</code></pre>
+<pre><code>Warning: Using `as.character()` on a quosure is deprecated as of rlang 0.3.0.
+Please use `as_label()` or `as_name()` instead.
+This warning is displayed once per session.</code></pre>
+<p><img src="figure/merge_full_data.Rmd/subset-data-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Now recluster with this reduced dataset</p>
 <pre class="r"><code>organoid.combined.sct.neuron &lt;- RunPCA(organoid.combined.sct.neuron, npcs = 100)
 organoid.combined.sct.neuron &lt;- RunUMAP(organoid.combined.sct.neuron, reduction = &quot;pca&quot;, dims = 1:100)
 
-DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;, group.by = &quot;stim&quot;)
-DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;, group.by = &quot;replicate&quot;)
+DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;, group.by = &quot;stim&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/recluster-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;, group.by = &quot;replicate&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/recluster-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>organoid.combined.sct.neuron &lt;- FindNeighbors(organoid.combined.sct.neuron, dims=1:100)
+organoid.combined.sct.neuron &lt;- FindClusters(organoid.combined.sct.neuron, resolution=0.1)</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 
-organoid.combined.sct.neuron &lt;- FindNeighbors(organoid.combined.sct.neuron, dims=1:100)
-organoid.combined.sct.neuron &lt;- FindClusters(organoid.combined.sct.neuron, resolution=0.3)
+Number of nodes: 35101
+Number of edges: 1902453
 
-DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;) + ggtitle(&quot;resolution=0.3&quot;)
-
-organoid.combined.sct.neuron.markers &lt;- FindAllMarkers(organoid.combined.sct.neuron, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9614
+Number of communities: 9
+Elapsed time: 9 seconds</code></pre>
+<pre class="r"><code>DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;) + ggtitle(&quot;resolution=0.1&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/recluster-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>saveRDS(organoid.combined.sct.neuron, file = &quot;output/organoid.combined.full.sct.neuron.RDS&quot;)</code></pre>
+<pre class="r"><code>organoid.combined.sct.neuron.markers &lt;- FindAllMarkers(organoid.combined.sct.neuron, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 saveRDS(organoid.combined.sct.neuron.markers, file=&quot;output/organoid.combined.sct.neuron.markers.RDS&quot;)
 organoid.combined.sct.neuron.markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_logFC) %&gt;% kable()
 
-#saveRDS(organoid.combined.sct.neuron, file = &quot;data/organoid.combined.full.sct.neuron.RDS&quot;)
-# organoid.combined.sct.neuron &lt;- readRDS(file = &quot;data/organoid.combined.full.sct.neuron.RDS&quot;)</code></pre>
+#saveRDS(organoid.combined.sct.neuron, file = &quot;output/organoid.combined.full.sct.neuron.RDS&quot;)
+# organoid.combined.sct.neuron &lt;- readRDS(file = &quot;output/organoid.combined.full.sct.neuron.RDS&quot;)</code></pre>
 <p>The relevant output of the above markers and the cluster-labeled UMAP representation:</p>
 <pre class="r"><code>organoid.combined.sct.neuron.markers &lt;- readRDS(file=&quot;output/organoid.combined.sct.neuron.markers.RDS&quot;)
-DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;) + ggtitle(&quot;resolution=0.3&quot;)</code></pre>
+DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;) + ggtitle(&quot;resolution=0.1&quot;)</code></pre>
 <p><img src="figure/merge_full_data.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-1-1">
+Past versions of unnamed-chunk-1-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/bumans/Organoid_Stress_Pilot/blob/cd984048b9303fbab28b13f099c22abc6025231b/docs/figure/merge_full_data.Rmd/unnamed-chunk-1-1.png" target="_blank">cd98404</a>
+</td>
+<td>
+Ben Umans
+</td>
+<td>
+2021-07-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>organoid.combined.sct.neuron.markers %&gt;% group_by(cluster) %&gt;% top_n(n = 5, wt = avg_logFC) %&gt;% kable()</code></pre>
 <table>
 <thead>
@@ -1197,116 +1622,116 @@ DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;) + ggtitle(&q
 <tbody>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">6.892666</td>
-<td align="right">0.893</td>
-<td align="right">0.260</td>
+<td align="right">7.648580</td>
+<td align="right">0.890</td>
+<td align="right">0.252</td>
 <td align="right">0.0000000</td>
 <td align="left">0</td>
 <td align="left">DPY19L1</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">6.468132</td>
-<td align="right">0.819</td>
-<td align="right">0.298</td>
+<td align="right">6.510334</td>
+<td align="right">0.821</td>
+<td align="right">0.292</td>
 <td align="right">0.0000000</td>
 <td align="left">0</td>
 <td align="left">ADRA2A</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">6.284193</td>
-<td align="right">0.873</td>
-<td align="right">0.377</td>
+<td align="right">6.224611</td>
+<td align="right">0.867</td>
+<td align="right">0.372</td>
 <td align="right">0.0000000</td>
 <td align="left">0</td>
 <td align="left">PRKX</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">5.669388</td>
-<td align="right">0.950</td>
-<td align="right">0.476</td>
+<td align="right">6.196572</td>
+<td align="right">0.963</td>
+<td align="right">0.411</td>
 <td align="right">0.0000000</td>
 <td align="left">0</td>
-<td align="left">PTPN4</td>
+<td align="left">TTC28</td>
 </tr>
 <tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">6.027549</td>
-<td align="right">0.538</td>
-<td align="right">0.336</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0029858</td>
+<td align="right">6.666291</td>
+<td align="right">0.642</td>
+<td align="right">0.610</td>
+<td align="right">1.0000000</td>
 <td align="left">0</td>
-<td align="left">AC105916.1</td>
+<td align="left">CUX1</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">10.800391</td>
-<td align="right">0.821</td>
-<td align="right">0.181</td>
+<td align="right">9.796594</td>
+<td align="right">0.842</td>
+<td align="right">0.172</td>
 <td align="right">0.0000000</td>
 <td align="left">1</td>
 <td align="left">SYBU</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">8.366472</td>
-<td align="right">0.857</td>
-<td align="right">0.282</td>
+<td align="right">8.988253</td>
+<td align="right">0.732</td>
+<td align="right">0.135</td>
+<td align="right">0.0000000</td>
+<td align="left">1</td>
+<td align="left">SLITRK5</td>
+</tr>
+<tr class="even">
+<td align="right">0.0000000</td>
+<td align="right">8.863240</td>
+<td align="right">0.533</td>
+<td align="right">0.068</td>
+<td align="right">0.0000000</td>
+<td align="left">1</td>
+<td align="left">AL138773.1</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0000000</td>
+<td align="right">8.327218</td>
+<td align="right">0.859</td>
+<td align="right">0.278</td>
 <td align="right">0.0000000</td>
 <td align="left">1</td>
 <td align="left">GPR85</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">7.388974</td>
-<td align="right">0.587</td>
-<td align="right">0.074</td>
-<td align="right">0.0000000</td>
-<td align="left">1</td>
-<td align="left">CELF2-DT</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">7.292979</td>
-<td align="right">0.972</td>
-<td align="right">0.436</td>
+<td align="right">7.417413</td>
+<td align="right">0.965</td>
+<td align="right">0.434</td>
 <td align="right">0.0000000</td>
 <td align="left">1</td>
 <td align="left">R3HDM1</td>
 </tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">7.249213</td>
-<td align="right">0.984</td>
-<td align="right">0.605</td>
-<td align="right">0.0000000</td>
-<td align="left">1</td>
-<td align="left">ADD2</td>
-</tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">9.614571</td>
-<td align="right">0.678</td>
-<td align="right">0.466</td>
+<td align="right">9.618730</td>
+<td align="right">0.679</td>
+<td align="right">0.467</td>
 <td align="right">0.0000000</td>
 <td align="left">2</td>
 <td align="left">AC053513.1</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">8.793939</td>
-<td align="right">0.740</td>
-<td align="right">0.126</td>
+<td align="right">8.798382</td>
+<td align="right">0.743</td>
+<td align="right">0.127</td>
 <td align="right">0.0000000</td>
 <td align="left">2</td>
 <td align="left">CITED1</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">8.688715</td>
-<td align="right">0.433</td>
+<td align="right">8.697273</td>
+<td align="right">0.434</td>
 <td align="right">0.099</td>
 <td align="right">0.0000000</td>
 <td align="left">2</td>
@@ -1314,8 +1739,8 @@ DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;) + ggtitle(&q
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">8.224377</td>
-<td align="right">0.487</td>
+<td align="right">8.229237</td>
+<td align="right">0.488</td>
 <td align="right">0.113</td>
 <td align="right">0.0000000</td>
 <td align="left">2</td>
@@ -1323,8 +1748,8 @@ DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;) + ggtitle(&q
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">9.378618</td>
-<td align="right">0.287</td>
+<td align="right">9.485794</td>
+<td align="right">0.288</td>
 <td align="right">0.176</td>
 <td align="right">0.0000000</td>
 <td align="left">2</td>
@@ -1332,411 +1757,567 @@ DimPlot(organoid.combined.sct.neuron, reduction = &quot;umap&quot;) + ggtitle(&q
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">7.749870</td>
-<td align="right">0.847</td>
-<td align="right">0.541</td>
+<td align="right">14.087441</td>
+<td align="right">0.857</td>
+<td align="right">0.349</td>
 <td align="right">0.0000000</td>
 <td align="left">3</td>
+<td align="left">KPNA2</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0000000</td>
+<td align="right">14.019993</td>
+<td align="right">0.838</td>
+<td align="right">0.064</td>
+<td align="right">0.0000000</td>
+<td align="left">3</td>
+<td align="left">CCNB2</td>
+</tr>
+<tr class="even">
+<td align="right">0.0000000</td>
+<td align="right">13.575890</td>
+<td align="right">0.922</td>
+<td align="right">0.072</td>
+<td align="right">0.0000000</td>
+<td align="left">3</td>
+<td align="left">SGO2</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0000000</td>
+<td align="right">13.534811</td>
+<td align="right">0.963</td>
+<td align="right">0.179</td>
+<td align="right">0.0000000</td>
+<td align="left">3</td>
+<td align="left">CKAP2</td>
+</tr>
+<tr class="even">
+<td align="right">0.0000000</td>
+<td align="right">13.512947</td>
+<td align="right">0.907</td>
+<td align="right">0.044</td>
+<td align="right">0.0000000</td>
+<td align="left">3</td>
+<td align="left">BUB1</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0000000</td>
+<td align="right">7.759194</td>
+<td align="right">0.848</td>
+<td align="right">0.542</td>
+<td align="right">0.0000000</td>
+<td align="left">4</td>
 <td align="left">RAPGEF2</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">7.440431</td>
-<td align="right">0.774</td>
-<td align="right">0.541</td>
+<td align="right">7.488123</td>
+<td align="right">0.777</td>
+<td align="right">0.542</td>
 <td align="right">0.0000000</td>
-<td align="left">3</td>
+<td align="left">4</td>
 <td align="left">DDX3Y</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">7.162033</td>
-<td align="right">0.604</td>
-<td align="right">0.393</td>
+<td align="right">7.171453</td>
+<td align="right">0.606</td>
+<td align="right">0.394</td>
 <td align="right">0.0000000</td>
-<td align="left">3</td>
+<td align="left">4</td>
 <td align="left">ERO1B</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">9.436481</td>
-<td align="right">0.298</td>
+<td align="right">9.446425</td>
+<td align="right">0.300</td>
 <td align="right">0.141</td>
 <td align="right">0.0000000</td>
-<td align="left">3</td>
+<td align="left">4</td>
 <td align="left">TSPYL2</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">7.467664</td>
-<td align="right">0.352</td>
+<td align="right">7.477498</td>
+<td align="right">0.353</td>
 <td align="right">0.180</td>
 <td align="right">0.0000000</td>
-<td align="left">3</td>
+<td align="left">4</td>
 <td align="left">IL12RB2</td>
 </tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">10.142848</td>
-<td align="right">0.990</td>
-<td align="right">0.206</td>
-<td align="right">0.0000000</td>
-<td align="left">4</td>
-<td align="left">FANCI</td>
-</tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">9.293580</td>
-<td align="right">0.957</td>
-<td align="right">0.120</td>
+<td align="right">9.796787</td>
+<td align="right">0.660</td>
+<td align="right">0.225</td>
 <td align="right">0.0000000</td>
-<td align="left">4</td>
-<td align="left">BRCA2</td>
+<td align="left">5</td>
+<td align="left">NPAS1</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">8.976039</td>
-<td align="right">0.940</td>
-<td align="right">0.134</td>
+<td align="right">8.959793</td>
+<td align="right">0.323</td>
+<td align="right">0.055</td>
 <td align="right">0.0000000</td>
-<td align="left">4</td>
-<td align="left">BLM</td>
+<td align="left">5</td>
+<td align="left">ZFHX3</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">8.781641</td>
-<td align="right">0.948</td>
-<td align="right">0.081</td>
+<td align="right">8.609726</td>
+<td align="right">0.742</td>
+<td align="right">0.040</td>
 <td align="right">0.0000000</td>
-<td align="left">4</td>
-<td align="left">MYBL2</td>
+<td align="left">5</td>
+<td align="left">GATA3-AS1</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">8.632552</td>
-<td align="right">0.982</td>
-<td align="right">0.111</td>
+<td align="right">7.864492</td>
+<td align="right">0.358</td>
+<td align="right">0.076</td>
 <td align="right">0.0000000</td>
-<td align="left">4</td>
-<td align="left">RAD51AP1</td>
+<td align="left">5</td>
+<td align="left">NHS</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">12.531469</td>
+<td align="right">8.281043</td>
+<td align="right">0.470</td>
+<td align="right">0.138</td>
+<td align="right">0.0000000</td>
+<td align="left">5</td>
+<td align="left">NR2F2</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0000000</td>
+<td align="right">13.408357</td>
+<td align="right">0.881</td>
+<td align="right">0.201</td>
+<td align="right">0.0000000</td>
+<td align="left">6</td>
+<td align="left">C1orf194</td>
+</tr>
+<tr class="even">
+<td align="right">0.0000000</td>
+<td align="right">12.787259</td>
+<td align="right">0.763</td>
+<td align="right">0.043</td>
+<td align="right">0.0000000</td>
+<td align="left">6</td>
+<td align="left">SMIM5</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0000000</td>
+<td align="right">12.582733</td>
+<td align="right">0.838</td>
+<td align="right">0.018</td>
+<td align="right">0.0000000</td>
+<td align="left">6</td>
+<td align="left">CFAP126</td>
+</tr>
+<tr class="even">
+<td align="right">0.0000000</td>
+<td align="right">12.529271</td>
 <td align="right">0.711</td>
 <td align="right">0.013</td>
 <td align="right">0.0000000</td>
-<td align="left">5</td>
+<td align="left">6</td>
 <td align="left">SERPINA3</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">12.460638</td>
-<td align="right">0.715</td>
+<td align="right">12.459995</td>
+<td align="right">0.716</td>
 <td align="right">0.024</td>
 <td align="right">0.0000000</td>
-<td align="left">5</td>
+<td align="left">6</td>
 <td align="left">WDR38</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">12.151465</td>
-<td align="right">0.791</td>
-<td align="right">0.021</td>
-<td align="right">0.0000000</td>
-<td align="left">5</td>
-<td align="left">C7orf57</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">11.898922</td>
-<td align="right">0.693</td>
-<td align="right">0.046</td>
-<td align="right">0.0000000</td>
-<td align="left">5</td>
-<td align="left">C11orf88</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">12.056751</td>
-<td align="right">0.530</td>
-<td align="right">0.015</td>
-<td align="right">0.0000000</td>
-<td align="left">5</td>
-<td align="left">MS4A8</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">10.278164</td>
-<td align="right">0.997</td>
-<td align="right">0.600</td>
-<td align="right">0.0000000</td>
-<td align="left">6</td>
-<td align="left">WASF1</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">10.104331</td>
-<td align="right">0.859</td>
-<td align="right">0.293</td>
-<td align="right">0.0000000</td>
-<td align="left">6</td>
-<td align="left">SATB1</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">8.843072</td>
-<td align="right">0.907</td>
-<td align="right">0.261</td>
-<td align="right">0.0000000</td>
-<td align="left">6</td>
-<td align="left">MAL2</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">8.516076</td>
-<td align="right">0.842</td>
-<td align="right">0.389</td>
-<td align="right">0.0000000</td>
-<td align="left">6</td>
-<td align="left">HECW2</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">9.887219</td>
-<td align="right">0.270</td>
-<td align="right">0.055</td>
-<td align="right">0.0000000</td>
-<td align="left">6</td>
-<td align="left">VRK2</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">7.257082</td>
+<td align="right">7.260082</td>
 <td align="right">0.972</td>
-<td align="right">0.404</td>
+<td align="right">0.403</td>
 <td align="right">0.0000000</td>
 <td align="left">7</td>
 <td align="left">RBPJ</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">6.882316</td>
-<td align="right">0.550</td>
+<td align="right">7.237427</td>
+<td align="right">0.912</td>
+<td align="right">0.571</td>
+<td align="right">0.0000000</td>
+<td align="left">7</td>
+<td align="left">TFDP2</td>
+</tr>
+<tr class="even">
+<td align="right">0.0000000</td>
+<td align="right">6.883786</td>
+<td align="right">0.551</td>
 <td align="right">0.144</td>
 <td align="right">0.0000000</td>
 <td align="left">7</td>
 <td align="left">GAS2</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">6.253624</td>
-<td align="right">0.383</td>
+<td align="right">6.254947</td>
+<td align="right">0.384</td>
 <td align="right">0.151</td>
 <td align="right">0.0000000</td>
 <td align="left">7</td>
 <td align="left">AC078881.1</td>
 </tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">6.065486</td>
-<td align="right">0.815</td>
-<td align="right">0.685</td>
-<td align="right">0.0000000</td>
-<td align="left">7</td>
-<td align="left">PPP1R9A</td>
-</tr>
 <tr class="even">
-<td align="right">0.0000539</td>
-<td align="right">7.637421</td>
-<td align="right">0.529</td>
-<td align="right">0.562</td>
-<td align="right">0.2692528</td>
+<td align="right">0.0000460</td>
+<td align="right">7.638507</td>
+<td align="right">0.530</td>
+<td align="right">0.563</td>
+<td align="right">0.2297607</td>
 <td align="left">7</td>
 <td align="left">GALNT8</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">9.920117</td>
-<td align="right">0.955</td>
-<td align="right">0.531</td>
+<td align="right">10.303605</td>
+<td align="right">0.912</td>
+<td align="right">0.297</td>
 <td align="right">0.0000000</td>
 <td align="left">8</td>
-<td align="left">SCLT1</td>
+<td align="left">SATB1</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">9.713181</td>
-<td align="right">0.931</td>
-<td align="right">0.165</td>
+<td align="right">8.954179</td>
+<td align="right">0.919</td>
+<td align="right">0.269</td>
 <td align="right">0.0000000</td>
 <td align="left">8</td>
-<td align="left">PARPBP</td>
+<td align="left">MAL2</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0000000</td>
-<td align="right">9.432273</td>
-<td align="right">0.977</td>
-<td align="right">0.097</td>
+<td align="right">8.695632</td>
+<td align="right">0.858</td>
+<td align="right">0.394</td>
 <td align="right">0.0000000</td>
 <td align="left">8</td>
-<td align="left">TROAP</td>
+<td align="left">HECW2</td>
 </tr>
 <tr class="even">
 <td align="right">0.0000000</td>
-<td align="right">8.916473</td>
-<td align="right">0.940</td>
-<td align="right">0.092</td>
+<td align="right">8.072489</td>
+<td align="right">0.855</td>
+<td align="right">0.056</td>
 <td align="right">0.0000000</td>
 <td align="left">8</td>
-<td align="left">TTK</td>
+<td align="left">LINC01435</td>
 </tr>
 <tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">8.695318</td>
-<td align="right">0.894</td>
-<td align="right">0.127</td>
-<td align="right">0.0000000</td>
-<td align="left">8</td>
-<td align="left">FAM83D</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">6.672513</td>
-<td align="right">0.959</td>
-<td align="right">0.750</td>
-<td align="right">0.0000000</td>
-<td align="left">9</td>
-<td align="left">SLAIN1</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">6.592629</td>
-<td align="right">0.329</td>
-<td align="right">0.107</td>
-<td align="right">0.0000000</td>
-<td align="left">9</td>
-<td align="left">TNN</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">7.664381</td>
-<td align="right">0.718</td>
-<td align="right">0.339</td>
-<td align="right">0.0000000</td>
-<td align="left">9</td>
-<td align="left">MTUS1</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">7.321903</td>
-<td align="right">0.566</td>
-<td align="right">0.286</td>
-<td align="right">0.0000000</td>
-<td align="left">9</td>
-<td align="left">AC090241.2</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">7.791721</td>
-<td align="right">0.393</td>
-<td align="right">0.224</td>
-<td align="right">0.0000000</td>
-<td align="left">9</td>
-<td align="left">RAP2C-AS1</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">7.995611</td>
-<td align="right">0.840</td>
-<td align="right">0.064</td>
-<td align="right">0.0000000</td>
-<td align="left">10</td>
-<td align="left">GATA3-AS1</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">8.192247</td>
-<td align="right">0.631</td>
-<td align="right">0.041</td>
-<td align="right">0.0000000</td>
-<td align="left">10</td>
-<td align="left">GATA3</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">9.055618</td>
-<td align="right">0.652</td>
-<td align="right">0.144</td>
-<td align="right">0.0000000</td>
-<td align="left">10</td>
-<td align="left">NR2F2</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">12.871942</td>
-<td align="right">0.464</td>
-<td align="right">0.040</td>
-<td align="right">0.0000000</td>
-<td align="left">10</td>
-<td align="left">SMIM32</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">7.304059</td>
-<td align="right">0.764</td>
-<td align="right">0.553</td>
-<td align="right">0.0000000</td>
-<td align="left">10</td>
-<td align="left">CDKN2D</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000000</td>
-<td align="right">10.992154</td>
-<td align="right">0.885</td>
-<td align="right">0.108</td>
-<td align="right">0.0000000</td>
-<td align="left">11</td>
-<td align="left">LGR4</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000000</td>
-<td align="right">10.700430</td>
-<td align="right">0.344</td>
-<td align="right">0.080</td>
-<td align="right">0.0001744</td>
-<td align="left">11</td>
-<td align="left">SEMA5A</td>
-</tr>
-<tr class="even">
-<td align="right">0.0000007</td>
-<td align="right">11.301041</td>
-<td align="right">0.393</td>
-<td align="right">0.145</td>
-<td align="right">0.0035772</td>
-<td align="left">11</td>
-<td align="left">LGI4</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0000141</td>
-<td align="right">11.596306</td>
-<td align="right">0.262</td>
-<td align="right">0.050</td>
-<td align="right">0.0704529</td>
-<td align="left">11</td>
-<td align="left">EGFLAM</td>
-</tr>
-<tr class="even">
-<td align="right">0.0012444</td>
-<td align="right">11.650612</td>
-<td align="right">0.295</td>
-<td align="right">0.117</td>
+<td align="right">0.0080493</td>
+<td align="right">10.095539</td>
+<td align="right">0.320</td>
+<td align="right">0.055</td>
 <td align="right">1.0000000</td>
-<td align="left">11</td>
-<td align="left">ANO2</td>
+<td align="left">8</td>
+<td align="left">VRK2</td>
 </tr>
 </tbody>
 </table>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct, features = c(&quot;sct_GAD1&quot;), max.cutoff = 0.5)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/unnamed-chunk-1-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;sct_GAD1&quot;), max.cutoff = 0.5)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/unnamed-chunk-1-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="representation-across-batches" class="section level2">
+<h2>Representation across batches</h2>
+<p>How many cells do I have from each individual in each sample?</p>
+<pre class="r"><code>table(organoid.combined.sct@meta.data$cell.line, organoid.combined.sct@meta.data$replicate, useNA=&quot;always&quot;) %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">2</th>
+<th align="right">3</th>
+<th align="right">4</th>
+<th align="right">NA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>20157</td>
+<td align="right">4912</td>
+<td align="right">2387</td>
+<td align="right">11671</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>23555</td>
+<td align="right">6485</td>
+<td align="right">937</td>
+<td align="right">7313</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>28126</td>
+<td align="right">5157</td>
+<td align="right">6851</td>
+<td align="right">5265</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>NA</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>We can s</td>
+<td align="right">ee that</td>
+<td align="right">this i</td>
+<td align="right">s pretty</td>
+<td align="right">unbalanced, especially for replicate 3. When we look at neurons specifically, we can see:</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table(organoid.combined.sct.neuron@meta.data$cell.line, organoid.combined.sct.neuron@meta.data$replicate, useNA=&quot;always&quot;) %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">2</th>
+<th align="right">3</th>
+<th align="right">4</th>
+<th align="right">NA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>20157</td>
+<td align="right">1614</td>
+<td align="right">1336</td>
+<td align="right">3259</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>23555</td>
+<td align="right">5579</td>
+<td align="right">250</td>
+<td align="right">6948</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>28126</td>
+<td align="right">4657</td>
+<td align="right">6652</td>
+<td align="right">4806</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td>NA</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td>This red</td>
+<td align="right">uces so</td>
+<td align="right">me cont</td>
+<td align="right">ributio</td>
+<td align="right">ns significantly. It also confirms my earlier finding that the mesenchymal mystery cluster is largely contributed by line 20157.</td>
+</tr>
+</tbody>
+</table>
+<p>Now we can calculate the library complexity for each sample.</p>
+<pre class="r"><code> organoid.combined.sct.neuron@meta.data$Complexity &lt;- log10(organoid.combined.sct.neuron@meta.data$nCount_RNA/organoid.combined.sct.neuron@meta.data$nFeature_RNA)
+  print(&quot;Complexity (Chimp and Human)&quot;)</code></pre>
+<pre><code>[1] &quot;Complexity (Chimp and Human)&quot;</code></pre>
+<pre class="r"><code>   for (i in unique(organoid.combined.sct.neuron@meta.data$replicate)){
+  print(summary(organoid.combined.sct.neuron@meta.data$Complexity[which(organoid.combined.sct.neuron@meta.data$replicate==i)]))
+  }</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1875  0.4920  0.5528  0.5641  0.6224  1.3113 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2052  0.4962  0.5665  0.5781  0.6442  1.2747 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1585  0.4243  0.4862  0.5032  0.5676  1.1489 </code></pre>
+<pre class="r"><code>  for (k in unique(organoid.combined.sct.neuron@meta.data$cell.line)){
+  print(summary(organoid.combined.sct.neuron@meta.data$Complexity[which(organoid.combined.sct.neuron@meta.data$cell.line==k)]))
+  }</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1585  0.4837  0.5583  0.5710  0.6401  1.2175 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1875  0.4537  0.5259  0.5342  0.5998  1.3113 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2052  0.4561  0.5233  0.5355  0.6020  1.2747 </code></pre>
+<pre class="r"><code>#look for each line in each replicate
+for (i in unique(organoid.combined.sct.neuron@meta.data$replicate)){
+  for (k in unique(organoid.combined.sct.neuron@meta.data$cell.line)){
+    print(list(c(i, k),summary(organoid.combined.sct.neuron@meta.data$Complexity[which(organoid.combined.sct.neuron@meta.data$cell.line==k &amp; organoid.combined.sct.neuron@meta.data$replicate==i)])))
+  }
+}</code></pre>
+<pre><code>[[1]]
+[1] &quot;2&quot;     &quot;20157&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2530  0.5294  0.5902  0.6033  0.6647  1.1594 
+
+[[1]]
+[1] &quot;2&quot;     &quot;23555&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1875  0.4986  0.5583  0.5678  0.6229  1.3113 
+
+[[1]]
+[1] &quot;2&quot;     &quot;28126&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2063  0.4756  0.5329  0.5460  0.6037  1.2157 
+
+[[1]]
+[1] &quot;3&quot;     &quot;20157&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2791  0.5526  0.6218  0.6342  0.7061  1.2175 
+
+[[1]]
+[1] &quot;3&quot;     &quot;23555&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.4064  0.5733  0.6274  0.6315  0.6836  1.1370 
+
+[[1]]
+[1] &quot;3&quot;     &quot;28126&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2052  0.4871  0.5528  0.5649  0.6290  1.2747 
+
+[[1]]
+[1] &quot;4&quot;     &quot;20157&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1585  0.4545  0.5109  0.5291  0.5872  1.1198 
+
+[[1]]
+[1] &quot;4&quot;     &quot;23555&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2129  0.4245  0.4877  0.5037  0.5702  1.1489 
+
+[[1]]
+[1] &quot;4&quot;     &quot;28126&quot;
+
+[[2]]
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.2234  0.4092  0.4651  0.4848  0.5465  1.0055 </code></pre>
+<p>Reassuringly, the library complexity is not very different between individuals in an given replicate, and the replicates don’t differ hugely.</p>
+<div id="gene-metrics" class="section level3">
+<h3>Gene metrics</h3>
+<p>I’ve mostly looked at measures of cell data quality, but what about genes? In particular, I’ll start by looking at UMIs/gene and genes with very rare expression.</p>
+<pre class="r"><code>df &lt;- data.frame(
+    counts_per_gene_20157 &lt;- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line==&quot;20157&quot;)]),
+    counts_per_gene_23555 &lt;- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line==&quot;23555&quot;)]),
+    counts_per_gene_28126 &lt;- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line==&quot;28126&quot;)]),
+    cells_per_gene_20157 &lt;- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line==&quot;20157&quot;)]&gt;0),
+    cells_per_gene_23555 &lt;- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line==&quot;23555&quot;)]&gt;0),
+    cells_per_gene_28126 &lt;- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line==&quot;28126&quot;)]&gt;0)
+  )
+  rm(counts_per_gene_20157, counts_per_gene_23555, counts_per_gene_28126,cells_per_gene_20157,cells_per_gene_23555,cells_per_gene_28126)
+  colnames(df) &lt;- c(&quot;counts_per_gene_20157&quot;, &quot;counts_per_gene_23555&quot;, &quot;counts_per_gene_28126&quot;,&quot;cells_per_gene_20157&quot;,&quot;cells_per_gene_23555&quot;,&quot;cells_per_gene_28126&quot;)
+
+ggplot(df, aes(x=log10(counts_per_gene_20157+1))) +
+           geom_histogram(color=&quot;#F8766D&quot;, fill=&quot;white&quot;, alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype=&quot;dashed&quot;) +
+  ggtitle(&quot;Counts per gene in 20157 cells&quot;) + ylab(&quot;genes&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(df, aes(x=log10(counts_per_gene_23555+1))) +
+           geom_histogram(color=&quot;#F8766D&quot;, fill=&quot;white&quot;, alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype=&quot;dashed&quot;) +
+  ggtitle(&quot;Counts per gene in 23555 cells&quot;) + ylab(&quot;genes&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(df, aes(x=log10(counts_per_gene_28126+1))) +
+           geom_histogram(color=&quot;#F8766D&quot;, fill=&quot;white&quot;, alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype=&quot;dashed&quot;) +
+  ggtitle(&quot;Counts per gene in 28126 cells&quot;) + ylab(&quot;genes&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/unnamed-chunk-5-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(df, aes(x=log10(cells_per_gene_20157+1))) +
+           geom_histogram(color=&quot;#F8766D&quot;, fill=&quot;white&quot;, alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype=&quot;dashed&quot;) +
+           labs(x=&quot;Log10 Cells per Gene (20157)&quot;,y=&quot;Count&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/unnamed-chunk-5-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(df, aes(x=log10(cells_per_gene_23555+1))) +
+           geom_histogram(color=&quot;#F8766D&quot;, fill=&quot;white&quot;, alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype=&quot;dashed&quot;) +
+           labs(x=&quot;Log10 Cells per Gene (23555)&quot;,y=&quot;Count&quot;) +
+  ggtitle(&quot;Cells per gene in 23555 cells&quot;) + ylab(&quot;genes&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/unnamed-chunk-5-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(df, aes(x=log10(cells_per_gene_28126+1))) +
+           geom_histogram(color=&quot;#F8766D&quot;, fill=&quot;white&quot;, alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype=&quot;dashed&quot;) +
+           labs(x=&quot;Log10 Cells per Gene (28126)&quot;,y=&quot;Count&quot;)+
+  ggtitle(&quot;Cells per gene in 28126 cells&quot;) + ylab(&quot;genes&quot;)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/unnamed-chunk-5-6.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="targeted-gene-classification" class="section level3">
+<h3>Targeted gene classification</h3>
+<p>In addition to genes of interest above, I’ve borrowed from the Abcam manual of neural markers to provide a more systematic assessment of canonical (and immunostainable) CNS targets.</p>
+<p>First, neuroepithelium:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_NES&quot;, &quot;rna_SOX2&quot;, &quot;rna_NOTCH1&quot;, &quot;rna_HES1&quot;, &quot;rna_SOX10&quot;), max.cutoff = 15)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/neuroepithelium-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>These indicate a cluster that contains progenitors. Not all of these markers are unique to neuroepithelium. Nestin, HES1, and SOX2, for instance, are also expressed by radial glia. Additional radial glial markers include:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_VIM&quot;, &quot;rna_PAX6&quot;, &quot;rna_HES5&quot;, &quot;rna_SLC1A3&quot;, &quot;rna_GFAP&quot;, &quot;rna_FABP7&quot;, &quot;rna_CDH2&quot;, &quot;rna_TNC&quot;), max.cutoff = 50)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/rg-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Intermediate progenitors a are distinguished by the following markers:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_EOMES&quot;, &quot;rna_ASCL1&quot;,&quot;rna_OTX1&quot;, &quot;rna_OTX2&quot;, &quot;rna_FOXG1&quot;), max.cutoff = 25)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/IPC-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>While immature neurons, which IPCs differentiate into, express the following:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_DCX&quot;, &quot;rna_TUBB3&quot;, &quot;rna_NEUROD1&quot;, &quot;rna_TBR1&quot;, &quot;rna_STMN1&quot;, &quot;rna_GAP43&quot;, &quot;rna_NCAM1&quot;), max.cutoff = 25)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/immature-1.png" width="672" style="display: block; margin: auto;" /> In contrast to the cloud of progenitor cells, these markers seem to indicate the other large cluster as being more neuronal in character.</p>
+<p>Oligodendrocytes and their precursors generally express the following markers:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_PDGFRA&quot;, &quot;rna_CSPG4&quot;, &quot;rna_CLDN11&quot;, &quot;rna_MOG&quot;), max.cutoff = 10)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/olig-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_OLIG1&quot;, &quot;rna_OLIG2&quot;, &quot;rna_OLIG3&quot;, &quot;rna_MBP&quot;), max.cutoff = 8)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/olig-2.png" width="672" style="display: block; margin: auto;" /> Oligodendrocytes seem sparse and early, consistent with the idea that gliogenesis starts later in organoid development.</p>
+<p>Markers of “mature” neurons–a somewhat arbitrary term that simply means they’re post-mitotic–include:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_RBFOX3&quot;, &quot;rna_MAP2&quot;, &quot;rna_NEFM&quot;, &quot;rna_NEFH&quot;, &quot;rna_DLG4&quot;), max.cutoff = 10)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/mature-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_SYP&quot;, &quot;rna_UNC13A&quot;), max.cutoff = 10)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/mature-2.png" width="672" style="display: block; margin: auto;" /> Which largely confirms our impression from earlier of which cluster contains neurons. Only a subset of these are positive for NeuN (RBFOX3), whereas more express PSD95 (DLG4) and Synaptophysin.</p>
+<p>I expect that the majority of these neurons will be glutamatergic:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_SLC17A7&quot;, &quot;rna_SLC17A6&quot;, &quot;rna_GRIN1&quot;, &quot;rna_GRIN2B&quot;), max.cutoff = 25)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/glutamatergic-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>GABAergic neurons, on the other hand, express the following markers:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_SLC6A1&quot;, &quot;rna_GABBR1&quot;, &quot;rna_GABBR2&quot;, &quot;rna_GAD1&quot;, &quot;rna_GAD2&quot;), max.cutoff = 40)</code></pre>
+<p><img src="figure/merge_full_data.Rmd/gabaergic-1.png" width="672" style="display: block; margin: auto;" /> GABA transporter (SLC6A1) and GABA synthesis enzymes GAD1/2 are expressed in a similar portion of cells complementary to the glutamatergic neurons described above. Expression of GABA receptors appears a bit more diffuse.</p>
+<p>Is there any evidence for dopaminergic neurons?</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_TH&quot;, &quot;rna_SLC6A3&quot;, &quot;rna_FOXA2&quot;, &quot;rna_NR4A2&quot;, &quot;rna_LMX1B&quot;))</code></pre>
+<p><img src="figure/merge_full_data.Rmd/dans-1.png" width="672" style="display: block; margin: auto;" /> Not really, though the mature neurons seem to express NR4A2.</p>
+<p>Cholinergic neurons:</p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_CHAT&quot;, &quot;rna_SLC18A3&quot;, &quot;rna_ACHE&quot;))</code></pre>
+<p><img src="figure/merge_full_data.Rmd/cholinergic-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_TNC&quot;, &quot;rna_PTPRZ1&quot;, &quot;rna_FAM107A&quot;, &quot;rna_HOPX&quot;,  &quot;rna_LIFR&quot;))</code></pre>
+<p><img src="figure/merge_full_data.Rmd/cholinergic-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>FeaturePlot(organoid.combined.sct.neuron, features = c(&quot;rna_POU5F1&quot;))</code></pre>
+<p><img src="figure/merge_full_data.Rmd/cholinergic-3.png" width="672" style="display: block; margin: auto;" /> Not really. A number of these genes are expressed sparsely in the progenitor population.</p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1775,51 +2356,52 @@ other attached packages:
 [15] Biobase_2.44.0           BiocGenerics_0.30.0     
 [17] scales_1.1.1             foreach_1.5.1           
 [19] ggplot2_3.3.5            edgeR_3.26.5            
-[21] limma_3.40.6             workflowr_1.6.2         
+[21] limma_3.40.6            
 
 loaded via a namespace (and not attached):
-  [1] readxl_1.3.1        backports_1.2.1     plyr_1.8.6         
-  [4] igraph_1.2.4.1      lazyeval_0.2.2      splines_3.6.1      
-  [7] listenv_0.7.0       digest_0.6.27       htmltools_0.5.1.1  
- [10] gdata_2.18.0        fansi_0.5.0         magrittr_2.0.1     
- [13] cluster_2.1.0       doParallel_1.0.14   ROCR_1.0-7         
- [16] globals_0.12.4      modelr_0.1.8        RcppParallel_5.1.4 
- [19] prettyunits_1.1.1   colorspace_2.0-2    rvest_1.0.0        
- [22] rappdirs_0.3.1      ggrepel_0.8.1       haven_2.3.1        
- [25] xfun_0.24           crayon_1.4.1        jsonlite_1.7.2     
- [28] lme4_1.1-21         survival_3.2-11     zoo_1.8-6          
- [31] iterators_1.0.13    ape_5.4-1           glue_1.4.2         
- [34] gtable_0.3.0        leiden_0.3.1        future.apply_1.3.0 
- [37] DBI_1.1.0           bibtex_0.4.2        Rcpp_1.0.6         
- [40] metap_1.1           viridisLite_0.3.0   progress_1.2.2     
- [43] reticulate_1.16     rsvd_1.0.1          tsne_0.1-3         
- [46] htmlwidgets_1.5.3   httr_1.4.2          gplots_3.0.1.1     
- [49] ellipsis_0.3.2      ica_1.0-2           farver_2.1.0       
- [52] pkgconfig_2.0.3     uwot_0.1.5          dbplyr_2.1.1       
- [55] locfit_1.5-9.1      utf8_1.1.4          labeling_0.4.2     
- [58] tidyselect_1.1.0    rlang_0.4.11        reshape2_1.4.4     
- [61] later_1.2.0         cellranger_1.1.0    munsell_0.5.0      
- [64] tools_3.6.1         cli_2.5.0           generics_0.1.0     
- [67] pacman_0.5.1        broom_0.7.8         ggridges_0.5.1     
- [70] evaluate_0.14       yaml_2.2.1          npsurv_0.4-0       
- [73] fs_1.3.1            fitdistrplus_1.0-14 caTools_1.17.1.2   
- [76] RANN_2.6.1          pbapply_1.4-0       future_1.14.0      
- [79] nlme_3.1-140        whisker_0.3-2       xml2_1.3.2         
- [82] rstudioapi_0.13     compiler_3.6.1      pbkrtest_0.4-7     
- [85] plotly_4.9.4.1      png_0.1-7           lsei_1.2-0         
- [88] reprex_2.0.0        stringi_1.6.2       highr_0.8          
- [91] RSpectra_0.15-0     lattice_0.20-38     Matrix_1.2-18      
- [94] nloptr_1.2.2.1      vctrs_0.3.8         pillar_1.6.1       
- [97] lifecycle_1.0.0     Rdpack_0.11-0       lmtest_0.9-37      
-[100] RcppAnnoy_0.0.12    data.table_1.14.0   bitops_1.0-6       
-[103] irlba_2.3.3         gbRd_0.4-11         httpuv_1.6.1       
-[106] colorRamps_2.3      R6_2.5.0            promises_1.2.0.1   
-[109] KernSmooth_2.23-15  gridExtra_2.3       codetools_0.2-16   
-[112] boot_1.3-23         MASS_7.3-51.4       gtools_3.8.1       
-[115] assertthat_0.2.1    rprojroot_2.0.2     withr_2.4.2        
-[118] sctransform_0.2.0   hms_1.1.0           grid_3.6.1         
-[121] minqa_1.2.4         rmarkdown_1.13      Rtsne_0.15         
-[124] git2r_0.26.1        lubridate_1.7.10   </code></pre>
+  [1] readxl_1.3.1        backports_1.2.1     workflowr_1.6.2    
+  [4] plyr_1.8.6          igraph_1.2.4.1      lazyeval_0.2.2     
+  [7] splines_3.6.1       listenv_0.7.0       digest_0.6.27      
+ [10] htmltools_0.5.1.1   gdata_2.18.0        fansi_0.5.0        
+ [13] magrittr_2.0.1      cluster_2.1.0       doParallel_1.0.14  
+ [16] ROCR_1.0-7          globals_0.12.4      modelr_0.1.8       
+ [19] RcppParallel_5.1.4  prettyunits_1.1.1   colorspace_2.0-2   
+ [22] rvest_1.0.0         rappdirs_0.3.1      ggrepel_0.8.1      
+ [25] haven_2.3.1         xfun_0.24           crayon_1.4.1       
+ [28] jsonlite_1.7.2      lme4_1.1-21         survival_3.2-11    
+ [31] zoo_1.8-6           iterators_1.0.13    ape_5.4-1          
+ [34] glue_1.4.2          gtable_0.3.0        leiden_0.3.1       
+ [37] future.apply_1.3.0  DBI_1.1.0           bibtex_0.4.2       
+ [40] Rcpp_1.0.6          metap_1.1           viridisLite_0.3.0  
+ [43] progress_1.2.2      reticulate_1.16     rsvd_1.0.1         
+ [46] tsne_0.1-3          htmlwidgets_1.5.3   httr_1.4.2         
+ [49] gplots_3.0.1.1      ellipsis_0.3.2      ica_1.0-2          
+ [52] farver_2.1.0        pkgconfig_2.0.3     uwot_0.1.5         
+ [55] dbplyr_2.1.1        locfit_1.5-9.1      utf8_1.1.4         
+ [58] labeling_0.4.2      tidyselect_1.1.0    rlang_0.4.11       
+ [61] reshape2_1.4.4      later_1.2.0         cellranger_1.1.0   
+ [64] munsell_0.5.0       tools_3.6.1         cli_2.5.0          
+ [67] generics_0.1.0      pacman_0.5.1        broom_0.7.8        
+ [70] ggridges_0.5.1      evaluate_0.14       yaml_2.2.1         
+ [73] npsurv_0.4-0        fs_1.3.1            fitdistrplus_1.0-14
+ [76] caTools_1.17.1.2    RANN_2.6.1          pbapply_1.4-0      
+ [79] future_1.14.0       nlme_3.1-140        whisker_0.3-2      
+ [82] xml2_1.3.2          rstudioapi_0.13     compiler_3.6.1     
+ [85] pbkrtest_0.4-7      plotly_4.9.4.1      png_0.1-7          
+ [88] lsei_1.2-0          reprex_2.0.0        stringi_1.6.2      
+ [91] highr_0.8           RSpectra_0.15-0     lattice_0.20-38    
+ [94] Matrix_1.2-18       nloptr_1.2.2.1      vctrs_0.3.8        
+ [97] pillar_1.6.1        lifecycle_1.0.0     Rdpack_0.11-0      
+[100] lmtest_0.9-37       RcppAnnoy_0.0.12    data.table_1.14.0  
+[103] bitops_1.0-6        irlba_2.3.3         gbRd_0.4-11        
+[106] httpuv_1.6.1        colorRamps_2.3      R6_2.5.0           
+[109] promises_1.2.0.1    KernSmooth_2.23-15  gridExtra_2.3      
+[112] codetools_0.2-16    boot_1.3-23         MASS_7.3-51.4      
+[115] gtools_3.8.1        assertthat_0.2.1    rprojroot_2.0.2    
+[118] withr_2.4.2         sctransform_0.2.0   hms_1.1.0          
+[121] grid_3.6.1          minqa_1.2.4         rmarkdown_1.13     
+[124] Rtsne_0.15          git2r_0.26.1        lubridate_1.7.10   </code></pre>
+</div>
 </div>
 </div>
 

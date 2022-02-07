@@ -62,12 +62,19 @@ filter.pseudobulk <- function(pseudobulk, threshold = 0) {
   pseudobulk
 }
 
+newqqplot=function(pvals, quant, title){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+  plot(res$x,res$y, main=title, xlab="Theoretical", ylab="Actual", col=ifelse(res$y>as.numeric(quantile(res$y, quant[1])), ifelse(res$y>as.numeric(quantile(res$y, quant[2])), "red", "blue"), "black"))
+  abline(0, 1)
+}
+
 organoid.combined.sct <- readRDS(file = "output/merged_full_dataset.RDS")
 organoid.combined.sct.neuron <- readRDS(file = "output/organoid.combined.full.sct.neuron.RDS")
 
 ```
 
-The neuronal dataset has `r organoid.combined.sct.neuron@meta.data$seurat_clusters %>% levels() %>% length()` clusters and the full dataset has `r organoid.combined.sct@meta.data$seurat_clusters %>% levels() %>% length()` clusters, as identified by very conservative (resolution 0.1) clustering in Seurat.  I start by splitting each dataset into its clusters.
+The neuronal dataset has `r organoid.combined.sct.neuron@meta.data$seurat_clusters %>% levels() %>% length()` clusters and the full dataset has `r organoid.combined.sct@meta.data$seurat_clusters %>% levels() %>% length()` clusters, as identified by  conservative (resolution 0.1) clustering in Seurat.  I start by splitting each dataset into its clusters.
 
 ```{r cluster-separation}
 cluster0.full <- subset(organoid.combined.sct, subset = seurat_clusters == '0')
@@ -98,9 +105,9 @@ cluster5.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters
 cluster6.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '6')
 cluster7.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '7')
 cluster8.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '8')
-cluster9.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '9')
-cluster10.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '10')
-cluster11.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '11')
+# cluster9.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '9')
+# cluster10.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '10')
+# cluster11.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters == '11')
 rm(organoid.combined.sct.neuron)
 
 
@@ -121,14 +128,13 @@ rownames(de.summary.full) <- c("cluster0","cluster1",
                           "cluster14","cluster15",
                           "cluster16")
 
-de.summary.neuron <- matrix(0, nrow = 12, ncol = 2)
+de.summary.neuron <- matrix(0, nrow = 9, ncol = 2)
 colnames(de.summary.neuron) <- c("oxidation", "pff")
 rownames(de.summary.neuron) <- c("cluster0","cluster1",
                           "cluster2","cluster3",
                           "cluster4","cluster5",
                           "cluster6","cluster7",
-                          "cluster8","cluster9",
-                          "cluster10","cluster11")
+                          "cluster8")
 
 param = SnowParam(20, "SOCK", progressbar=TRUE)
 register(param)
@@ -163,20 +169,26 @@ topTable(fitmm0.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(cap
 pseudo0.neuron <- generate.pseudobulk(cluster0.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo0.neuron <- filter.pseudobulk(pseudo0.neuron)
 d0.neuron <- DGEList(pseudo0.neuron$counts)
-d0.neuron <- calcNormFactors(d0.neuron)
-keep0.neuron <- filterByExpr(d0.neuron$counts)
+
+meta_d0.neuron <- d0.neuron$samples[,c("lib.size","norm.factors")]
+d0.neuron$samples <- cbind(meta_d0.neuron, pseudo0.neuron$meta)
+keep0.neuron <- filterByExpr(d0.neuron$counts, group=d0.neuron$samples$stim)
 d0.neuron <- d0.neuron[keep0.neuron,]
+d0.neuron <- calcNormFactors(d0.neuron, method="TMM")
 
-voomed0.neuron <- voomWithDreamWeights(d0.neuron, formde, pseudo0.neuron$meta, plot=FALSE)
-fitmm0.neuron = dream(voomed0.neuron, formde, pseudo0.neuron$meta)
+voomed0.neuron <- voomWithDreamWeights(d0.neuron, formde, d0.neuron$samples, plot=TRUE)
+fitmm0.neuron = dream(voomed0.neuron, formde, d0.neuron$samples)
 
-try(topTable(fitmm0.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+try(topTable(fitmm0.neuron, coef='stimoxidation', p.val = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
 de.summary.neuron[1,1] <- try(topTable(fitmm0.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm0.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 0 of full dataset")
+topTable(fitmm0.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 0 of neuronal dataset")
 
-try(topTable(fitmm0.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+saveRDS(object = fitmm0.neuron, file = "output/fitmm0.neuron.RDS")
+write.csv(x=topTable(fitmm0.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron0_oxidation_table.csv")
+
+try(topTable(fitmm0.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
 de.summary.neuron[1,2] <- try(topTable(fitmm0.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm0.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 0 of full dataset")
+topTable(fitmm0.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 0 of neuronal dataset")
 ```
 
 
@@ -200,65 +212,87 @@ try(topTable(fitmm1.full, coef='stimpff', p.value = 0.05, number = 10000)) %>% n
 de.summary.full[2,2] <- try(topTable(fitmm1.full, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
 topTable(fitmm1.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 1 of full dataset")
 
+
+newqqplot(-log10(topTable(fitmm1.full, coef="stimoxidation", number=Inf, sort.by="none")$P.Val), 
+          c(0.5, 0.75), 
+          "QQ Plot, Cluster 1, Full Data")
+
+
 #now repeat with the neuron dataset
 pseudo1.neuron <- generate.pseudobulk(cluster1.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo1.neuron <- filter.pseudobulk(pseudo1.neuron)
 d1.neuron <- DGEList(pseudo1.neuron$counts)
-d1.neuron <- calcNormFactors(d1.neuron)
-keep1.neuron <- filterByExpr(d1.neuron$counts)
+
+meta_d1.neuron <- d1.neuron$samples[,c("lib.size","norm.factors")]
+d1.neuron$samples <- cbind(meta_d1.neuron, pseudo1.neuron$meta)
+keep1.neuron <- filterByExpr(d1.neuron$counts, group=d1.neuron$samples$stim)
 d1.neuron <- d1.neuron[keep1.neuron,]
+d1.neuron <- calcNormFactors(d1.neuron, method="TMM")
+
 
 voomed1.neuron <- voomWithDreamWeights(d1.neuron, formde, pseudo1.neuron$meta, plot=FALSE)
 fitmm1.neuron = dream(voomed1.neuron, formde, pseudo1.neuron$meta)
 
-try(topTable(fitmm1.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[2,1] <- try(topTable(fitmm1.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm1.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 1 of full dataset")
+try(topTable(fitmm1.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[2,1] <- try(topTable(fitmm1.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm1.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 1 of neuronal dataset")
 
-try(topTable(fitmm1.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[2,2] <- try(topTable(fitmm1.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm1.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 1 of full dataset")
+saveRDS(object = fitmm1.neuron, file = "output/fitmm1.neuron.RDS")
+write.csv(x=topTable(fitmm1.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron1_oxidation_table.csv")
+
+try(topTable(fitmm1.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[2,2] <- try(topTable(fitmm1.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm1.neuron, coef='stimpff', number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "PFF DE genes, cluster 1 of neuronal dataset")
+
+newqqplot(-log10(topTable(fitmm1.neuron, coef="stimoxidation", number=Inf, sort.by="none")$adj.P.Val), 
+          c(0.5, 0.75), 
+          "QQ Plot, Cluster 1, Neuronal Data")
+
 ```
 
 
 For cluster 2:
 ```{r cluster2de, message=FALSE, error=TRUE}
-pseudo2.full <- generate.pseudobulk(cluster2.full, labels = c("stim", "replicate", "cell.line"))
-pseudo2.full <- filter.pseudobulk(pseudo2.full)
-d2.full <- DGEList(pseudo2.full$counts)
-d2.full <- calcNormFactors(d2.full)
-keep2.full <- filterByExpr(d2.full$counts)
-d2.full <- d2.full[keep2.full,]
-
-voomed2.full <- voomWithDreamWeights(d2.full, formde, pseudo2.full$meta, plot=FALSE)
-fitmm2.full = dream(voomed2.full, formde, pseudo2.full$meta)
-
-try(topTable(fitmm2.full, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.full[3,1] <- try(topTable(fitmm2.full, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm2.full, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 2 of full dataset")
-
-try(topTable(fitmm2.full, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.full[3,2] <- try(topTable(fitmm2.full, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm2.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 2 of full dataset")
+# pseudo2.full <- generate.pseudobulk(cluster2.full, labels = c("stim", "replicate", "cell.line"))
+# pseudo2.full <- filter.pseudobulk(pseudo2.full)
+# d2.full <- DGEList(pseudo2.full$counts)
+# d2.full <- calcNormFactors(d2.full)
+# keep2.full <- filterByExpr(d2.full$counts)
+# d2.full <- d2.full[keep2.full,]
+# 
+# voomed2.full <- voomWithDreamWeights(d2.full, formde, pseudo2.full$meta, plot=FALSE)
+# fitmm2.full = dream(voomed2.full, formde, pseudo2.full$meta)
+# 
+# try(topTable(fitmm2.full, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+# de.summary.full[3,1] <- try(topTable(fitmm2.full, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+# topTable(fitmm2.full, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 2 of full dataset")
+# 
+# try(topTable(fitmm2.full, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+# de.summary.full[3,2] <- try(topTable(fitmm2.full, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
+# topTable(fitmm2.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 2 of full dataset")
 
 #now repeat with the neuron dataset
 pseudo2.neuron <- generate.pseudobulk(cluster2.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo2.neuron <- filter.pseudobulk(pseudo2.neuron)
 d2.neuron <- DGEList(pseudo2.neuron$counts)
-d2.neuron <- calcNormFactors(d2.neuron)
-keep2.neuron <- filterByExpr(d2.neuron$counts)
+meta_d2.neuron <- d2.neuron$samples[,c("lib.size","norm.factors")]
+d2.neuron$samples <- cbind(meta_d2.neuron, pseudo2.neuron$meta)
+keep2.neuron <- filterByExpr(d2.neuron$counts, group=d2.neuron$samples$stim)
 d2.neuron <- d2.neuron[keep2.neuron,]
-
+d2.neuron <- calcNormFactors(d2.neuron, method="TMM")
 voomed2.neuron <- voomWithDreamWeights(d2.neuron, formde, pseudo2.neuron$meta, plot=FALSE)
 fitmm2.neuron = dream(voomed2.neuron, formde, pseudo2.neuron$meta)
 
-try(topTable(fitmm2.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[3,1] <- try(topTable(fitmm2.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm2.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 2 of full dataset")
+saveRDS(object = fitmm2.neuron, file = "output/fitmm2.neuron.RDS")
+write.csv(x=topTable(fitmm2.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron2_oxidation_table.csv")
 
-try(topTable(fitmm2.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[3,2] <- try(topTable(fitmm2.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm2.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 2 of full dataset")
+try(topTable(fitmm2.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[3,1] <- try(topTable(fitmm2.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm2.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 2 of neuronal dataset")
+
+try(topTable(fitmm2.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[3,2] <- try(topTable(fitmm2.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm2.neuron, coef='stimpff', number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "PFF DE genes, cluster 2 of neuronal dataset")
 ```
 
 
@@ -286,20 +320,25 @@ topTable(fitmm3.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(cap
 pseudo3.neuron <- generate.pseudobulk(cluster3.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo3.neuron <- filter.pseudobulk(pseudo3.neuron)
 d3.neuron <- DGEList(pseudo3.neuron$counts)
-d3.neuron <- calcNormFactors(d3.neuron)
-keep3.neuron <- filterByExpr(d3.neuron$counts)
+meta_d3.neuron <- d3.neuron$samples[,c("lib.size","norm.factors")]
+d3.neuron$samples <- cbind(meta_d3.neuron, pseudo3.neuron$meta)
+keep3.neuron <- filterByExpr(d3.neuron$counts, group=d3.neuron$samples$stim)
 d3.neuron <- d3.neuron[keep3.neuron,]
+d3.neuron <- calcNormFactors(d3.neuron, method="TMM")
 
 voomed3.neuron <- voomWithDreamWeights(d3.neuron, formde, pseudo3.neuron$meta, plot=FALSE)
 fitmm3.neuron = dream(voomed3.neuron, formde, pseudo3.neuron$meta)
 
-try(topTable(fitmm3.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[4,1] <- try(topTable(fitmm3.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm3.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 3 of full dataset")
+saveRDS(object = fitmm3.neuron, file = "output/fitmm3.neuron.RDS")
+write.csv(x=topTable(fitmm3.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron3_oxidation_table.csv")
 
-try(topTable(fitmm3.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[4,2] <- try(topTable(fitmm3.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm3.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 3 of full dataset")
+try(topTable(fitmm3.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[4,1] <- try(topTable(fitmm3.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm3.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 3 of neuronal dataset")
+
+try(topTable(fitmm3.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[4,2] <- try(topTable(fitmm3.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm3.neuron, coef='stimpff', number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "PFF DE genes, cluster 3 of neuronal dataset")
 ```
 
 
@@ -327,20 +366,25 @@ topTable(fitmm4.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(cap
 pseudo4.neuron <- generate.pseudobulk(cluster4.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo4.neuron <- filter.pseudobulk(pseudo4.neuron)
 d4.neuron <- DGEList(pseudo4.neuron$counts)
-d4.neuron <- calcNormFactors(d4.neuron)
-keep4.neuron <- filterByExpr(d4.neuron$counts)
+meta_d4.neuron <- d4.neuron$samples[,c("lib.size","norm.factors")]
+d4.neuron$samples <- cbind(meta_d4.neuron, pseudo4.neuron$meta)
+keep4.neuron <- filterByExpr(d4.neuron$counts, group=d4.neuron$samples$stim)
 d4.neuron <- d4.neuron[keep4.neuron,]
+d4.neuron <- calcNormFactors(d4.neuron, method="TMM")
 
 voomed4.neuron <- voomWithDreamWeights(d4.neuron, formde, pseudo4.neuron$meta, plot=FALSE)
 fitmm4.neuron = dream(voomed4.neuron, formde, pseudo4.neuron$meta)
 
-try(topTable(fitmm4.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[5,1] <- try(topTable(fitmm4.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm4.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 4 of full dataset")
+saveRDS(object = fitmm4.neuron, file = "output/fitmm4.neuron.RDS")
+write.csv(x=topTable(fitmm4.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron4_oxidation_table.csv")
 
-try(topTable(fitmm4.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[5,2] <- try(topTable(fitmm4.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm4.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 4 of full dataset")
+try(topTable(fitmm4.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[5,1] <- try(topTable(fitmm4.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm4.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 4 of neuronal dataset")
+
+try(topTable(fitmm4.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[5,2] <- try(topTable(fitmm4.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm4.neuron, coef='stimpff', number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "PFF DE genes, cluster 4 of neuronal dataset")
 ```
 
 
@@ -368,20 +412,25 @@ topTable(fitmm5.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(cap
 pseudo5.neuron <- generate.pseudobulk(cluster5.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo5.neuron <- filter.pseudobulk(pseudo5.neuron)
 d5.neuron <- DGEList(pseudo5.neuron$counts)
-d5.neuron <- calcNormFactors(d5.neuron)
-keep5.neuron <- filterByExpr(d5.neuron$counts)
+meta_d5.neuron <- d5.neuron$samples[,c("lib.size","norm.factors")]
+d5.neuron$samples <- cbind(meta_d5.neuron, pseudo5.neuron$meta)
+keep5.neuron <- filterByExpr(d5.neuron$counts, group=d5.neuron$samples$stim)
 d5.neuron <- d5.neuron[keep5.neuron,]
+d5.neuron <- calcNormFactors(d5.neuron, method="TMM")
 
 voomed5.neuron <- voomWithDreamWeights(d5.neuron, formde, pseudo5.neuron$meta, plot=FALSE)
 fitmm5.neuron = dream(voomed5.neuron, formde, pseudo5.neuron$meta)
 
-try(topTable(fitmm5.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[6,1] <- try(topTable(fitmm5.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm5.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 5 of full dataset")
+saveRDS(object = fitmm5.neuron, file = "output/fitmm5.neuron.RDS")
+write.csv(x=topTable(fitmm5.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron5_oxidation_table.csv")
 
-try(topTable(fitmm5.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[6,2] <- try(topTable(fitmm5.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm5.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 5 of full dataset")
+try(topTable(fitmm5.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[6,1] <- try(topTable(fitmm5.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm5.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 5 of neuronal dataset")
+
+try(topTable(fitmm5.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[6,2] <- try(topTable(fitmm5.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm5.neuron, coef='stimpff', number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "PFF DE genes, cluster 5 of neuronal dataset")
 ```
 
 
@@ -409,20 +458,25 @@ topTable(fitmm6.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(cap
 pseudo6.neuron <- generate.pseudobulk(cluster6.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo6.neuron <- filter.pseudobulk(pseudo6.neuron)
 d6.neuron <- DGEList(pseudo6.neuron$counts)
-d6.neuron <- calcNormFactors(d6.neuron)
-keep6.neuron <- filterByExpr(d6.neuron$counts)
+meta_d6.neuron <- d6.neuron$samples[,c("lib.size","norm.factors")]
+d6.neuron$samples <- cbind(meta_d6.neuron, pseudo6.neuron$meta)
+keep6.neuron <- filterByExpr(d6.neuron$counts, group=d6.neuron$samples$stim)
 d6.neuron <- d6.neuron[keep6.neuron,]
+d6.neuron <- calcNormFactors(d6.neuron, method="TMM")
 
 voomed6.neuron <- voomWithDreamWeights(d6.neuron, formde, pseudo6.neuron$meta, plot=FALSE)
 fitmm6.neuron = dream(voomed6.neuron, formde, pseudo6.neuron$meta)
 
-try(topTable(fitmm6.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[7,1] <- try(topTable(fitmm6.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm6.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 6 of full dataset")
+saveRDS(object = fitmm6.neuron, file = "output/fitmm6.neuron.RDS")
+write.csv(x=topTable(fitmm6.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron6_oxidation_table.csv")
 
-try(topTable(fitmm6.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[7,2] <- try(topTable(fitmm6.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm6.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 6 of full dataset")
+try(topTable(fitmm6.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[7,1] <- try(topTable(fitmm6.neuron, coef='stimoxidation', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm6.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 6 of neuronal dataset")
+
+try(topTable(fitmm6.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+de.summary.neuron[7,2] <- try(topTable(fitmm6.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmm6.neuron, coef='stimpff', number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "PFF DE genes, cluster 6 of neuronal dataset")
 ```
 
 
@@ -451,20 +505,25 @@ topTable(fitmm7.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(cap
 pseudo7.neuron <- generate.pseudobulk(cluster7.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo7.neuron <- filter.pseudobulk(pseudo7.neuron)
 d7.neuron <- DGEList(pseudo7.neuron$counts)
-d7.neuron <- calcNormFactors(d7.neuron)
-keep7.neuron <- filterByExpr(d7.neuron$counts)
+meta_d7.neuron <- d7.neuron$samples[,c("lib.size","norm.factors")]
+d7.neuron$samples <- cbind(meta_d7.neuron, pseudo7.neuron$meta)
+keep7.neuron <- filterByExpr(d7.neuron$counts, group=d7.neuron$samples$stim)
 d7.neuron <- d7.neuron[keep7.neuron,]
+d7.neuron <- calcNormFactors(d7.neuron, method="TMM")
 
 voomed7.neuron <- voomWithDreamWeights(d7.neuron, formde, pseudo7.neuron$meta, plot=FALSE)
 fitmm7.neuron = dream(voomed7.neuron, formde, pseudo7.neuron$meta)
 
-try(topTable(fitmm7.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[8,1] <- try(topTable(fitmm7.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm7.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 7 of full dataset")
+saveRDS(object = fitmm7.neuron, file = "output/fitmm7.neuron.RDS")
+write.csv(x=topTable(fitmm7.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron7_oxidation_table.csv")
 
-try(topTable(fitmm7.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[8,2] <- try(topTable(fitmm7.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm7.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 7 of full dataset")
+try(topTable(fitmm7.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)) %>% nrow()
+de.summary.neuron[8,1] <- try(topTable(fitmm7.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)) %>% nrow()
+topTable(fitmm7.neuron, coef='stimoxidation',  number = Inf) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 7 of neuronal dataset")
+
+try(topTable(fitmm7.neuron, coef='stimpff', p.value = 0.05, number = Inf)) %>% nrow()
+de.summary.neuron[8,2] <- try(topTable(fitmm7.neuron, coef='stimpff', p.value = 0.05, number = Inf)) %>% nrow()
+topTable(fitmm7.neuron, coef='stimpff', number = Inf) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 7 of neuronal dataset")
 ```
 
 
@@ -493,20 +552,25 @@ topTable(fitmm8.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(cap
 pseudo8.neuron <- generate.pseudobulk(cluster8.neuron, labels = c("stim", "replicate", "cell.line"))
 pseudo8.neuron <- filter.pseudobulk(pseudo8.neuron)
 d8.neuron <- DGEList(pseudo8.neuron$counts)
-d8.neuron <- calcNormFactors(d8.neuron)
-keep8.neuron <- filterByExpr(d8.neuron$counts)
+meta_d8.neuron <- d8.neuron$samples[,c("lib.size","norm.factors")]
+d8.neuron$samples <- cbind(meta_d8.neuron, pseudo8.neuron$meta)
+keep8.neuron <- filterByExpr(d8.neuron$counts, group=d8.neuron$samples$stim)
 d8.neuron <- d8.neuron[keep8.neuron,]
+d8.neuron <- calcNormFactors(d8.neuron, method="TMM")
 
 voomed8.neuron <- voomWithDreamWeights(d8.neuron, formde, pseudo8.neuron$meta, plot=FALSE)
 fitmm8.neuron = dream(voomed8.neuron, formde, pseudo8.neuron$meta)
 
-try(topTable(fitmm8.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[9,1] <- try(topTable(fitmm8.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm8.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 8 of full dataset")
+saveRDS(object = fitmm8.neuron, file = "output/fitmm8.neuron.RDS")
+write.csv(x=topTable(fitmm8.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuron8_oxidation_table.csv")
 
-try(topTable(fitmm8.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[9,2] <- try(topTable(fitmm8.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm8.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 8 of full dataset")
+try(topTable(fitmm8.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)) %>% nrow()
+de.summary.neuron[9,1] <- try(topTable(fitmm8.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)) %>% nrow()
+topTable(fitmm8.neuron, coef='stimoxidation',  number = Inf) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 8 of neuronal dataset")
+
+try(topTable(fitmm8.neuron, coef='stimpff', p.value = 0.05, number = Inf)) %>% nrow()
+de.summary.neuron[9,2] <- try(topTable(fitmm8.neuron, coef='stimpff', p.value = 0.05, number = Inf)) %>% nrow()
+topTable(fitmm8.neuron, coef='stimpff', number = Inf) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 8 of neuronal dataset")
 ```
 
 
@@ -531,24 +595,7 @@ try(topTable(fitmm9.full, coef='stimpff', p.value = 0.05, number = 10000)) %>% n
 de.summary.full[10,2] <- try(topTable(fitmm9.full, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
 topTable(fitmm9.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 9 of full dataset")
 
-#now repeat with the neuron dataset
-pseudo9.neuron <- generate.pseudobulk(cluster9.neuron, labels = c("stim", "replicate", "cell.line"))
-pseudo9.neuron <- filter.pseudobulk(pseudo9.neuron)
-d9.neuron <- DGEList(pseudo9.neuron$counts)
-d9.neuron <- calcNormFactors(d9.neuron)
-keep9.neuron <- filterByExpr(d9.neuron$counts)
-d9.neuron <- d9.neuron[keep9.neuron,]
 
-voomed9.neuron <- voomWithDreamWeights(d9.neuron, formde, pseudo9.neuron$meta, plot=FALSE)
-fitmm9.neuron = dream(voomed9.neuron, formde, pseudo9.neuron$meta)
-
-try(topTable(fitmm9.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[10,1] <- try(topTable(fitmm9.neuron, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm9.neuron, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 9 of full dataset")
-
-try(topTable(fitmm9.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-de.summary.neuron[10,2] <- try(topTable(fitmm9.neuron, coef='stimpff', p.value = 0.05, number = 10000)) %>% nrow()
-topTable(fitmm9.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, cluster 9 of full dataset")
 ```
 
 
@@ -558,12 +605,28 @@ For cluster 10:
 pseudo10.full <- generate.pseudobulk(cluster10.full, labels = c("stim", "replicate", "cell.line"))
 pseudo10.full <- filter.pseudobulk(pseudo10.full)
 d10.full <- DGEList(pseudo10.full$counts)
-d10.full <- calcNormFactors(d10.full)
-keep10.full <- filterByExpr(d10.full$counts)
+meta_d10.full <- d10.full$samples[,c("lib.size","norm.factors")]
+meta_d10.full <- cbind(meta_d10.full, pseudo10.full$meta)
+d10.full$samples <- meta_d10.full
+
+d10.full <- calcNormFactors(d10.full, method = "TMM")
+keep10.full <- filterByExpr(d10.full) #, group=d10.full$samples$stim
 d10.full <- d10.full[keep10.full,]
 
-voomed10.full <- voomWithDreamWeights(d10.full, formde, pseudo10.full$meta, plot=FALSE)
+
+fbase <- ~  (1|cell.line) + (1|stim) + (1|replicate)
+voomed10.varpart <- voomWithDreamWeights(d10.full, fbase, pseudo10.full$meta, plot=TRUE)
+
+varpart10 <- fitExtractVarPartModel(voomed10.varpart, fbase, d10.full$samples)
+head(varpart10[order(varpart10$stim, decreasing=TRUE),])
+vp10 <- sortCols(varpart10)
+# plotPercentBars(vp1[1:10,])
+plotVarPart(vp10) + ggtitle("Variance partition cluster 10 (resolution=0.1)")
+
+voomed10.full <- voomWithDreamWeights(counts= d10.full, formula = formde, data = d10.full$samples, plot=TRUE)
+
 fitmm10.full = dream(voomed10.full, formde, pseudo10.full$meta)
+
 
 try(topTable(fitmm10.full, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
 de.summary.full[11,1] <- try(topTable(fitmm10.full, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
@@ -673,14 +736,23 @@ For cluster 15:
 pseudo15.full <- generate.pseudobulk(cluster15.full, labels = c("stim", "replicate", "cell.line"))
 pseudo15.full <- filter.pseudobulk(pseudo15.full)
 d15.full <- DGEList(pseudo15.full$counts)
-d15.full <- calcNormFactors(d15.full)
-keep15.full <- filterByExpr(d15.full$counts)
-d15.full <- d15.full[keep15.full,]
+meta_d15.full <- d15.full$samples[,c("lib.size","norm.factors")]
+d15.full$samples <- cbind(meta_d15.full, pseudo15.full$meta)
+keepd15.full <- filterByExpr(d15.full$counts, group=d15.full$samples$stim)
+d15.full <- d15.full[keepd15.full,]
 
-voomed15.full <- voomWithDreamWeights(d15.full, formde, pseudo15.full$meta, plot=FALSE)
+d15.cleaned <- DGEList(counts=d15.full$counts)
+meta_d15.cleaned <- d15.cleaned$samples[,c("lib.size","norm.factors")]
+d15.cleaned$samples <- cbind(meta_d15.cleaned, pseudo15.full$meta)
+
+
+d15.cleaned <- calcNormFactors(d15.cleaned, method="TMM")
+
+
+voomed15.full <- voomWithDreamWeights(d15.full, formde, pseudo15.full$meta, plot=TRUE)
 fitmm15.full = dream(voomed15.full, formde, pseudo15.full$meta)
 
-try(topTable(fitmm15.full, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
+try(topTable(fitmm15.full, coef='stimoxidation', p.value = 0.05, number = Inf)) %>% nrow()
 de.summary.full[16,1] <- try(topTable(fitmm15.full, coef='stimoxidation', p.value = 0.05, number = 10000)) %>% nrow()
 topTable(fitmm15.full, coef='stimoxidation',  number = 10000) %>% head(10) %>% kable(caption = "Oxidation DE genes, cluster 15 of full dataset")
 
@@ -713,11 +785,126 @@ topTable(fitmm16.full, coef='stimpff', number = 10000) %>% head(10) %>% kable(ca
 
 ```
 
+If we treat the whole set as a single pseudobulk cluster:
+```{r all-cells, message=FALSE, error=TRUE}
+pseudoall.neuron <- generate.pseudobulk(organoid.combined.sct.neuron, labels = c("stim", "replicate", "cell.line"))
+pseudoall.neuron <- filter.pseudobulk(pseudoall.neuron)
+dall.neuron <- DGEList(pseudoall.neuron$counts)
+
+meta_dall.neuron <- dall.neuron$samples[,c("lib.size","norm.factors")]
+dall.neuron$samples <- cbind(meta_dall.neuron, pseudoall.neuron$meta)
+keepall.neuron <- filterByExpr(dall.neuron$counts, group=dall.neuron$samples$stim)
+dall.neuron <- dall.neuron[keepall.neuron,]
+dall.neuron <- calcNormFactors(dall.neuron, method="TMM")
+
+voomedall.neuron <- voomWithDreamWeights(dall.neuron, formde, dall.neuron$samples, plot=TRUE)
+fitmmall.neuron = dream(voomedall.neuron, formde, dall.neuron$samples)
+
+try(topTable(fitmmall.neuron, coef='stimoxidation', p.val = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+try(sum(topTable(fitmmall.neuron, coef='stimoxidation', number = Inf)$adj.P.Val < 0.05), silent = TRUE)
+
+topTable(fitmmall.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH") %>% head(10) %>% kable(caption = "Oxidation DE genes, combined neuronal dataset")
+
+saveRDS(object = fitmmall.neuron, file = "output/fitmmall.neuron.RDS")
+write.csv(x=topTable(fitmmall.neuron, coef='stimoxidation',  number = Inf, adjust.method="BH"), file = "output/neuronall_oxidation_table.csv")
+
+try(topTable(fitmmall.neuron, coef='stimpff', p.value = 0.05, number = Inf, adjust.method="BH")) %>% nrow()
+topTable(fitmmall.neuron, coef='stimpff', number = 10000) %>% head(10) %>% kable(caption = "PFF DE genes, combined neuronal dataset")
+```
+
 
 To summarize, at 5% FDR threshold, I detect the following number of DE genes in each cluster:
 ```{r de-summary}
 de.summary.full %>% kable(caption = "DE genes, full dataset")
 
 de.summary.neuron %>% kable(caption = "DE genes, neuronal dataset")
+```
+
+How many of these are unique?
+```{r}
+genes8 <- topTable(fitmm8.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genes7 <- topTable(fitmm7.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genes6 <- topTable(fitmm6.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genes5 <- topTable(fitmm5.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genes4 <- topTable(fitmm4.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genes3 <- topTable(fitmm3.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genes2 <- topTable(fitmm2.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genes1 <- topTable(fitmm1.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genes0 <- topTable(fitmm0.neuron, coef='stimoxidation', p.value = 0.05, number = Inf)  %>% rownames()
+genesall <- c(genes8, genes7, genes6, genes5, genes4, genes3, genes2, genes1, genes0)
+
+length(unique(genesall))
+```
+
+
+
+#Notes from GH
+
+```{r, eval=FALSE}
+
+    if (filter.type=="logcpm"){
+      keep <- rowMeans(edgeR::cpm(dge,log=TRUE,prior.count=0.25))>0
+      dge$counts <- dge$counts[keep,]
+    }
+    if (filter.type=="min.count"){
+      keep <- filterByExpr(dge, group=dge$samples$Species, min.count=filter.param, min.total.count=15)
+      table(keep)
+      dge <- dge[keep, , keep.lib.sizes=FALSE]
+      rm(keep)
+    }
+    if (filter.type=="pch"){ 
+      dge$counts <- dge$counts[rowSums(dge$counts!=0)>=(filter.param*dim(dge$counts)[2]),]
+    }
+
+#normalize data
+  dge <- calcNormFactors(dge, method="TMM")
+  summary(dge$samples$norm.factors)
+  
+  #assess differential expression output for particular contrast
+  tt <- topTable(fitmm1.neuron, n=Inf, coef='stimoxidation', adjust.method="BH", p.value=1)
+  print("All DE Genes")
+  print(dim(tt))
+  print(table(tt$adj.P.Val<0.01))
+  #print(table(tt$adj.P.Val<0.05))
+  print(summary(decideTests(fitmm4.neuron, adjust.method="BH", p.value=0.01)))
+  #print(summary(decideTests(fitmm, adjust.method="BH", p.value=0.05)))
+  #print(summary(decideTests(fitmm, adjust.method="BH", p.value=0.01, lfc=abs(1.2)))) #DON'T ADJUST LOGFC DURING TEST
+
+  hist(tt$logFC)
+  hist(topTable(fitmm0.neuron, n=Inf, coef='stimoxidation', adjust.method="BH", p.value=1)$adj.P.Val)
+  plot(tt$logFC, -log10(tt$adj.P.Val))
+  qqplot(-log10(runif(length(topTable(fitmm8.neuron, n=Inf, coef='stimoxidation', adjust.method="BH", p.value=1)$adj.P.Val))),
+         -log10(topTable(fitmm8.neuron, n=Inf, coef='stimoxidation', adjust.method="BH", p.value=1)$adj.P.Val),
+         xlab="-log10(Uniform)",
+         ylab="-log10(Adjusted p-Value)",
+         main=paste0("QQ Plot"))
+  
+  abline(0,1)
+  
+
+
+GE <- data.frame( Expression = d.neuron$counts["HIF1A",], Stim = d.full$samples[,"stim"], Cluster = d.full$samples[,"seurat_clusters"])
+plotStratify( Expression ~  Stim, GE[which(GE$Cluster=="9"),])
+
+
+GE <- data.frame( Expression = d8.neuron$counts["ACO1",], Stim = d8.neuron$samples[,"stim"])
+plotStratify( Expression ~  Stim, GE[which(GE$Stim !="pff"),])
+
+GE <- data.frame( Expression = d.full$counts["CAT",], Stim = d.full$samples[,"stim"], Cluster = d.full$samples[,"seurat_clusters"])
+plotStratify( Expression ~  Stim, GE[which(GE$Cluster=="9"),])
+
+GE <- data.frame( Expression = d.full$counts["PRDX1",], Stim = d.full$samples[,"stim"], Cluster = d.full$samples[,"seurat_clusters"])
+plotStratify( Expression ~  Stim, GE[which(GE$Cluster=="9"),])
+
+GE <- data.frame( Expression = d.full$counts["SOD1",], Stim = d.full$samples[,"stim"], Cluster = d.full$samples[,"seurat_clusters"])
+plotStratify( Expression ~  Stim, GE[which(GE$Cluster=="9"),])
+
+GE <- data.frame( Expression = d.neuron$counts["SOD1",], Stim = d.neuron$samples[,"stim"], Cluster = d.neuron$samples[,"seurat_clusters"])
+plotStratify( Expression ~  Stim, GE[which(GE$Cluster=="6"),])
+
+DimPlot(organoid.combined.sct.nopff, cells.highlight = WhichCells(organoid.combined.sct.nopff, idents =16))
+DimPlot(organoid.combined.sct.neuron, cells.highlight = WhichCells(organoid.combined.sct.neuron, idents =11))
+
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_GPX8"), max.cutoff = 1, split.by = "stim")
 ```
 

@@ -23,7 +23,7 @@ library(cowplot)
 library(knitr)
 ```
 
-```{r combine-data}
+```{r combine-data, eval=FALSE}
 control1 <- readRDS(file = "data_S2/YG-BU-01_human/obj.rds")
 #replace the names of all individuals with the actual line names
 oldnames1 <- control1$individual
@@ -100,7 +100,7 @@ rm(control1, control2, control3, oxid1, oxid2, oxid3, pff1, pff3)
 
 Because each of these datasets was prepared using `SCTransform` it should be straightforward to now integrate them.  Following the [guide](https://satijalab.org/seurat/articles/integration_introduction.html#performing-integration-on-datasets-normalized-with-sctransform-1) from the Satija lab for integrating these datasets, I run the following steps:
 
-```{r integrate}
+```{r integrate, eval=FALSE}
 features <- SelectIntegrationFeatures(object.list = combined.data, nfeatures = 5000, verbose = F)
 combined.data <- PrepSCTIntegration(object.list = combined.data, anchor.features = features)
 
@@ -114,6 +114,8 @@ rm(combined.data)
 ###Evaluate QC for further filtering
 The pre-processing script already subsetted to less than 15% mitochondrial reads, but this is still pretty liberal.
 ```{r pre-qc, message=FALSE}
+organoid.combined.sct <- readRDS(file = "output/merged_full_dataset.RDS")
+
 FeatureScatter(organoid.combined.sct, feature1 = "nCount_RNA", feature2 = "percent.mt") + theme(legend.position = "none") + ggtitle("")
 FeatureScatter(organoid.combined.sct, feature1 = "nCount_RNA", feature2 = "nFeature_RNA") + theme(legend.position = "none") + ggtitle("")
 FeatureScatter(organoid.combined.sct, feature1 = "nFeature_RNA", feature2 = "percent.mt") + theme(legend.position = "none") + ggtitle("")
@@ -140,6 +142,7 @@ We could set a minimum threshold of 2500 genes/cell to be safe.  This would cert
 organoid.combined.sct <- subset(organoid.combined.sct, subset = percent.mt < 8 & nFeature_RNA > 2500 )
 ```
 
+
 ###Dimensionality reduction and clustering
 Now, I go ahead and perform dimensionality reduction and clustering using the integrated dataset.
 ```{r integrated-umap}
@@ -159,12 +162,12 @@ DimPlot(organoid.combined.sct, reduction = "umap", group.by = "replicate")
 And now we can look for clusters:
 ```{r integrated-clustering, message=FALSE}
 organoid.combined.sct <- FindNeighbors(organoid.combined.sct, dims=1:100)
-organoid.combined.sct <- FindClusters(organoid.combined.sct, resolution=0.3)
+organoid.combined.sct <- FindClusters(organoid.combined.sct, resolution=0.1)
 
 ```
 
 ```{r integrated-clusters}
-DimPlot(organoid.combined.sct, reduction = "umap") + ggtitle("resolution=0.3")
+DimPlot(organoid.combined.sct, reduction = "umap") + ggtitle("resolution=0.1")
 
 ```
 
@@ -203,7 +206,7 @@ FeaturePlot(organoid.combined.sct, features = c("sct_ITGAM", "sct_AIF1"), max.cu
 ```
 There's some expression of MMP9, TMEM119, and a tiny bit of IBA1 throughout the cluster, but not in the APOE-positive area and not in the COL2A1/ACAN area. 
 
-This cluster is probably not homogenously any one cell type, but it's not neuronal.
+This cluster is probably not homogenously any one cell type, but it's not neuronal.  In addition, cluster 16 is unique to 20157.
 
 ```{r subset-data}
 # p1 <- DimPlot(organoid.combined.sct)
@@ -211,17 +214,16 @@ This cluster is probably not homogenously any one cell type, but it's not neuron
 # saveRDS(select.cells, "data/exclude_fulldata.rds")
 select.cells <- readRDS(file = "data/exclude_fulldata.rds")
 organoid.combined.sct.neuron <- subset(organoid.combined.sct, cells = select.cells, invert=TRUE)
+organoid.combined.sct.neuron <- subset(organoid.combined.sct.neuron, subset = seurat_clusters %in% c("1", "3", "11", "12", "13", "14", "15", "16"), invert=TRUE)
 DimPlot(organoid.combined.sct, cells.highlight = select.cells)
-```
-
-```{r save-data-neuron, eval=FALSE}
-saveRDS(organoid.combined.sct.neuron, file = "output/organoid.combined.full.sct.neuron.RDS")
+DimPlot(organoid.combined.sct.neuron, label=TRUE, split.by="cell.line")
 
 ```
+
 
 
 Now recluster with this reduced dataset
-```{r recluster, message=FALSE, eval=FALSE}
+```{r recluster, message=FALSE}
 organoid.combined.sct.neuron <- RunPCA(organoid.combined.sct.neuron, npcs = 100)
 organoid.combined.sct.neuron <- RunUMAP(organoid.combined.sct.neuron, reduction = "pca", dims = 1:100)
 
@@ -229,24 +231,285 @@ DimPlot(organoid.combined.sct.neuron, reduction = "umap", group.by = "stim")
 DimPlot(organoid.combined.sct.neuron, reduction = "umap", group.by = "replicate")
 
 organoid.combined.sct.neuron <- FindNeighbors(organoid.combined.sct.neuron, dims=1:100)
-organoid.combined.sct.neuron <- FindClusters(organoid.combined.sct.neuron, resolution=0.3)
+organoid.combined.sct.neuron <- FindClusters(organoid.combined.sct.neuron, resolution=0.1)
 
-DimPlot(organoid.combined.sct.neuron, reduction = "umap") + ggtitle("resolution=0.3")
+DimPlot(organoid.combined.sct.neuron, reduction = "umap") + ggtitle("resolution=0.1")
 
+```
+
+```{r save-data-neuron, eval=FALSE}
+saveRDS(organoid.combined.sct.neuron, file = "output/organoid.combined.full.sct.neuron.RDS")
+organoid.combined.sct.neuron <- readRDS(file = "output/organoid.combined.full.sct.neuron.RDS")
+
+```
+
+```{r find-markers, eval=FALSE}
 organoid.combined.sct.neuron.markers <- FindAllMarkers(organoid.combined.sct.neuron, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 saveRDS(organoid.combined.sct.neuron.markers, file="output/organoid.combined.sct.neuron.markers.RDS")
 organoid.combined.sct.neuron.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
 
-#saveRDS(organoid.combined.sct.neuron, file = "data/organoid.combined.full.sct.neuron.RDS")
-# organoid.combined.sct.neuron <- readRDS(file = "data/organoid.combined.full.sct.neuron.RDS")
+#saveRDS(organoid.combined.sct.neuron, file = "output/organoid.combined.full.sct.neuron.RDS")
+# organoid.combined.sct.neuron <- readRDS(file = "output/organoid.combined.full.sct.neuron.RDS")
 ```
+
+What if these markers include genes that reflect the effects of treatment?  Instead, I should find markers based on the untreated condition:
+```{r}
+organoid.combined.sct.neuron.unstim.markers <- FindAllMarkers(subset(organoid.combined.sct.neuron, subset= stim=="control"), only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+saveRDS(organoid.combined.sct.neuron.unstim.markers, file="output/organoid.combined.sct.neuron.unstim.markers.RDS")
+organoid.combined.sct.neuron.unstim.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+
+```
+
 
 The relevant output of the above markers and the cluster-labeled UMAP representation:
 ```{r, message=FALSE}
 organoid.combined.sct.neuron.markers <- readRDS(file="output/organoid.combined.sct.neuron.markers.RDS")
-DimPlot(organoid.combined.sct.neuron, reduction = "umap") + ggtitle("resolution=0.3")
-organoid.combined.sct.neuron.markers %>% group_by(cluster) %>% top_n(n = 5, wt = avg_logFC) %>% kable()
+DimPlot(organoid.combined.sct.neuron, reduction = "umap") + ggtitle("resolution=0.1")
+organoid.combined.sct.neuron.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_logFC) %>% kable()
+
+FeaturePlot(organoid.combined.sct, features = c("sct_GAD1"), max.cutoff = 0.5)
+FeaturePlot(organoid.combined.sct.neuron, features = c("sct_GAD1"), max.cutoff = 0.5)
+
+```
+
+##Representation across batches
+How many cells do I have from each individual in each sample?  
+
+```{r}
+table(organoid.combined.sct@meta.data$cell.line, organoid.combined.sct@meta.data$replicate, useNA="always") %>% kable()
+```
+We can see that this is pretty unbalanced, especially for replicate 3.  When we look at neurons specifically, we can see:
+
+```{r}
+table(organoid.combined.sct.neuron@meta.data$cell.line, organoid.combined.sct.neuron@meta.data$replicate, useNA="always") %>% kable()
+```
+This reduces some contributions significantly.  It also confirms my earlier finding that the mesenchymal mystery cluster is largely contributed by line 20157.
+
+Now we can calculate the library complexity for each sample.  
+```{r}
+ organoid.combined.sct.neuron@meta.data$Complexity <- log10(organoid.combined.sct.neuron@meta.data$nCount_RNA/organoid.combined.sct.neuron@meta.data$nFeature_RNA)
+  print("Complexity (Chimp and Human)")
+ 
+   for (i in unique(organoid.combined.sct.neuron@meta.data$replicate)){
+  print(summary(organoid.combined.sct.neuron@meta.data$Complexity[which(organoid.combined.sct.neuron@meta.data$replicate==i)]))
+  }
+  
+  for (k in unique(organoid.combined.sct.neuron@meta.data$cell.line)){
+  print(summary(organoid.combined.sct.neuron@meta.data$Complexity[which(organoid.combined.sct.neuron@meta.data$cell.line==k)]))
+  }
+#look for each line in each replicate
+for (i in unique(organoid.combined.sct.neuron@meta.data$replicate)){
+  for (k in unique(organoid.combined.sct.neuron@meta.data$cell.line)){
+    print(list(c(i, k),summary(organoid.combined.sct.neuron@meta.data$Complexity[which(organoid.combined.sct.neuron@meta.data$cell.line==k & organoid.combined.sct.neuron@meta.data$replicate==i)])))
+  }
+}
+```
+Reassuringly, the library complexity is not very different between individuals in an given replicate, and the replicates don't differ hugely.  
+
+###Gene metrics
+I've mostly looked at measures of cell data quality, but what about genes?  In particular, I'll start by looking at UMIs/gene and genes with very rare expression.
+```{r}
+df <- data.frame(
+    counts_per_gene_20157 <- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line=="20157")]),
+    counts_per_gene_23555 <- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line=="23555")]),
+    counts_per_gene_28126 <- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line=="28126")]),
+    cells_per_gene_20157 <- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line=="20157")]>0),
+    cells_per_gene_23555 <- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line=="23555")]>0),
+    cells_per_gene_28126 <- Matrix::rowSums(organoid.combined.sct.neuron@assays$RNA@counts[,which(organoid.combined.sct.neuron@meta.data$cell.line=="28126")]>0)
+  )
+  rm(counts_per_gene_20157, counts_per_gene_23555, counts_per_gene_28126,cells_per_gene_20157,cells_per_gene_23555,cells_per_gene_28126)
+  colnames(df) <- c("counts_per_gene_20157", "counts_per_gene_23555", "counts_per_gene_28126","cells_per_gene_20157","cells_per_gene_23555","cells_per_gene_28126")
+
+ggplot(df, aes(x=log10(counts_per_gene_20157+1))) +
+           geom_histogram(color="#F8766D", fill="white", alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype="dashed") +
+  ggtitle("Counts per gene in 20157 cells") + ylab("genes")
+
+ggplot(df, aes(x=log10(counts_per_gene_23555+1))) +
+           geom_histogram(color="#F8766D", fill="white", alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype="dashed") +
+  ggtitle("Counts per gene in 23555 cells") + ylab("genes")
+
+ggplot(df, aes(x=log10(counts_per_gene_28126+1))) +
+           geom_histogram(color="#F8766D", fill="white", alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype="dashed") +
+  ggtitle("Counts per gene in 28126 cells") + ylab("genes")
+
+ggplot(df, aes(x=log10(cells_per_gene_20157+1))) +
+           geom_histogram(color="#F8766D", fill="white", alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype="dashed") +
+           labs(x="Log10 Cells per Gene (20157)",y="Count")
+ggplot(df, aes(x=log10(cells_per_gene_23555+1))) +
+           geom_histogram(color="#F8766D", fill="white", alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype="dashed") +
+           labs(x="Log10 Cells per Gene (23555)",y="Count") +
+  ggtitle("Cells per gene in 23555 cells") + ylab("genes")
+ggplot(df, aes(x=log10(cells_per_gene_28126+1))) +
+           geom_histogram(color="#F8766D", fill="white", alpha=0.1, binwidth=0.05) +
+           ylim(0,6000) +
+           geom_vline(xintercept=log10(1.5), linetype="dashed") +
+           labs(x="Log10 Cells per Gene (28126)",y="Count")+
+  ggtitle("Cells per gene in 28126 cells") + ylab("genes")
+```
+
+### Targeted gene classification
+
+In addition to genes of interest above, I've borrowed from the Abcam manual of neural markers to provide a more systematic assessment of canonical (and immunostainable) CNS targets.
+
+First, neuroepithelium:
+```{r neuroepithelium}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_NES", "rna_SOX2", "rna_NOTCH1", "rna_HES1", "rna_SOX10"), max.cutoff = 15)
+```
+
+These indicate a cluster that contains progenitors.  Not all of these markers are unique to neuroepithelium.  Nestin, HES1, and SOX2, for instance, are also expressed by radial glia.  Additional radial glial markers include:
+```{r rg}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_VIM", "rna_PAX6", "rna_HES5", "rna_SLC1A3", "rna_GFAP", "rna_FABP7", "rna_CDH2", "rna_TNC"), max.cutoff = 50)
+```
+
+Intermediate progenitors a are distinguished by the following markers:
+```{r IPC}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_EOMES", "rna_ASCL1","rna_OTX1", "rna_OTX2", "rna_FOXG1"), max.cutoff = 25)
+
+```
+
+While immature neurons, which IPCs differentiate into, express the following:
+```{r immature}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_DCX", "rna_TUBB3", "rna_NEUROD1", "rna_TBR1", "rna_STMN1", "rna_GAP43", "rna_NCAM1"), max.cutoff = 25)
+```
+In contrast to the cloud of progenitor cells, these markers seem to indicate the other large cluster as being more neuronal in character.
+
+Oligodendrocytes and their precursors generally express the following markers:
+```{r olig}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_PDGFRA", "rna_CSPG4", "rna_CLDN11", "rna_MOG"), max.cutoff = 10)
+
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_OLIG1", "rna_OLIG2", "rna_OLIG3", "rna_MBP"), max.cutoff = 8)
+```
+Oligodendrocytes seem sparse and early, consistent with the idea that gliogenesis starts later in organoid development.
+
+Markers of "mature" neurons--a somewhat arbitrary term that simply means they're post-mitotic--include:
+```{r mature}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_RBFOX3", "rna_MAP2", "rna_NEFM", "rna_NEFH", "rna_DLG4"), max.cutoff = 10)
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_SYP", "rna_UNC13A"), max.cutoff = 10)
+
+```
+Which largely confirms our impression from earlier of which cluster contains neurons.  Only a subset of these are positive for NeuN (RBFOX3), whereas more express PSD95 (DLG4) and Synaptophysin.
+
+I expect that the majority of these neurons will be glutamatergic:
+```{r glutamatergic}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_SLC17A7", "rna_SLC17A6", "rna_GRIN1", "rna_GRIN2B"), max.cutoff = 25)
+```
+
+GABAergic neurons, on the other hand, express the following markers:
+```{r gabaergic}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_SLC6A1", "rna_GABBR1", "rna_GABBR2", "rna_GAD1", "rna_GAD2"), max.cutoff = 40)
+```
+GABA transporter (SLC6A1) and GABA synthesis enzymes GAD1/2 are expressed in a similar portion of cells complementary to the glutamatergic neurons described above.  Expression of GABA receptors appears a bit more diffuse.
+
+Is there any evidence for dopaminergic neurons?
+```{r dans}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_TH", "rna_SLC6A3", "rna_FOXA2", "rna_NR4A2", "rna_LMX1B"))
+```
+Not really, though the mature neurons seem to express NR4A2.
+
+Cholinergic neurons:
+```{r cholinergic}
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_CHAT", "rna_SLC18A3", "rna_ACHE"))
+
+FeaturePlot(organoid.combined.sct.neuron, features = c("rna_TNC", "rna_PTPRZ1", "rna_FAM107A", "rna_HOPX",  "rna_LIFR"))
+```
+Not really.  A number of these genes are expressed sparsely in the progenitor population.
+
+
+##Compare to primary fetal brain tissue
+[Polioudakis et al. 2019](https://www.sciencedirect.com/science/article/pii/S0896627319305616#bib31) used DropSeq to profile mid-gestational cortical neurons.  I'll use this dataset as reference for a final comparison.  
+
+```{r import-geschwind}
+load("../HumanChimpCellranger/HumanChimpOrganoidPilot/data/geschwind-raw_counts_mat.rdata")
+geschwind_meta <- read_csv("../HumanChimpCellranger/HumanChimpOrganoidPilot/data/geschwind-cell_metadata.csv") %>% column_to_rownames(var="Cell")
+
+geschwind <- CreateSeuratObject(raw_counts_mat)
+geschwind <- AddMetaData(object = geschwind, metadata = geschwind_meta)
+rm(raw_counts_mat)
+```
+
+Now we follow the Geschwind [lab's guidance](http://solo.bmap.ucla.edu/shiny/webapp/) to filter their data for further processing:  (1) remove cells with fewer than 200 genes detected; (2) remove cells with more than 3152 genes detected; (3) remove cells with >5% mitochondrial read content; (4) remove genes detected in <3 cells.
+
+...except that it appears they've already performed this filtering on the uploaded "raw" data.  Great!
+```{r}
+#Use SCTransform on their data
+geschwind <- SCTransform(geschwind, variable.features.n = 5000)
+
+ref.list <- list(geschwind, organoid.combined.sct.neuron)
+
+features <- SelectIntegrationFeatures(object.list = ref.list, nfeatures = 5000, verbose = F)
+ref.list <- PrepSCTIntegration(object.list = ref.list, anchor.features = features)
+
+organoid.anchors <- FindIntegrationAnchors(object.list = ref.list, normalization.method = "SCT",
+    anchor.features = features)
+reference.combined <- IntegrateData(anchorset = organoid.anchors, normalization.method = "SCT")
+DefaultAssay(reference.combined) <- "integrated"
+rm(ref.list, geschwind)
+
+
+reference.combined <- RunPCA(reference.combined, npcs = 100)
+reference.combined <- RunUMAP(reference.combined, reduction = "pca", dims = 1:100)
+
 
 ```
 
 
+```{r geschwind-processing}
+plot(density(geschwind@meta.data$nFeature_RNA))
+#it looks like the data we have here are mostly in good shape to start, I will assume I don't have to do any cleaning beyond what was uploaded.
+
+geschwind <- FindVariableFeatures(geschwind, selection.method = "vst", nfeatures = 2000)
+
+geschwind.plot <- VariableFeaturePlot(geschwind)
+LabelPoints(geschwind.plot, points = head(VariableFeatures(geschwind), 20), repel = T) + theme(legend.position = "none") 
+
+all.genes.filtered <- row.names(geschwind)
+geschwind <- ScaleData(geschwind, features = all.genes.filtered)
+
+geschwind <- RunPCA(geschwind, features = VariableFeatures(object = geschwind), npcs = 60)
+
+geschwind <- FindNeighbors(geschwind, dims = 1:40)
+geschwind <- FindClusters(geschwind, resolution = 0.7)
+
+geschwind <- RunUMAP(geschwind, dims = 1:50)
+DimPlot(geschwind, reduction = "umap", group.by="Cluster", label=TRUE, cols = DiscretePalette(20, "stepped"), na.value = "black") + ggtitle("resolution=0.7") + NoLegend() + ggtitle("Geschwind lab data")
+#the Geschwind lab data looks nice, now I can combine my data with it.
+
+geschwind$source <- "geschwind"
+organoid.combined.sct.neuron$source <- "gilad"
+
+data.list <- list(ges=geschwind, org=organoid.combined.sct.neuron)
+
+in.anchors <- FindIntegrationAnchors(object.list = data.list, dims = 1:50)
+geschwind.integrated <- IntegrateData(anchorset = in.anchors, dims = 1:50)
+
+DefaultAssay(geschwind.integrated) <- "integrated"
+
+# Run the standard workflow for visualization and clustering
+geschwind.integrated <- ScaleData(geschwind.integrated, verbose = FALSE)
+geschwind.integrated <- RunPCA(geschwind.integrated, npcs = 50, verbose = FALSE)
+geschwind.integrated <- RunUMAP(geschwind.integrated, reduction = "pca", dims = 1:40)
+#saveRDS(geschwind.integrated, "data/geschwindintegrated.rds")
+DimPlot(geschwind.integrated, reduction = "umap", group.by = "source") +ggtitle("Geschwind-Gilad integrated data") 
+
+DimPlot(geschwind.integrated, reduction = "umap", split.by = "source", label = TRUE, repel = TRUE, cols = DiscretePalette(20, "stepped")) +ggtitle("Geschwind-Gilad integrated data") + NoLegend()
+
+DimPlot(geschwind.integrated, reduction = "umap", group.by = "Cluster", label = TRUE, repel = TRUE, cols = DiscretePalette(20, "stepped"), na.value = "purple") + NoLegend() + ggtitle("Geschwind-Gilad integrated data, by cluster label")
+
+DimPlot(geschwind.integrated, reduction = "umap", group.by = "Cluster", label = TRUE, repel = TRUE, cols = DiscretePalette(20, "stepped"), na.value = "purple") + NoLegend() + ggtitle("Geschwind-Gilad integrated data, by cluster label")
+ggsave("docs/figure/geschwind.png")
+g2
+
+
+rm(data.list)
+rm(in.anchors)
+```
