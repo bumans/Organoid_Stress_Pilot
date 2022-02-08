@@ -1,0 +1,83 @@
+---
+title: "hippo"
+author: "Ben Umans"
+date: "2022-02-03"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+Mengjie Chen gave a really interesting talk this week about her scRNAseq pre-processing pipeline, HIPPO.  The routine is very different from the Seurat approach, iteratively splitting clusters in a hierarchical manner, rather than identifying highly variable genes across the whole map.  One can imagine helpful aspects of this--particularly for a developmental tree, where you want to be able to compare at similar levels of resolution (ie, not comparing retinal pigmented epithelium to mesoderm).  I'd like to try it out with my organoid data just to see what would happen.
+
+```{r setup}
+Sys.setenv(TZ='America/Chicago')
+library(HIPPO)
+library(Seurat)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(knitr)
+library(viridis)
+library(SingleCellExperiment)
+
+organoid.combined.sct.neuron <- readRDS(file="output/organoid.combined.full.sct.neuron.RDS") 
+organoid.combined.control <- subset(organoid.combined.sct.neuron, subset = stim=="control")
+
+sce <- SingleCellExperiment(assays=list(counts=organoid.combined.control@assays$RNA@counts))
+rm(organoid.combined.sct.neuron)
+rm(organoid.combined.control)
+
+#to use only genes that are expressed above a certain count value
+# keep_feature <- rowSums(counts(sce)>10) >0
+# sum(keep_feature)
+# sce <- sce[keep_feature,]
+
+#to randomly subsample genes
+keep_feature <- sample(rownames(sce), size=8000)
+sce <- sce[keep_feature,]
+```
+
+##Initial diagnostics
+I'mm using a random subset of 8000 genes to speed computation.  Let's see what zero-inflation looks like here in the whole dataset.
+
+```{r}
+hippo_diagnostic_plot(sce,
+                      show_outliers = TRUE,
+                      zvalue_thresh = 2)
+```
+
+
+
+##HIPPO clustering
+
+
+```{r}
+set.seed(20200321)
+sce = hippo(sce, K = 25, z_threshold = 2, outlier_proportion = 0.01, verbose=TRUE)
+saveRDS(sce, "output/sce_hippo_test.RDS")
+```
+
+HIPPO lets us visualize dimensionality reduction for each iteration:
+```{r}
+# sce = hippo_dimension_reduction(sce, method="umap")
+# hippo_umap_plot(sce)
+
+zero_proportion_plot(sce)
+```
+
+NB: at the moment the function to look at iterative splitting does not work.  Will be working on this with Karl.
+
+
+And the resulting heatmap of clustering genes:
+```{r}
+hippo_feature_heatmap(sce, kk = 25,
+                      top.n = 10)
+```
+
+We can finally test for DE between clusters:
+```{r, eval=FALSE}
+sce = hippo_diffexp(sce, 
+                  top.n = 5)
+```
+
